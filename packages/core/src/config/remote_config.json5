@@ -26,6 +26,7 @@
   },
   plugin: {
     overwall: {
+      enabled: true,
       targets: {
         '*azureedge.net': true,
         'github.com': true,
