@@ -34,6 +34,8 @@ const _lanIP = [
   '*.baidu.com',
   '*.tencent.com',
   '*.qq.com',
+  '*.weixin.com',
+  '*.weixinbridge.com',
   '*.aliyun.com',
   '*.alipay.com',
   '*.taobao.com',
@@ -46,7 +48,7 @@ const _lanIP = [
   'cdn.*',
   // 中国大陆域名
   '*.cn',
-  '*.com.cn',
+  'cn.*',
   // 本地
   'localhost',
   '127.*',
