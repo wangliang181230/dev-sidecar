@@ -18,15 +18,15 @@ const extraPath = require('../extra-path/index')
 const _lanIP = [
   // AGE动漫
   '*.agedm.*',
-  'agedm.*',
   '*.zhimg.com',
-  'zhimg.com',
   '*.bdxiguaimg.com',
-  'bdxiguaimg.com',
   '*.bytecdntp.com',
-  'bytecdntp.com',
   '*.bytegoofy.com',
-  'bytegoofy.com',
+  '*.toutiao.com',
+  '*.toutiaovod.com',
+  '*.aliyuncs.com',
+  '*.127.net',
+  '43.240.74.134',
   // 常用国内可访问域名
   '*.csdn.net',
   'csdn.net',
