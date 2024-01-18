@@ -51,6 +51,7 @@ const _lanIP = [
   'cn.*',
   // 本地
   'localhost',
+  'localhost.*',
   '127.*',
   'test.*',
   // 服务端常用域名
