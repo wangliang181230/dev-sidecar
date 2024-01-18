@@ -5,7 +5,6 @@
 通过本地代理的方式将https请求代理到一些国内的加速通道上
 
 <a href='https://github.com/docmirror/dev-sidecar'><img alt="GitHub stars" src="https://img.shields.io/github/stars/docmirror/dev-sidecar?logo=github"></a>
-<a href='https://gitee.com/docmirror/dev-sidecar'><img src='./doc/gitee.png' alt='star'/></a>
 
 >
 > Gitee上的同步项目已被封禁，此项目将不再更新与维护 【狗头保命】
@@ -26,7 +25,6 @@
 > 注意：由于electron无法监听windows的关机事件，开着ds情况下直接重启电脑，会导致无法上网，你可以手动启动ds即可恢复网络，你也可以将ds设置为开机自启。
 >
 > 关于此问题的更多讨论请前往：    
-> https://gitee.com/docmirror/dev-sidecar/issues/I49OUL     
 > https://github.com/docmirror/dev-sidecar/issues/109
 >
 
@@ -91,7 +89,6 @@
  
 #### 1 下载安装包 
 * release下载     
-[Gitee Release](https://gitee.com/docmirror/dev-sidecar/releases)  
 [Github Release](https://github.com/docmirror/dev-sidecar/releases)  
 
 > Windows: 请选择DevSidecar-x.x.x.exe     
