@@ -334,6 +334,26 @@ npm config delete https-proxy
 
 ## 八、贡献代码
 
+### 环境准备
+
+#### 安装 `nodejs`
+
+推荐安装 nodejs 16.x版本，其他版本未做测试
+
+#### 安装 `lerna` 和 `phantomjs`
+
+运行如下命令即可安装所需依赖：
+> 注：lerna指定为6.x版本，更高版本会导致打包失败
+```shell
+npm install cnpm -g --registry=https://registry.npm.taobao.org
+
+cnpm install lerna@6 -g
+
+cnpm install phantomjs -g
+
+```
+
+
 ### 开发调试模式启动
 
 运行如下命令即可开发模式启动
@@ -342,7 +362,6 @@ git clone https://github.com/docmirror/dev-sidecar
 
 cd dev-sidecar 
 
-npm install lerna@6 -g
 lerna bootstrap
 
 cd packages/gui
