@@ -42,7 +42,8 @@ const _lanIP = [
   '*.taobao.com',
   '*.tmall.com',
   '*.alipayobjects.com',
-  '*.dingtalk.com'
+  '*.dingtalk.com',
+  'mvnrepository.com'
 ]
 //   '<-loopback>'
 
