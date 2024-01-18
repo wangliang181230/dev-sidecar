@@ -35,7 +35,14 @@ const _lanIP = [
   '172.29.*',
   '172.30.*',
   '172.31.*',
-  '192.168.*'
+  '192.168.*',
+  '*.tencent.com',
+  '*.qq.com',
+  '*.alipay.com',
+  '*.taobao.com',
+  '*.tmall.com',
+  '*.alipayobjects.com',
+  '*.dingtalk.com'
 ]
 //   '<-loopback>'
 
