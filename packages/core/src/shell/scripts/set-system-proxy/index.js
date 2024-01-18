@@ -20,6 +20,7 @@ const _lanIP = [
   '*.agedm.*',
   '*.zhimg.com',
   '*.bdxiguaimg.com',
+  '*.toutiaoimg.com',
   '*.bytecdntp.com',
   '*.bytegoofy.com',
   '*.toutiao.com',
