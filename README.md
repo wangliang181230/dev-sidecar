@@ -342,7 +342,7 @@ git clone https://github.com/docmirror/dev-sidecar
 
 cd dev-sidecar 
 
-npm install lerna -g
+npm install lerna@6 -g
 lerna bootstrap
 
 cd packages/gui
