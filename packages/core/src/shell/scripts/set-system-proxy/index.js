@@ -16,8 +16,53 @@ const fs = require('fs')
 const _exec = util.promisify(childProcess.exec)
 const extraPath = require('../extra-path/index')
 const _lanIP = [
+  // AGE动漫
+  '*.agedm.*',
+  'agedm.*',
+  '*.zhimg.com',
+  'zhimg.com',
+  '*.bdxiguaimg.com',
+  'bdxiguaimg.com',
+  '*.bytecdntp.com',
+  'bytecdntp.com',
+  '*.bytegoofy.com',
+  'bytegoofy.com',
+  // 常用国内可访问域名
+  '*.csdn.net',
+  'csdn.net',
+  '*.bilibili.com',
+  'bilibili.com',
+  '*.baidu.com',
+  'baidu.com',
+  '*.tencent.com',
+  'tencent.com',
+  '*.qq.com',
+  'qq.com',
+  '*.aliyun.com',
+  'aliyun.com',
+  '*.alipay.com',
+  'alipay.com',
+  '*.taobao.com',
+  'taobao.com',
+  '*.tmall.com',
+  'tmall.com',
+  '*.alipayobjects.com',
+  'alipayobjects.com',
+  '*.dingtalk.com',
+  'dingtalk.com',
+  '*.mvnrepository.com',
+  'mvnrepository.com',
+  '*.maven.org',
+  'maven.org',
+  // cdn加速
+  'cdn.*',
+  // 中国大陆域名
+  '*.cn',
+  '*.com.cn',
+  // 本地
   'localhost',
   '127.*',
+  // 服务端常用域名
   '10.*',
   '172.16.*',
   '172.17.*',
@@ -35,15 +80,8 @@ const _lanIP = [
   '172.29.*',
   '172.30.*',
   '172.31.*',
-  '192.168.*',
-  '*.tencent.com',
-  '*.qq.com',
-  '*.alipay.com',
-  '*.taobao.com',
-  '*.tmall.com',
-  '*.alipayobjects.com',
-  '*.dingtalk.com',
-  'mvnrepository.com'
+  // 局域网
+  '192.168.*'
 ]
 //   '<-loopback>'
 
