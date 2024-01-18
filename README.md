@@ -5,7 +5,6 @@
 通过本地代理的方式将https请求代理到一些国内的加速通道上
 
 <a href='https://github.com/docmirror/dev-sidecar'><img alt="GitHub stars" src="https://img.shields.io/github/stars/docmirror/dev-sidecar?logo=github"></a>
-<a href='https://gitee.com/docmirror/dev-sidecar'><img src='./doc/gitee.png' alt='star'/></a>
 
 >
 > Gitee上的同步项目已被封禁，此项目将不再更新与维护 【狗头保命】
@@ -26,7 +25,6 @@
 > 注意：由于electron无法监听windows的关机事件，开着ds情况下直接重启电脑，会导致无法上网，你可以手动启动ds即可恢复网络，你也可以将ds设置为开机自启。
 >
 > 关于此问题的更多讨论请前往：    
-> https://gitee.com/docmirror/dev-sidecar/issues/I49OUL     
 > https://github.com/docmirror/dev-sidecar/issues/109
 >
 
@@ -91,7 +89,6 @@
  
 #### 1 下载安装包 
 * release下载     
-[Gitee Release](https://gitee.com/docmirror/dev-sidecar/releases)  
 [Github Release](https://github.com/docmirror/dev-sidecar/releases)  
 
 > Windows: 请选择DevSidecar-x.x.x.exe     
@@ -334,6 +331,26 @@ npm config delete https-proxy
 
 ## 八、贡献代码
 
+### 环境准备
+
+#### 安装 `nodejs`
+
+推荐安装 nodejs 16.x版本，其他版本未做测试
+
+#### 安装 `lerna` 和 `phantomjs`
+
+运行如下命令即可安装所需依赖：
+> 注：lerna指定为6.x版本，更高版本会导致打包失败
+```shell
+npm install cnpm -g --registry=https://registry.npm.taobao.org
+
+cnpm install lerna@6 -g
+
+cnpm install phantomjs -g
+
+```
+
+
 ### 开发调试模式启动
 
 运行如下命令即可开发模式启动
@@ -342,7 +359,6 @@ git clone https://github.com/docmirror/dev-sidecar
 
 cd dev-sidecar 
 
-npm install lerna -g
 lerna bootstrap
 
 cd packages/gui
