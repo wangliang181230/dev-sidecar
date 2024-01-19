@@ -16,6 +16,7 @@ const fs = require('fs')
 const _exec = util.promisify(childProcess.exec)
 const extraPath = require('../extra-path/index')
 const _lanIP = [
+  // region 常用国内可访问域名
   // AGE动漫
   '*.agedm.*',
   '*.zhimg.com',
@@ -28,32 +29,44 @@ const _lanIP = [
   '*.aliyuncs.com',
   '*.127.net',
   '43.240.74.134',
-  // 常用国内可访问域名
+  // 系统之家
   '*.xitongzhijia.net',
+  // CSDN
   '*.csdn.net',
+  // 哔哩哔哩
   '*.bilibili.com',
+  // 百度
   '*.baidu.com',
+  '*.baiducontent.com',
+  '*.bdimg.com',
+  '*.bdstatic.com',
+  '*.bdydns.com',
+  // 腾讯
   '*.tencent.com',
   '*.qq.com',
   '*.weixin.com',
   '*.weixinbridge.com',
+  // 阿里
   '*.aliyun.com',
   '*.alipay.com',
   '*.taobao.com',
   '*.tmall.com',
   '*.alipayobjects.com',
   '*.dingtalk.com',
+  // Maven Repository
   '*.mvnrepository.com',
   '*.maven.org',
-  // 微软的域名
+  // 微软
   '*.microsoft.com',
   '*.windows.com',
   '*.live.com',
-  // cdn加速
-  'cdn.*',
-  // 中国大陆域名
+  // 中国大陆
   '*.cn',
   'cn.*',
+  // endregion
+
+  // cdn加速
+  'cdn.*',
   // 本地
   'localhost',
   'localhost.*',
