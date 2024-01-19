@@ -46,6 +46,7 @@ const _lanIP = [
   '*.qq.com',
   '*.weixin.com',
   '*.weixinbridge.com',
+  '*.idqqimg.com',
   // 阿里
   '*.aliyun.com',
   '*.alipay.com',
