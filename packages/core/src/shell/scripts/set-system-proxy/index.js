@@ -55,6 +55,9 @@ const _lanIP = [
   '*.alipayobjects.com',
   '*.dingtalk.com',
   '*.mmstat.com',
+  // Gitee
+  '*.gitee.com',
+  '*.gitee.io',
   // Maven Repository
   '*.mvnrepository.com',
   '*.maven.org',
