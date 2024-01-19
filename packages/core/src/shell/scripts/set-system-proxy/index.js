@@ -53,13 +53,27 @@ const _lanIP = [
   '*.tmall.com',
   '*.alipayobjects.com',
   '*.dingtalk.com',
+  '*.mmstat.com',
   // Maven Repository
   '*.mvnrepository.com',
   '*.maven.org',
   // 微软
   '*.microsoft.com',
   '*.windows.com',
+  '*.office.com',
   '*.live.com',
+  // 360
+  '*.360.com',
+  '*.360safe.com',
+  '*.360buyimg.com',
+  '*.360buy.com',
+  // 京东
+  '*.jd.com',
+  '*.jcloud.com',
+  '*.jcloudcs.com',
+  '*.jcloudcache.com',
+  '*.jcloudcdn.com',
+  '*.jcloudlb.com',
   // 中国大陆
   '*.cn',
   'cn.*',
