@@ -17,8 +17,10 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
 
     const rOptions = commonUtil.getOptionsFormRequest(req, ssl, externalProxy)
 
-    if (rOptions.agent && rOptions.agent.options) {
+    if (rOptions.agent) {
       rOptions.agent.options.rejectUnauthorized = setting.verifySsl
+    } else if (rOptions.agent !== false) {
+      log.error('rOptions.agent 的值有问题: ', rOptions)
     }
 
     if (rOptions.headers.connection === 'close') {
@@ -82,12 +84,12 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
       if (isDnsIntercept) {
         const { dns, ip, hostname } = isDnsIntercept
         dns.count(hostname, ip, true)
-        log.error('记录ip失败次数,用于优选ip：', hostname, ip, type)
+        log.error('记录ip失败次数,用于优选ip：', hostname, ip, type, dns)
       }
       const counter = context.requestCount
       if (counter != null) {
         counter.count.doCount(counter.value, true)
-        log.error('记录proxy失败次数：', counter.value, type)
+        log.error('记录proxy失败次数：', counter.value, type, counter.count)
       }
     }
 
