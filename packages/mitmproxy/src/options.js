@@ -16,6 +16,9 @@ module.exports = (config) => {
   if (!setting.script.dirAbsolutePath) {
     setting.script.dirAbsolutePath = path.join(setting.rootDir, setting.script.defaultDir)
   }
+  if (!setting.verifySsl) {
+    setting.verifySsl = true
+  }
 
   const overwallConfig = serverConfig.plugin.overwall
   if (!overwallConfig.pac.pacFileAbsolutePath) {
