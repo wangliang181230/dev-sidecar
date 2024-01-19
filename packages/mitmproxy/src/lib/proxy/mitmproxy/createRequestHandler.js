@@ -17,7 +17,9 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
 
     const rOptions = commonUtil.getOptionsFormRequest(req, ssl, externalProxy)
 
-    rOptions.agent.options.rejectUnauthorized = setting.verifySsl
+    if (rOptions.agent && rOptions.agent.options) {
+      rOptions.agent.options.rejectUnauthorized = setting.verifySsl
+    }
 
     if (rOptions.headers.connection === 'close') {
       req.socket.setKeepAlive(false)

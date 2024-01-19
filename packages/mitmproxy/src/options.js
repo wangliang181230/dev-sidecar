@@ -16,7 +16,7 @@ module.exports = (config) => {
   if (!setting.script.dirAbsolutePath) {
     setting.script.dirAbsolutePath = path.join(setting.rootDir, setting.script.defaultDir)
   }
-  if (!setting.verifySsl) {
+  if (setting.verifySsl !== false) {
     setting.verifySsl = true
   }
 
