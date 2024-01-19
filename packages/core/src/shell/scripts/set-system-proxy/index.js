@@ -29,6 +29,7 @@ const _lanIP = [
   '*.127.net',
   '43.240.74.134',
   // 常用国内可访问域名
+  '*.xitongzhijia.net',
   '*.csdn.net',
   '*.bilibili.com',
   '*.baidu.com',
