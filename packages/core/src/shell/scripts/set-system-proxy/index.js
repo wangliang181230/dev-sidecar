@@ -58,6 +58,11 @@ const _lanIP = [
   // Gitee
   '*.gitee.com',
   '*.gitee.io',
+  // MozillaFirefox
+  '*.mozilla.org',
+  '*.mozilla.com',
+  '*.mozilla.net',
+  '*.firefox.cn',
   // Maven Repository
   '*.mvnrepository.com',
   '*.maven.org',
