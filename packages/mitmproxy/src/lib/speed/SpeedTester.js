@@ -112,7 +112,7 @@ class SpeedTester {
       aliveList.sort((a, b) => a.time - b.time)
       this.backupList.sort((a, b) => a.time - b.time)
     } catch (e) {
-      log.error('[speed] test error', this.hostname, item.host, e.message)
+      log.warn('[speed] test error', this.hostname, item.host, e.message)
     }
   }
 
@@ -134,7 +134,7 @@ class SpeedTester {
       client.on('end', () => {
       })
       client.on('error', (error) => {
-        log.error('[speed]test error', this.hostname, host, error.message)
+        log.warn('[speed]test error', this.hostname, host, error.message)
         isOver = true
         clearTimeout(timeoutId)
         reject(error)
@@ -144,7 +144,7 @@ class SpeedTester {
         if (isOver) {
           return
         }
-        log.error('[speed] test timeout', this.hostname, host)
+        log.warn('[speed] test timeout', this.hostname, host)
         reject(new Error('timeout'))
         client.end()
       }, timeout)
