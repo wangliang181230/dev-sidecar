@@ -45,6 +45,10 @@ const _lanIP = [
   '*.dingtalk.com',
   '*.mvnrepository.com',
   '*.maven.org',
+  // 微软的域名
+  '*.microsoft.com',
+  '*.windows.com',
+  '*.live.com',
   // cdn加速
   'cdn.*',
   // 中国大陆域名
