@@ -47,6 +47,7 @@ const _lanIP = [
   '*.dingtalk.com',
   '*.mmstat.com',
   // Gitee
+  'gitee.com',
   '*.gitee.com',
   '*.gitee.io',
   // MozillaFirefox
