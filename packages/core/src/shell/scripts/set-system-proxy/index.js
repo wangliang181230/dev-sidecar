@@ -17,18 +17,9 @@ const _exec = util.promisify(childProcess.exec)
 const extraPath = require('../extra-path/index')
 const _lanIP = [
   // region 常用国内可访问域名
-  // AGE动漫
-  '*.agedm.*',
-  '*.zhimg.com',
-  '*.bdxiguaimg.com',
-  '*.toutiaoimg.com',
-  '*.bytecdntp.com',
-  '*.bytegoofy.com',
-  '*.toutiao.com',
-  '*.toutiaovod.com',
-  '*.aliyuncs.com',
-  '*.127.net',
-  '43.240.74.134',
+  // 中国大陆
+  '*.cn',
+  'cn.*',
   // 系统之家
   '*.xitongzhijia.net',
   // CSDN
@@ -62,7 +53,7 @@ const _lanIP = [
   '*.mozilla.org',
   '*.mozilla.com',
   '*.mozilla.net',
-  '*.firefox.cn',
+  '*.firefox.com',
   // Maven Repository
   '*.mvnrepository.com',
   '*.maven.org',
@@ -83,9 +74,18 @@ const _lanIP = [
   '*.jcloudcache.com',
   '*.jcloudcdn.com',
   '*.jcloudlb.com',
-  // 中国大陆
-  '*.cn',
-  'cn.*',
+  // AGE动漫
+  '*.agedm.*',
+  '*.zhimg.com',
+  '*.bdxiguaimg.com',
+  '*.toutiaoimg.com',
+  '*.bytecdntp.com',
+  '*.bytegoofy.com',
+  '*.toutiao.com',
+  '*.toutiaovod.com',
+  '*.aliyuncs.com',
+  '*.127.net',
+  '43.240.74.134',
   // endregion
 
   // cdn加速
