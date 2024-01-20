@@ -107,7 +107,7 @@ const configApi = {
       log.info('开始下载远程配置:', remoteConfigUrl)
       request(remoteConfigUrl, (error, response, body) => {
         if (error) {
-          log.error('下载远程配置失败:', error)
+          log.error('下载远程配置失败, error:', error, ', response:', response, ', body:', body)
           reject(error)
           return
         }
@@ -116,13 +116,14 @@ const configApi = {
           fs.writeFileSync(_getRemoteSavePath(), body)
           resolve()
         } else {
-          let message;
+          log.error('下载远程配置失败, response:', response, ', body:', body)
+
+          let message
           if (response) {
             message = '下载远程配置失败: ' + response.message + ', code: ' + response.statusCode
           } else {
-            message = '下载远程配置失败: response: ' + response;
+            message = '下载远程配置失败: response: ' + response
           }
-          log.error(message)
           reject(new Error(message))
         }
       })
