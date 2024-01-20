@@ -104,18 +104,24 @@ const configApi = {
     const remoteConfigUrl = get().app.remoteConfig.url
     // eslint-disable-next-line handle-callback-err
     return new Promise((resolve, reject) => {
-      log.info('下载远程配置：', remoteConfigUrl)
+      log.info('开始下载远程配置:', remoteConfigUrl)
       request(remoteConfigUrl, (error, response, body) => {
         if (error) {
-          log.error('下载远程配置失败', error)
+          log.error('下载远程配置失败:', error)
           reject(error)
           return
         }
         if (response && response.statusCode === 200) {
+          log.info('下载远程配置成功:', body)
           fs.writeFileSync(_getRemoteSavePath(), body)
           resolve()
         } else {
-          const message = '下载远程配置失败:' + response.message + ',code:' + response.statusCode
+          let message;
+          if (response) {
+            message = '下载远程配置失败: ' + response.message + ', code: ' + response.statusCode
+          } else {
+            message = '下载远程配置失败: response: ' + response;
+          }
           log.error(message)
           reject(new Error(message))
         }
