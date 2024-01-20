@@ -67,9 +67,9 @@ class DynamicChoice {
   }
 
   /**
-     * 换下一个
-     * @param count
-     */
+   * 换下一个
+   * @param count
+   */
   changeNext (count) {
     log.info('切换backup', count, this.backup)
     count.keepErrorCount = 0 // 清空连续失败
@@ -84,10 +84,10 @@ class DynamicChoice {
   }
 
   /**
-     * 记录使用次数或错误次数
-     * @param value
-     * @param isError
-     */
+   * 记录使用次数或错误次数
+   * @param value
+   * @param isError
+   */
   doCount (value, isError) {
     let count = this.count[value]
     if (count == null) {
@@ -105,7 +105,7 @@ class DynamicChoice {
       if (count.keepErrorCount >= 3) {
         this.changeNext(count)
       }
-      // 成功率小于50%,切换下一个
+      // 成功率小于40%,切换下一个
       if (count.successRate < 0.4) {
         this.changeNext(count)
       }
