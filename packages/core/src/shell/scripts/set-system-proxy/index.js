@@ -6,14 +6,7 @@ const Registry = require('winreg')
 
 const execute = Shell.execute
 const execFile = Shell.execFile
-const refreshInternetPs = require('./refresh-internet')
-const PowerShell = require('node-powershell')
 const log = require('../../../utils/util.log')
-const path = require('path')
-const childProcess = require('child_process')
-const util = require('util')
-const fs = require('fs')
-const _exec = util.promisify(childProcess.exec)
 const extraPath = require('../extra-path/index')
 const _lanIP = [
   // region 常用国内可访问域名
@@ -92,7 +85,6 @@ const _lanIP = [
   '*.10086cloud.com',
   // 移动：139邮箱
   '*.139.com',
-  '*.139.net',
   // AGE动漫
   '*.agedm.*',
   '*.zhimg.com',
