@@ -87,6 +87,12 @@ const _lanIP = [
   '*.jcloudlb.com',
   // 哔哩哔哩
   '*.bilibili.com',
+  // 移动
+  '*.10086.com',
+  '*.10086cloud.com',
+  // 移动：139邮箱
+  '*.139.com',
+  '*.139.net',
   // AGE动漫
   '*.agedm.*',
   '*.zhimg.com',
