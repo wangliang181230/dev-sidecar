@@ -84,9 +84,9 @@ module.exports = {
       'github.githubassets.com': {
         '.*': {
           proxy: 'github.githubassets.com',
-          backup: [
-            'assets.fastgit.org'
-          ],
+          // backup: [
+          //   'assets.fastgit.org'
+          // ],
           sni: 'assets.fastgit.org'
         }
       },
@@ -191,13 +191,20 @@ module.exports = {
       }
     },
     whiteList: {
+      'cdn.*': true,
+      '*.cdn.*': true,
+      '*.cn': true,
+      'cn.*': true,
+      'dingtalk.com': true,
+      '*.dingtalk.com': true,
+      'qq.com': true,
+      '*.qq.com': true,
       'apple.com': true,
       '*.apple.com': true,
       'microsoft.com': true,
       '*.microsoft.com': true,
       'alipay.com': true,
       '*.alipay.com': true,
-      'pay.weixin.qq.com': true,
       'www.baidu.com': true
     },
     // sniList: {

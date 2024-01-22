@@ -91,6 +91,7 @@ const _lanIP = [
 
   // cdn加速
   'cdn.*',
+  '*.cdn.*',
   // 本地
   'localhost',
   'localhost.*',
