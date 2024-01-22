@@ -1,2 +1,2 @@
 cd packages/gui
-call build.bat
+call _build.bat

@@ -17,6 +17,9 @@
         <a-tag v-else color="red">
           当前未启动
         </a-tag>
+        <div class="form-help">
+          <a @click="openExternal('https://gitee.com/wangliang181230/dev-sidecar/blob/master/doc/recover.md')">卸载与恢复网络说明</a>
+        </div>
       </a-form-item>
       <a-form-item v-if="isWindows()" label="设置环境变量" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-checkbox v-model="config.proxy.setEnv" >
