@@ -27,6 +27,7 @@
   plugin: {
     overwall: {
       targets: {
+        '*.jsdelivr.net': true,
         '*.docker.com': true,
         'github.com': true,
         '*wikimedia.org': true,
