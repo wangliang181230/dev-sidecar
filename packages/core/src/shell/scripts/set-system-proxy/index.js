@@ -110,9 +110,6 @@ const _lanIP = [
   '*.zzzfun.vip',
   // endregion
 
-  // cdn加速
-  'cdn.*',
-  '*.cdn.*',
   // 本地
   'localhost',
   'localhost.*',
