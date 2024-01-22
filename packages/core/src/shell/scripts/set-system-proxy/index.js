@@ -24,8 +24,6 @@ const _lanIP = [
   '*.xitongzhijia.net',
   // CSDN
   '*.csdn.net',
-  // 哔哩哔哩
-  '*.bilibili.com',
   // 百度
   '*.baidu.com',
   '*.baiducontent.com',
@@ -38,6 +36,11 @@ const _lanIP = [
   '*.weixin.com',
   '*.weixinbridge.com',
   '*.idqqimg.com',
+  '*.gtimg.com',
+  '*.qpic.com',
+  '*.qlogo.com',
+  '*.myapp.com',
+  '*.myqcloud.com',
   // 阿里
   '*.aliyun.com',
   '*.alipay.com',
@@ -46,15 +49,22 @@ const _lanIP = [
   '*.alipayobjects.com',
   '*.dingtalk.com',
   '*.mmstat.com',
+  '*.alicdn.com',
   // Gitee
   'gitee.com',
   '*.gitee.com',
   '*.gitee.io',
+  '*.giteeusercontent.com',
   // MozillaFirefox
   '*.mozilla.org',
   '*.mozilla.com',
   '*.mozilla.net',
   '*.firefox.com',
+  '*.firefox.org',
+  '*.mozillademos.org',
+  '*.mozillians.org',
+  '*.mozillians.net',
+  '*.mozillians.com',
   // Maven Repository
   '*.mvnrepository.com',
   '*.maven.org',
@@ -75,6 +85,8 @@ const _lanIP = [
   '*.jcloudcache.com',
   '*.jcloudcdn.com',
   '*.jcloudlb.com',
+  // 哔哩哔哩
+  '*.bilibili.com',
   // AGE动漫
   '*.agedm.*',
   '*.zhimg.com',
@@ -87,6 +99,9 @@ const _lanIP = [
   '*.aliyuncs.com',
   '*.127.net',
   '43.240.74.134',
+  // ZzzFun
+  '*.zzzfun.one',
+  '*.zzzfun.vip',
   // endregion
 
   // cdn加速

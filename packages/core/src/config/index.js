@@ -191,10 +191,10 @@ module.exports = {
       }
     },
     whiteList: {
-      'cdn.*': true,
-      '*.cdn.*': true,
       '*.cn': true,
       'cn.*': true,
+      '*.cdn.*': true,
+      'cdn.*': true,
       'dingtalk.com': true,
       '*.dingtalk.com': true,
       'qq.com': true,
