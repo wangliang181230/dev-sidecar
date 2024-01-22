@@ -144,7 +144,7 @@ async function _winUnsetProxy (exec, setEnv) {
     regKey.get('HTTPS_PROXY', (err) => {
       if (!err) {
         regKey.remove('HTTPS_PROXY', async (err) => {
-          log.info('删除环境变量https_proxy', err)
+          log.warn('删除环境变量https_proxy失败:', err)
           await exec('setx DS_REFRESH "1"')
         })
       }
@@ -188,7 +188,7 @@ const executor = {
     } else {
       // 设置代理
 
-      log.info('设置代理', ip, port, setEnv)
+      log.info('设置代理:', ip, port, setEnv)
       return _winSetProxy(exec, ip, port, setEnv)
     }
   },

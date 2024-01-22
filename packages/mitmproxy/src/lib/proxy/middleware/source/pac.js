@@ -8,12 +8,12 @@ function createPacClient (pacFilePath) {
 
   function readFile (location) {
     try {
-      log.info('pac root dir', path.resolve('./'))
+      log.info('pac root dir:', path.resolve('./'))
       const filePath = path.resolve(location)
       log.info('read pac path:', filePath)
       return fs.readFileSync(location).toString()
     } catch (e) {
-      log.error('读取pac失败')
+      log.error('读取pac失败:', e)
       return ''
     }
   }

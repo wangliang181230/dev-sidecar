@@ -141,7 +141,7 @@ const configApi = {
         return JSON5.parse(file.toString())
       }
     } catch (e) {
-      log.info('远程配置读取有误', e)
+      log.info('远程配置读取有误:', e)
     }
 
     return {}

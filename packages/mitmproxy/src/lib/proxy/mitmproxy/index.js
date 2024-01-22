@@ -85,7 +85,7 @@ module.exports = {
     server.listen(port, host, () => {
       log.info(`dev-sidecar启动端口: ${port}`)
       server.on('error', (e) => {
-        log.error('server error', e)
+        log.error('server error:', e)
       })
       server.on('request', (req, res) => {
         const ssl = false
@@ -103,7 +103,7 @@ module.exports = {
         upgradeHandler(req, socket, head, ssl)
       })
       server.on('clientError', (err, socket) => {
-        log.error('client error', err)
+        log.error('client error:', err)
         socket.end('HTTP/1.1 400 Bad Request\r\n\r\n')
       })
 

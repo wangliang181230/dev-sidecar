@@ -20,7 +20,7 @@ module.exports = function createFakeServerCenter ({
     caCert = forge.pki.certificateFromPem(caCertPem)
     caKey = forge.pki.privateKeyFromPem(caKeyPem)
   } catch (e) {
-    log.info(colors.red('Can not find `CA certificate` or `CA key`.'), e)
+    log.error('Can not find `CA certificate` or `CA key`:', e)
     process.exit(1)
   }
 

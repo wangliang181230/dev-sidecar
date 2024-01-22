@@ -38,7 +38,7 @@ class DynamicChoice {
     list.sort((a, b) => {
       return b.successRate - a.successRate
     })
-    log.info('do rank', JSON.stringify(list))
+    log.info('do rank:', JSON.stringify(list))
     const backup = list.map(item => item.value)
 
     this.setBackupList(backup)
@@ -71,7 +71,7 @@ class DynamicChoice {
    * @param count
    */
   changeNext (count) {
-    log.info('切换backup', count, this.backup)
+    log.info('切换backup:', count, this.backup)
     count.keepErrorCount = 0 // 清空连续失败
     count.total = 0
     count.error = 0
@@ -80,7 +80,7 @@ class DynamicChoice {
     } else {
       this.value = null
     }
-    log.info('切换backup完成', this.value, this.backup)
+    log.info('切换backup完成:', this.value, this.backup)
   }
 
   /**

@@ -106,7 +106,7 @@ function updateHandle (app, api, win, beforeQuit, quit, log) {
     const length = fs.statSync(partPackagePath)
     log.info('安装包大小:', length)
 
-    log.info('开始解压缩，安装升级包', partPackagePath, target)
+    log.info('开始解压缩，安装升级包:', partPackagePath, target)
 
     try {
       await beforeQuit()
@@ -121,7 +121,7 @@ function updateHandle (app, api, win, beforeQuit, quit, log) {
   }
 
   autoUpdater.on('error', function (error) {
-    log.info('autoUpdater error', error)
+    log.warn('autoUpdater error:', error)
     sendUpdateMessage({ key: 'error', value: error, error: error })
     // dialog.showErrorBox('Error: ', error == null ? 'unknown' : (error.stack || error).toString())
   })
@@ -144,7 +144,7 @@ function updateHandle (app, api, win, beforeQuit, quit, log) {
   })
   // 更新完成，重启应用
   autoUpdater.on('update-downloaded', function (info) {
-    log.info('download complete', info.version)
+    log.info('download complete, version:', info.version)
     win.webContents.send('update', {
       key: 'downloaded',
       value: info

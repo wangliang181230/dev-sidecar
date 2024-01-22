@@ -40,10 +40,10 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
     const hostname = srvUrl.hostname
     if (isSslConnect(sslConnectInterceptors, req, cltSocket, head)) {
       fakeServerCenter.getServerPromise(hostname, srvUrl.port).then((serverObj) => {
-        log.info('--- fakeServer connect', hostname)
+        log.info('--- fakeServer connect:', hostname)
         connect(req, cltSocket, head, localIP, serverObj.port)
       }, (e) => {
-        log.error('getServerPromise', e)
+        log.error('getServerPromise error:', e)
       })
     } else {
       log.info('不拦截请求：', hostname)
@@ -93,26 +93,26 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig, sniRegexpMap)
       cltSocket.write('HTTP/1.1 200 Connection Established\r\n' +
                 'Proxy-agent: dev-sidecar\r\n' +
                 '\r\n')
-      log.info('proxy connect start', hostname)
+      log.info('proxy connect start:', hostname)
       proxySocket.write(head)
       proxySocket.pipe(cltSocket)
 
       cltSocket.pipe(proxySocket)
     })
     cltSocket.on('timeout', (e) => {
-      log.error('cltSocket timeout', e.message, hostname)
+      log.error('cltSocket timeout:', e.message, hostname)
     })
     cltSocket.on('error', (e) => {
-      log.error('cltSocket error', e.message, hostname)
+      log.error('cltSocket error:', e.message, hostname)
     })
     proxySocket.on('timeout', () => {
       const end = new Date().getTime()
-      log.info('代理socket timeout：', hostname, port, (end - start) + 'ms')
+      log.info('代理socket timeout：', hostname, port, (end - start) + ' ms')
     })
     proxySocket.on('error', (e) => {
       // 连接失败，可能被GFW拦截，或者服务端拥挤
       const end = new Date().getTime()
-      log.error('代理连接失败：', e.message, hostname, port, (end - start) + 'ms')
+      log.error('代理连接失败：', e.message, hostname, port, (end - start) + ' ms')
       cltSocket.destroy()
       if (isDnsIntercept) {
         const { dns, ip, hostname } = isDnsIntercept
@@ -122,6 +122,6 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig, sniRegexpMap)
     })
     return proxySocket
   } catch (error) {
-    log.error('connect err', error)
+    log.error('connect error:', error)
   }
 }

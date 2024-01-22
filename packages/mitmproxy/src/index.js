@@ -8,7 +8,7 @@ let server
 
 function registerProcessListener () {
   process.on('message', function (msg) {
-    log.info('child get msg: ' + JSON.stringify(msg))
+    log.info('child get msg:', JSON.stringify(msg))
     if (msg.type === 'action') {
       api[msg.event.key](msg.event.params)
     } else if (msg.type === 'speed') {
@@ -27,15 +27,15 @@ function registerProcessListener () {
       //  log.error(err.errno)
       return
     }
-    log.error('uncaughtException:', err)
+    log.error('Process uncaughtException:', err)
   })
 
   process.on('unhandledRejection', (err, p) => {
-    log.info('Unhandled Rejection at: Promise', p, 'err:', err)
+    log.info('Process unhandledRejection at: Promise', p, 'err:', err)
     // application specific logging, throwing an error, or other logic here
   })
   process.on('uncaughtExceptionMonitor', (err, origin) => {
-    log.info('uncaughtExceptionMonitor:', err, origin)
+    log.info('Process uncaughtExceptionMonitor:', err, origin)
   })
   process.on('exit', function (code, signal) {
     log.info('代理服务进程被关闭:', code, signal)
