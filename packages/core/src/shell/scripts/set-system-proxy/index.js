@@ -44,7 +44,6 @@ const _lanIP = [
   '*.mmstat.com',
   '*.alicdn.com',
   // Gitee
-  'gitee.com',
   '*.gitee.com',
   '*.gitee.io',
   '*.giteeusercontent.com',
@@ -100,6 +99,8 @@ const _lanIP = [
   // ZzzFun
   '*.zzzfun.one',
   '*.zzzfun.vip',
+  // 我的个人域名
+  '*.easyj.icu',
   // endregion
 
   // 本地
