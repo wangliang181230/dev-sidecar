@@ -1,9 +1,9 @@
 const through = require('through2')
 const zlib = require('zlib')
 // eslint-disable-next-line no-unused-vars
-const url = require('url')
+// const url = require('url')
 
-var httpUtil = {}
+const httpUtil = {}
 httpUtil.getCharset = function (res) {
   const contentType = res.getHeader('content-type')
   const reg = /charset=(.*)/
@@ -14,11 +14,11 @@ httpUtil.getCharset = function (res) {
   return 'utf-8'
 }
 httpUtil.isGzip = function (res) {
-  var contentEncoding = res.headers['content-encoding']
+  const contentEncoding = res.headers['content-encoding']
   return !!(contentEncoding && contentEncoding.toLowerCase() === 'gzip')
 }
 httpUtil.isHtml = function (res) {
-  var contentType = res.headers['content-type']
+  const contentType = res.headers['content-type']
   return (typeof contentType !== 'undefined') && /text\/html|application\/xhtml\+xml/.test(contentType)
 }
 const HEAD = Buffer.from('</head>')

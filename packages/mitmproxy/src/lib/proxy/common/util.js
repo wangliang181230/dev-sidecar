@@ -125,7 +125,7 @@ util.getTunnelAgent = (requestIsSSL, externalProxyUrl) => {
       //             host: hostname,
       //             port: port
       //         }
-      //     });
+      //     })
       // }
       return false
     } else {

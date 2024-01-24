@@ -96,7 +96,7 @@ function updateHandle (app, api, win, beforeQuit, quit, log) {
     })
   }
 
-  async function updatePart (app, api, value, partPackagePath, quit) {
+  async function updatePart (app, api, value, partPackagePath) {
     const appPath = appPathUtil.getAppRootPath(app)
     const platform = api.shell.getSystemPlatform()
     let target = path.join(appPath, 'resources')
@@ -133,7 +133,7 @@ function updateHandle (app, api, win, beforeQuit, quit, log) {
     log.info('autoUpdater update-available')
     sendUpdateMessage({ key: 'available', value: info })
   })
-  autoUpdater.on('update-not-available', function (info) {
+  autoUpdater.on('update-not-available', function () {
     log.info('autoUpdater update-not-available')
     sendUpdateMessage({ key: 'notAvailable', value: message.updateNotAva })
   })
