@@ -58,8 +58,10 @@ const _lanIP = [
   '*.mozillians.net',
   '*.mozillians.com',
   // Maven Repository
-  '*.mvnrepository.com',
   '*.maven.org',
+  // Maven Repository
+  '*.mvnrepository.com',
+  'challenges.cloudflare.com', // 人机校验时使用，国内可直接访问，所以不需要代理
   // 微软
   '*.microsoft.com',
   '*.windows.com',
