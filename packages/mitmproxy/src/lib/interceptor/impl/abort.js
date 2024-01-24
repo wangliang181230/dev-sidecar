@@ -4,7 +4,7 @@ module.exports = {
     const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
     log.info(`abort: ${url}`)
     res.writeHead(403)
-    res.write('DevSidecar 403: Request abort.\n\n This request is matched by abort intercept.')
+    res.write('DevSidecar 403: Request abort.\n\nThis request is matched by abort intercept.')
     res.end()
     return true// 是否结束
   },
