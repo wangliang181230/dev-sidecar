@@ -2,7 +2,6 @@ import lodash from 'lodash'
 import DevSidecar from '@docmirror/dev-sidecar'
 import { ipcMain } from 'electron'
 import fs from 'fs'
-import JSON5 from 'json5'
 import path from 'path'
 const pk = require('../../../package.json')
 const mitmproxyPath = path.join(__dirname, 'mitmproxy.js')
@@ -47,7 +46,7 @@ const localApi = {
       let setting = {}
       if (fs.existsSync(settingPath)) {
         const file = fs.readFileSync(settingPath)
-        setting = JSON5.parse(file.toString())
+        setting = JSON.parse(file.toString())
         if (setting == null) {
           setting = {}
         }
@@ -64,7 +63,7 @@ const localApi = {
     },
     save (setting = {}) {
       const settingPath = _getSettingsPath()
-      fs.writeFileSync(settingPath, JSON5.stringify(setting, null, 2))
+      fs.writeFileSync(settingPath, JSON.stringify(setting, null, '\t'))
     }
   },
   /**

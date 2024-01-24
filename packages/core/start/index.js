@@ -1,4 +1,3 @@
-const JSON5 = require('json5')
 const DevSidecar = require('../index')
 const fs = require('fs')
 // 启动服务
@@ -10,7 +9,7 @@ async function startup () {
   const configPath = './start/user_config.json'
   if (fs.existsSync(configPath)) {
     const file = fs.readFileSync(configPath)
-    const userConfig = JSON5.parse(file.toString())
+    const userConfig = JSON.parse(file.toString())
     DevSidecar.api.config.set(userConfig)
   }
 

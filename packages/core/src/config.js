@@ -2,7 +2,6 @@ const fs = require('fs')
 const Shell = require('./shell')
 const lodash = require('lodash')
 const defConfig = require('./config/index.js')
-const JSON5 = require('json5').default
 const request = require('request')
 const path = require('path')
 const log = require('./utils/util.log')
@@ -138,7 +137,7 @@ const configApi = {
       log.info('读取合并远程配置文件:', path)
       if (fs.existsSync(path)) {
         const file = fs.readFileSync(path)
-        return JSON5.parse(file.toString())
+        return JSON.parse(file.toString())
       }
     } catch (e) {
       log.info('远程配置读取有误:', e)
@@ -159,7 +158,7 @@ const configApi = {
       doMerge(defConfig, configApi.readRemoteConfig())
     }
     const saveConfig = doMerge(defConfig, newConfig)
-    fs.writeFileSync(_getConfigPath(), JSON5.stringify(saveConfig, null, 2))
+    fs.writeFileSync(_getConfigPath(), JSON.stringify(saveConfig, null, '\t'))
     configApi.reload()
     return saveConfig
   },
@@ -174,7 +173,7 @@ const configApi = {
       return configApi.get()
     }
     const file = fs.readFileSync(path)
-    const userConfig = JSON5.parse(file.toString())
+    const userConfig = JSON.parse(file.toString())
     configApi.set(userConfig)
     const config = configApi.get()
     return config || {}

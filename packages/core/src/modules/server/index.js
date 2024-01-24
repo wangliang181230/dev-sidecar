@@ -6,10 +6,6 @@ const fork = require('child_process').fork
 const log = require('../../utils/util.log')
 const fs = require('fs')
 const path = require('path')
-let JSON5 = require('json5')
-if (JSON5.default) {
-  JSON5 = JSON5.default
-}
 
 let server = null
 function fireStatus (status) {
@@ -70,7 +66,7 @@ const serverApi = {
     // fireStatus('ing') // 启动中
     const basePath = serverConfig.setting.userBasePath
     const runningConfig = path.join(basePath, '/running.json')
-    fs.writeFileSync(runningConfig, JSON5.stringify(serverConfig))
+    fs.writeFileSync(runningConfig, JSON.stringify(serverConfig, null, '\t'))
     const serverProcess = fork(mitmproxyPath, [runningConfig])
     server = {
       id: serverProcess.pid,
@@ -92,7 +88,7 @@ const serverApi = {
       log.error('server process uncaughtException:', err)
     })
     serverProcess.on('message', function (msg) {
-      log.info('收到子进程消息:', msg.type, msg.event.key, msg.message)
+      log.info('收到子进程消息:', JSON.stringify(msg))
       if (msg.type === 'status') {
         fireStatus(msg.event)
       } else if (msg.type === 'error') {
