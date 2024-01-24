@@ -40,7 +40,7 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
     const { hostname, port } = url.parse(`https://${req.url}`)
     if (isSslConnect(sslConnectInterceptors, req, cltSocket, head)) {
       fakeServerCenter.getServerPromise(hostname, port).then((serverObj) => {
-        log.info(` --- fakeServer connect: ${hostname}:${port} -> ${localIP}:${serverObj.port}`)
+        log.info(` --- fakeServer connect: ${hostname}:${port} ➜ ${localIP}:${serverObj.port}`)
         connect(req, cltSocket, head, localIP, serverObj.port)
       }, (e) => {
         log.error(`--- fakeServer getServerPromise error: ${hostname}:${port}, exception:`, e)

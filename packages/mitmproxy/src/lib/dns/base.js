@@ -59,7 +59,7 @@ module.exports = class BaseDNS {
 
       ipCache.setBackupList(ipList)
       log.info(`[dns counter]:${hostname}`, ipCache.value, ipList, JSON.stringify(ipCache))
-      log.info(`[DNS] ${hostname} -> ${ipCache.value} (${new Date() - t} ms)`)
+      log.info(`[DNS] ${hostname} ➜ ${ipCache.value} (${new Date() - t} ms)`)
 
       return ipCache.value
     } catch (error) {
