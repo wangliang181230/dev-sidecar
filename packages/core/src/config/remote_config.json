@@ -27,8 +27,8 @@
 	"plugin": {
 		"overwall": {
 			"targets": {
-				"*.jsdelivr.net": true,
 				"github.com": true,
+				"*.jsdelivr.net": true,
 				"*wikimedia.org": true,
 				"v2ex.com": true,
 				"*azureedge.net": true,
