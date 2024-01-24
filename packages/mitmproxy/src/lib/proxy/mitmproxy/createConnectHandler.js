@@ -46,7 +46,7 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
         log.error(`--- fakeServer getServerPromise error: ${hostname}:${port}, exception:`, e)
       })
     } else {
-      log.info('不拦截请求:', req.url)
+      log.info(`不拦截请求: ${req.url}，但会代理当前请求连接到目标服务器（proxy connect）.`)
       connect(req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpMap */)
     }
   }
