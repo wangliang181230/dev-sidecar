@@ -37,18 +37,17 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
   // const sniRegexpMap = matchUtil.domainMapRegexply(sniConfig)
   return function connectHandler (req, cltSocket, head) {
     // eslint-disable-next-line node/no-deprecated-api
-    const srvUrl = url.parse(`https://${req.url}`)
-    const hostname = srvUrl.hostname
+    const { hostname, port } = url.parse(`https://${req.url}`)
     if (isSslConnect(sslConnectInterceptors, req, cltSocket, head)) {
-      fakeServerCenter.getServerPromise(hostname, srvUrl.port).then((serverObj) => {
-        log.info(`---  fakeServer connect: ${hostname} -> ${localIP}, port: ${serverObj.port}`)
+      fakeServerCenter.getServerPromise(hostname, port).then((serverObj) => {
+        log.info(`---  fakeServer connect: ${hostname} -> ${localIP}, port: ${serverObj.port}|${port}`)
         connect(req, cltSocket, head, localIP, serverObj.port)
       }, (e) => {
-        log.error(`--- fakeServer getServerPromise error: ${hostname}:${srvUrl.port}, exception:`, e)
+        log.error(`--- fakeServer getServerPromise error: ${hostname}:${port}, exception:`, e)
       })
     } else {
-      log.info(`不拦截请求: ${hostname}, req: ${JSON.stringify(req)}, cltSocket: ${JSON.stringify(cltSocket)}, head: ${JSON.stringify(head)}`)
-      connect(req, cltSocket, head, hostname, srvUrl.port, dnsConfig/* , sniRegexpMap */)
+      log.info('不拦截请求:', req.url)
+      connect(req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpMap */)
     }
   }
 }
