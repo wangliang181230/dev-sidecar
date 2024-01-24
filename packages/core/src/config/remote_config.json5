@@ -1,0 +1,57 @@
+{
+	"server": {
+		"intercepts": {
+			"github.githubassets.com": {
+				".*": {
+					"proxy": "github.githubassets.com",
+					"sni": "baidu.com"
+				}
+			},
+			"www.gstatic.com": {
+				"/recaptcha/.*": {
+					"proxy": "www.recaptcha.net"
+				}
+			}
+		},
+		"dns": {
+			"mapping": {
+				"*jetbrains.com": "quad9",
+				"*azureedge.net": "quad9",
+				"*stackoverflow.com": "quad9"
+			},
+			"speedTest": {
+				"interval": 300000
+			}
+		}
+	},
+	"plugin": {
+		"overwall": {
+			"targets": {
+				"github.com": true,
+				"*.jsdelivr.net": true,
+				"*wikimedia.org": true,
+				"v2ex.com": true,
+				"*azureedge.net": true,
+				"*cloudfront.net": true,
+				"*bing.com": true,
+				"*discourse-cdn.com": true,
+				"*gravatar.com": true,
+				"*docker.com": true,
+				"*vueuse.org": true,
+				"*elastic.co": true,
+				"*optimizely.com": true,
+				"*stackpathcdn.com": true,
+				"*fastly.net": true,
+				"*cloudflare.com": true,
+				"*233v2.com": true,
+				"*v2fly.org": true,
+				"*telegram.org": true,
+				"*amazon.com": true,
+				"*googleapis.com": true,
+				"*cloudflareinsights.com": true,
+				"*.intlify.dev": true,
+				"*segment.io": true
+			}
+		}
+	}
+}
