@@ -57,6 +57,7 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
   // log.info('connect:', hostname, port)
   const start = new Date().getTime()
   let isDnsIntercept = null
+  const hostport = `${hostname}:${port}`
   // const replaceSni = matchUtil.matchHostname(sniRegexpMap, hostname)
   try {
     const options = {
@@ -93,35 +94,36 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
       cltSocket.write('HTTP/1.1 200 Connection Established\r\n' +
                 'Proxy-agent: dev-sidecar\r\n' +
                 '\r\n')
-      log.info(`proxy connect start: ${hostname}:${port}`)
+      log.info('proxy connect start:', hostport)
       proxySocket.write(head)
       proxySocket.pipe(cltSocket)
 
       cltSocket.pipe(proxySocket)
     })
     cltSocket.on('timeout', (e) => {
-      log.error('cltSocket timeout:', e.message, hostname)
+      log.error(`cltSocket timeout: ${hostport}, errorMsg: ${e.message}`)
     })
     cltSocket.on('error', (e) => {
-      log.error('cltSocket error:', e.message, hostname)
+      log.error(`cltSocket error:   ${hostport}, errorMsg: ${e.message}`)
     })
     proxySocket.on('timeout', () => {
       const end = new Date().getTime()
-      log.info('代理socket timeout：', hostname, port, (end - start) + ' ms')
+      log.error(`代理连接超时: ${hostport}, cost: ${end - start} ms`)
     })
     proxySocket.on('error', (e) => {
       // 连接失败，可能被GFW拦截，或者服务端拥挤
       const end = new Date().getTime()
-      log.error('代理连接失败：', e.message, hostname, port, (end - start) + ' ms')
+      const errorMsg = `代理连接失败: ${hostport}, cost: ${end - start} ms, errorMsg: ${e.message}`
+      log.error(errorMsg)
       cltSocket.destroy()
       if (isDnsIntercept) {
         const { dns, ip, hostname } = isDnsIntercept
         dns.count(hostname, ip, true)
-        log.error('记录ip失败次数,用于优选ip：', hostname, ip)
+        log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${errorMsg}, dns:`, dns)
       }
     })
     return proxySocket
-  } catch (error) {
-    log.error('connect error:', error)
+  } catch (e) {
+    log.error(`proxy connect error: ${hostport}, exception:`, e)
   }
 }
