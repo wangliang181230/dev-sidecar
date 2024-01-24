@@ -41,13 +41,13 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
     const hostname = srvUrl.hostname
     if (isSslConnect(sslConnectInterceptors, req, cltSocket, head)) {
       fakeServerCenter.getServerPromise(hostname, srvUrl.port).then((serverObj) => {
-        log.info('--- fakeServer connect:', hostname)
+        log.info(`---  fakeServer connect: ${hostname} -> ${localIP}, port: ${serverObj.port}`)
         connect(req, cltSocket, head, localIP, serverObj.port)
       }, (e) => {
-        log.error('getServerPromise error:', e)
+        log.error(`--- fakeServer getServerPromise error: ${hostname}:${srvUrl.port}, exception:`, e)
       })
     } else {
-      log.info('不拦截请求：', hostname)
+      log.info(`不拦截请求: ${hostname}, req: ${JSON.stringify(req)}, cltSocket: ${JSON.stringify(cltSocket)}, head: ${JSON.stringify(head)}`)
       connect(req, cltSocket, head, hostname, srvUrl.port, dnsConfig/* , sniRegexpMap */)
     }
   }
