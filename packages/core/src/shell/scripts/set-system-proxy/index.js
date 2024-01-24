@@ -44,6 +44,7 @@ const _lanIP = [
   '*.mmstat.com',
   '*.alicdn.com',
   // Gitee
+  'gitee.com',
   '*.gitee.com',
   '*.gitee.io',
   '*.giteeusercontent.com',
