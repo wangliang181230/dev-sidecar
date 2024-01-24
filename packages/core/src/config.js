@@ -30,14 +30,14 @@ function _getRemoteSavePath () {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
   }
-  return path.join(dir, 'remote_config.json5')
+  return path.join(dir, 'remote_config.json')
 }
 function _getConfigPath () {
   const dir = getDefaultConfigBasePath()
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
   }
-  return dir + '/config.json5'
+  return dir + '/config.json'
 }
 
 function doMerge (defObj, newObj) {

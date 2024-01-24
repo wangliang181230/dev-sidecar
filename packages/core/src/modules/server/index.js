@@ -70,7 +70,7 @@ const serverApi = {
     // fireStatus('ing') // 启动中
     const basePath = serverConfig.setting.userBasePath
     const runningConfig = path.join(basePath, '/running.json')
-    fs.writeFileSync(runningConfig, JSON5.stringify(serverConfig, null, 2))
+    fs.writeFileSync(runningConfig, JSON5.stringify(serverConfig))
     const serverProcess = fork(mitmproxyPath, [runningConfig])
     server = {
       id: serverProcess.pid,

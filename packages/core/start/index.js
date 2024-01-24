@@ -7,7 +7,7 @@ async function startup () {
   const banner = fs.readFileSync('./start/banner.txt')
   console.log(banner.toString())
 
-  const configPath = './start/user_config.json5'
+  const configPath = './start/user_config.json'
   if (fs.existsSync(configPath)) {
     const file = fs.readFileSync(configPath)
     const userConfig = JSON5.parse(file.toString())
