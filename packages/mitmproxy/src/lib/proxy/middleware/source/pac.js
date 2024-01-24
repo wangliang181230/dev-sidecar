@@ -371,7 +371,11 @@ function createPacClient (pacFilePath) {
                 }
             }
         }
-        if (!blocking && (contentType == null || contentType && RegExpFilter.typeMap.DOCUMENT) && (!options || options.indexOf("DOCUMENT") < 0) && !/^\|?[\w\-]+:/.test(text)) {
+        if (contentType != null) {
+            log.error('contentType & RegExpFilter.typeMap.DOCUMENT =', contentType & RegExpFilter.typeMap.DOCUMENT)
+            log.error('contentType && RegExpFilter.typeMap.DOCUMENT =', contentType && RegExpFilter.typeMap.DOCUMENT)
+        }
+        if (!blocking && (contentType == null || contentType & RegExpFilter.typeMap.DOCUMENT) && (!options || options.indexOf("DOCUMENT") < 0) && !/^\|?[\w\-]+:/.test(text)) {
             if (contentType == null) {
                 contentType = RegExpFilter.prototype.contentType
             }
