@@ -84,7 +84,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
       if (isDnsIntercept) {
         const { dns, ip, hostname } = isDnsIntercept
         dns.count(hostname, ip, true)
-        log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${reason}, dns:`, dns)
+        log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${reason}, dns:`, JSON.stringify(dns))
       }
       const counter = context.requestCount
       if (counter != null) {

@@ -119,7 +119,7 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
       if (isDnsIntercept) {
         const { dns, ip, hostname } = isDnsIntercept
         dns.count(hostname, ip, true)
-        log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${errorMsg}, dns:`, dns)
+        log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${errorMsg}, dns:`, JSON.stringify(dns))
       }
     })
     return proxySocket
