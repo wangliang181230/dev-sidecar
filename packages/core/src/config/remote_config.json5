@@ -16,7 +16,6 @@
 		"dns": {
 			"mapping": {
 				"*jetbrains.com": "quad9",
-				"*azureedge.net": "quad9",
 				"*stackoverflow.com": "quad9"
 			},
 			"speedTest": {

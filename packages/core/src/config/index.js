@@ -240,7 +240,6 @@ module.exports = {
         '*cloudfront.net': 'quad9',
         '*cloudflare.com': 'quad9',
         '*github.io': 'quad9',
-        'img.shields.io': 'quad9',
         '*.githubusercontent.com': 'quad9',
         '*.githubassets.com': 'quad9',
         // "解决push的时候需要输入密码的问题",
