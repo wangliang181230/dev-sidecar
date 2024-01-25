@@ -46,7 +46,7 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
         log.error(`--- fakeServer getServerPromise error: ${hostname}:${port}, exception:`, e)
       })
     } else {
-      log.info(`不拦截请求: ${req.url}，但会代理当前请求连接到目标服务器（proxy connect）.`)
+      log.info(`不拦截请求: ${req.url}，但会代理连接（Proxy connect），以完成请求`)
       connect(req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpMap */)
     }
   }
@@ -94,7 +94,7 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
       cltSocket.write('HTTP/1.1 200 Connection Established\r\n' +
                 'Proxy-agent: dev-sidecar\r\n' +
                 '\r\n')
-      log.info('proxy connect start:', hostport)
+      log.info('Proxy connect start:', hostport)
       proxySocket.write(head)
       proxySocket.pipe(cltSocket)
 
@@ -124,6 +124,6 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
     })
     return proxySocket
   } catch (e) {
-    log.error(`proxy connect error: ${hostport}, exception:`, e)
+    log.error(`Proxy connect error: ${hostport}, exception:`, e)
   }
 }
