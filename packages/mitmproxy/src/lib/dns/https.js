@@ -26,7 +26,7 @@ module.exports = class DNSOverHTTPS extends BaseDNS {
       }
       return ret
     } catch (err) {
-      log.warn('dns query error:', hostname, ', dns:', this.dnsServer, ', errorMsg:', err.message, ', error:', JSON.stringify(err))
+      log.warn('DNS query error:', hostname, ', dns:', this.dnsServer, ', errorMsg:', err.message, ', error:', JSON.stringify(err))
       return []
     }
   }
