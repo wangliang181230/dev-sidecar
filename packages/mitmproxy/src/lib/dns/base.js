@@ -41,7 +41,7 @@ module.exports = class BaseDNS {
       let ipCache = this.cache.get(hostname)
       if (ipCache) {
         if (ipCache.value != null) {
-          ipCache.doCount(ipCache.value, false)
+          // ipCache.doCount(ipCache.value, false)
           return ipCache.value
         }
       } else {

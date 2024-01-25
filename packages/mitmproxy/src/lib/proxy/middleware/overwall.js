@@ -61,7 +61,7 @@ module.exports = function createOverWallIntercept (overWallConfig) {
         if (count.value == null) {
           log.error('count.value is null, count:', count)
         } else {
-          count.doCount(count.value)
+          // count.doCount(count.value)
           proxyServer = count.value
           context.requestCount = {
             key: cacheKey,

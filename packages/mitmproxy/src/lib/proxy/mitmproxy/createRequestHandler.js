@@ -154,6 +154,18 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
 
             if (cost > MAX_SLOW_TIME) {
               countSlow(isDnsIntercept, `代理请求成功但太慢, cost: ${cost} ms > ${MAX_SLOW_TIME} ms`)
+            } else {
+              if (isDnsIntercept) {
+                // 代理请求成功，记录请求成功次数
+                const { dns, ip, hostname } = isDnsIntercept
+                dns.count(hostname, ip, false)
+              }
+
+              // 代理请求成功，记录请求成功次数
+              const counter = context.requestCount
+              if (counter != null) {
+                counter.count.doCount(counter.value, false)
+              }
             }
 
             resolve(proxyRes)

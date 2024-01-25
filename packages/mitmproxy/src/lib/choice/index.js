@@ -25,10 +25,11 @@ class ChoiceCache {
 class DynamicChoice {
   constructor (key) {
     this.key = key
-    this.countMap = {} /* ip -> count { value, total, error, keepErrorCount, successRate } */
+    this.countMap = {} /* ip -> count { value, total, success, keepErrorCount, successRate, time, resetCount } */
     this.value = null // 当前使用的host
     this.backupList = [] // 备选host列表
-    this.lastChangeTime = new Date()
+    this.changeCount = 0 // 切换次数
+    this.changeTime = null
     this.createTime = new Date()
   }
 
@@ -53,42 +54,53 @@ class DynamicChoice {
         return a.total === 0 ? b.total : -1
       }
     })
-    log.info('Do rank:', JSON.stringify(countList))
-    const backupList = countList.map(item => item.value)
 
+    log.info('Do rank:', JSON.stringify(countList))
+
+    const backupList = countList.map(item => item.value)
     this.setBackupList(backupList)
   }
 
   newCount (ip) {
-    return { value: ip, total: 0, error: 0, keepErrorCount: 0, successRate: 1, time: new Date() }
+    return { key: this.key === ip ? null : this.key, value: ip, total: 0, success: 0, keepErrorCount: 0, successRate: 1, time: new Date(), resetCount: 0 }
   }
 
   /**
    * 设置新的backup列表
-   * @param backupList
+   * @param newBackupList 新的backupList
+   * @param doMerge 是否合并到原有的backupList中
    */
-  setBackupList (backupList) {
+  setBackupList (newBackupList, doMerge = true) {
+    // 从backupList中删除当前使用的ip
+    if (this.value != null) {
+      newBackupList = newBackupList.filter(ip => ip !== this.value)
+    }
+
     // 设置新的backupList
-    log.info('set backupList:', backupList, ', this.backupList:', this.backupList, 'this.countMap:', this.countMap)
-    this.backupList = backupList
+    if (doMerge) {
+      this.backupList = [...new Set([...this.backupList, ...newBackupList])]
+    } else {
+      this.backupList = newBackupList
+    }
 
     // 将新的backupList中的ip加入到countMap中
-    for (const ip of backupList) {
-      if (this.countMap[ip]) {
-        continue
+    for (const ip of this.backupList) {
+      if (!this.countMap[ip]) {
+        this.countMap[ip] = this.newCount(ip)
       }
-      this.countMap[ip] = this.newCount(ip)
     }
 
     // 如果当前未使用任何ip，切换到backupList中的第一个
-    if (this.value == null && backupList.length > 0) {
-      this.value = backupList.shift()
+    if (this.value == null && this.backupList.length > 0) {
+      this.value = this.backupList.shift()
+      this.changeCount++
+      this.changeTime = new Date()
     }
   }
 
-  countStart (value) {
-    this.doCount(value, false)
-  }
+  // countStart (value) {
+  //   this.doCount(value, false)
+  // }
 
   /**
    * 换下一个
@@ -96,16 +108,19 @@ class DynamicChoice {
    * @param reason 切换原因
    */
   changeNext (count, reason) {
-    log.info(`切换backup: ${this.key}, reason: ${reason}, backupList: ${this.backupList}, count:`, count)
+    log.info(`切换backup: ${this.key}, reason: ${reason}, backupList: ${JSON.stringify(this.backupList)}, count:`, count)
 
     // 初始化 `count` 的各计量数据
     count.keepErrorCount = 0
     count.total = 0
-    count.error = 0
+    count.success = 0
     count.successRate = 1
     count.time = new Date()
+    count.resetCount++
 
     const valueBackup = this.value
+    this.changeCount++
+    this.changeTime = new Date()
     if (this.backupList.length > 0) {
       this.value = this.backupList.shift()
       log.info(`切换backup完成: ${this.key}, ip: ${valueBackup} ➜ ${this.value}, this:`, this)
@@ -113,8 +128,6 @@ class DynamicChoice {
       this.value = null
       log.info(`切换backup完成: ${this.key}, backupList为空了，设置this.value: from '${valueBackup}' to null. this:`, this)
     }
-
-    this.lastChangeTime = new Date()
   }
 
   /**
@@ -128,26 +141,36 @@ class DynamicChoice {
       count = this.countMap[ip] = this.newCount(ip)
     }
 
+    // 记录使用次数
     count.total++
-    if (isError === true) {
-      count.error++
+    if (isError) {
+      // 失败了，累计连续失败次数
       count.keepErrorCount++
     } else {
-      count.keepErrorCount = 0 // 成功了，清空连续失败次数
+      // 成功了，记录成功次数，并清空连续失败次数
+      count.success++
+      count.keepErrorCount = 0
     }
+    // 计算成功率
+    count.successRate = parseFloat((count.success / count.total).toFixed(2)) // 保留两位小数
 
-    count.successRate = (1.0 - (count.error / count.total))
-      .toFixed(2) // 保留两位小数
+    log.info(`DynamicChoice.doCount('${ip}', ${isError}):`, JSON.stringify(count))
 
-    // 如果出错了，且当前使用的就是这个地址，且总计使用3次及以上时，才校验切换策略
-    if (isError && this.value === count.value && count.total >= 3) {
-      // 连续错误3次，切换下一个
-      if (count.keepErrorCount >= 3) {
-        this.changeNext(count, `连续错误${count.keepErrorCount}次`)
+    // 如果出错了，且当前使用的就是这个地址，且总计使用2次及以上时，才校验切换策略
+    if (isError && this.value === count.value && count.total >= 2) {
+      let changeReason
+      if (count.keepErrorCount === 1 && count.total === 1) {
+        changeReason = '首次访问就失败了' // 我觉得首次访问就失败的域名，应该不是很好的域名，所以这里直接切换掉
+      } else if (count.keepErrorCount >= 3) {
+        changeReason = `连续错误 ${count.keepErrorCount} 次`
+      } else if (count.keepErrorCount >= 2 && count.successRate < 0.25) {
+        changeReason = `连续错误 ${count.keepErrorCount} 次，且成功率 ${count.successRate} < 0.25`
+      } else if (count.total >= 3 && count.successRate < 0.4) {
+        changeReason = `成功率 ${count.successRate} < 0.4`
       }
-      // 成功率小于40%,切换下一个
-      if (count.successRate < 0.4) {
-        this.changeNext(count, `成功率小于 ${count.successRate} < 0.4`)
+
+      if (changeReason) {
+        this.changeNext(count, changeReason)
       }
     }
   }

@@ -113,7 +113,9 @@ class SpeedTester {
       aliveList.sort((a, b) => a.time - b.time)
       this.backupList.sort((a, b) => a.time - b.time)
     } catch (e) {
-      log.warn('[speed] test error:  ', this.hostname, `➜ ${item.host}:${item.port} from DNS '${item.dns}'`, ', errorMsg:', e.message)
+      if (e.message !== 'timeout') {
+        log.warn('[speed] test error:  ', this.hostname, `➜ ${item.host}:${item.port} from DNS '${item.dns}'`, ', errorMsg:', e.message)
+      }
     }
   }
 
@@ -134,18 +136,20 @@ class SpeedTester {
       })
       client.on('end', () => {
       })
-      client.on('error', (error) => {
-        log.warn('[speed] test error:  ', this.hostname, `➜ ${host}:${port} from DNS '${dns}'`, ', errorMsg:', error.message)
+      client.on('error', (e) => {
+        if (e.message !== 'timeout') {
+          log.warn('[speed] test error:  ', this.hostname, `➜ ${host}:${port} from DNS '${dns}', cost: ${Date.now() - startTime} ms, errorMsg:`, e.message)
+        }
         isOver = true
         clearTimeout(timeoutId)
-        reject(error)
+        reject(e)
       })
 
       timeoutId = setTimeout(() => {
         if (isOver) {
           return
         }
-        log.warn('[speed] test timeout:', this.hostname, `➜ ${host}:${port} from DNS '${dns}'`)
+        log.warn('[speed] test timeout:', this.hostname, `➜ ${host}:${port} from DNS '${dns}', cost: ${Date.now() - startTime} ms`)
         reject(new Error('timeout'))
         client.end()
       }, timeout)

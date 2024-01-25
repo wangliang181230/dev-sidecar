@@ -108,19 +108,32 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
     })
     proxySocket.on('timeout', () => {
       const end = new Date().getTime()
-      log.error(`代理连接超时: ${hostport}, cost: ${end - start} ms`)
+      const errorMsg = `代理连接超时: ${hostport}, cost: ${end - start} ms`
+      log.error(errorMsg)
+      if (isDnsIntercept) {
+        const { dns, ip, hostname } = isDnsIntercept
+        dns.count(hostname, ip, true)
+        log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${errorMsg}, dns:`, JSON.stringify(dns))
+      }
+      cltSocket.write('HTTP/1.1 408 Proxy connect timeout\r\n' +
+          'Proxy-agent: dev-sidecar\r\n' +
+          '\r\n')
+      cltSocket.end()
     })
     proxySocket.on('error', (e) => {
       // 连接失败，可能被GFW拦截，或者服务端拥挤
       const end = new Date().getTime()
       const errorMsg = `代理连接失败: ${hostport}, cost: ${end - start} ms, errorMsg: ${e.message}`
       log.error(errorMsg)
-      cltSocket.destroy()
       if (isDnsIntercept) {
         const { dns, ip, hostname } = isDnsIntercept
         dns.count(hostname, ip, true)
         log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${errorMsg}, dns:`, JSON.stringify(dns))
       }
+      cltSocket.write(`HTTP/1.1 400 Proxy connect error: ${e.message}\r\n` +
+          'Proxy-agent: dev-sidecar\r\n' +
+          '\r\n')
+      cltSocket.end()
     })
     return proxySocket
   } catch (e) {
