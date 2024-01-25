@@ -160,13 +160,6 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           })
 
           // 代理请求的事件监听
-          proxyReq.on('error', (e) => {
-            const end = new Date().getTime()
-            const cost = end - start
-            log.error(`代理请求错误: ${url}, cost: ${cost} ms, error:`, JSON.stringify(e))
-            countSlow(isDnsIntercept, '代理请求错误: ' + e.message)
-            reject(e)
-          })
           proxyReq.on('timeout', () => {
             const end = new Date().getTime()
             const cost = end - start
@@ -178,6 +171,13 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             const error = new Error(errorMsg)
             error.status = 408
             reject(error)
+          })
+          proxyReq.on('error', (e) => {
+            const end = new Date().getTime()
+            const cost = end - start
+            log.error(`代理请求错误: ${url}, cost: ${cost} ms, error:`, JSON.stringify(e))
+            countSlow(isDnsIntercept, '代理请求错误: ' + e.message)
+            reject(e)
           })
           proxyReq.on('aborted', () => {
             const end = new Date().getTime()
@@ -194,28 +194,8 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             }
             reject(new Error(errorMsg))
           })
-          proxyReq.on('close', () => {
-            const end = new Date().getTime()
-            const cost = end - start
-            const errorMsg = `代理请求关闭: ${url}, cost: ${cost} ms`
-            log.error(errorMsg)
-            reject(new Error(errorMsg))
-          })
 
           // 普通请求的事件监听
-          req.on('error', function (e, req, res) {
-            const end = new Date().getTime()
-            const cost = end - start
-            log.error(`请求错误: ${url}, cost: ${cost} ms, error:`, JSON.stringify(e))
-            reject(e)
-          })
-          req.on('timeout', () => {
-            const end = new Date().getTime()
-            const cost = end - start
-            const errorMsg = `请求超时: ${url}, cost: ${cost} ms`
-            log.error(errorMsg)
-            reject(new Error(errorMsg))
-          })
           req.on('aborted', function () {
             const end = new Date().getTime()
             const cost = end - start
@@ -227,10 +207,16 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             }
             reject(new Error(errorMsg))
           })
-          req.on('close', function () {
+          req.on('error', function (e, req, res) {
             const end = new Date().getTime()
             const cost = end - start
-            const errorMsg = `请求关闭: ${url}, cost: ${cost} ms`
+            log.error(`请求错误: ${url}, cost: ${cost} ms, error:`, JSON.stringify(e))
+            reject(e)
+          })
+          req.on('timeout', () => {
+            const end = new Date().getTime()
+            const cost = end - start
+            const errorMsg = `请求超时: ${url}, cost: ${cost} ms`
             log.error(errorMsg)
             reject(new Error(errorMsg))
           })
