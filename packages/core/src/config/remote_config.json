@@ -28,6 +28,7 @@
 		"overwall": {
 			"targets": {
 				"github.com": true,
+				"*.shields.io": true,
 				"*.jsdelivr.net": true,
 				"*wikimedia.org": true,
 				"v2ex.com": true,
