@@ -312,6 +312,22 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
 目标地址：${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
         )
         res.end()
+
+        // region 忽略部分已经打印过ERROR日志的错误
+        const ignoreErrors = [
+          '代理请求错误: ',
+          '代理请求超时: ',
+          '代理请求被取消: '
+        ]
+        if (e.message) {
+          for (const ignoreError of ignoreErrors) {
+            if (e.message.startsWith(ignoreError)) {
+              return
+            }
+          }
+        }
+        // endregion
+
         log.error('Request error:', e.message)
       }
     })
