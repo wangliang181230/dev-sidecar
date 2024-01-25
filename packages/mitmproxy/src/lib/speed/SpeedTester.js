@@ -58,11 +58,12 @@ class SpeedTester {
   async getIpListFromDns (dnsMap) {
     const ips = {}
     const promiseList = []
-    for (const key in dnsMap) {
-      const one = this.getFromOneDns(dnsMap[key]).then(ipList => {
+    for (const dnsName in dnsMap) {
+      const dns = dnsMap[dnsName]
+      const one = this.getFromOneDns(dns).then(ipList => {
         if (ipList) {
           for (const ip of ipList) {
-            ips[ip] = 1
+            ips[ip] = { dnsName/* , dns */ }
           }
         }
       })
@@ -71,7 +72,7 @@ class SpeedTester {
     await Promise.all(promiseList)
     const items = []
     for (const ip in ips) {
-      items.push({ host: ip, port: 443 })
+      items.push({ host: ip, port: 443, dnsName: ips[ip].dnsName/* , dns: ips[ip].dns */ })
     }
     return items
   }
@@ -86,7 +87,7 @@ class SpeedTester {
     this.backupList = _.unionBy(newBackupList, 'host')
     this.testCount++
 
-    log.info('[speed]', this.hostname, ' ips:', this.backupList)
+    log.info('[speed]', this.hostname, '➜ ips:', this.backupList)
     await this.testBackups()
     if (config.notify) {
       config.notify({ key: 'test' })
@@ -112,13 +113,13 @@ class SpeedTester {
       aliveList.sort((a, b) => a.time - b.time)
       this.backupList.sort((a, b) => a.time - b.time)
     } catch (e) {
-      log.warn('[speed] test error:  ', this.hostname, `${item.host}:${item.port}`, ', errorMsg:', e.message)
+      log.warn('[speed] test error:  ', this.hostname, `➜ ${item.host}:${item.port} from dns '${item.dnsName}'`, ', errorMsg:', e.message)
     }
   }
 
   testOne (item) {
     const timeout = 5000
-    const { host, port } = item
+    const { host, port, dnsName } = item
     const startTime = Date.now()
     let isOver = false
     return new Promise((resolve, reject) => {
@@ -134,7 +135,7 @@ class SpeedTester {
       client.on('end', () => {
       })
       client.on('error', (error) => {
-        log.warn('[speed] test error:  ', this.hostname, `${host}:${port}`, ', errorMsg:', error.message)
+        log.warn('[speed] test error:  ', this.hostname, `➜ ${host}:${port} from dns '${dnsName}'`, ', errorMsg:', error.message)
         isOver = true
         clearTimeout(timeoutId)
         reject(error)
@@ -144,7 +145,7 @@ class SpeedTester {
         if (isOver) {
           return
         }
-        log.warn('[speed] test timeout:', this.hostname, `${host}:${port}`)
+        log.warn('[speed] test timeout:', this.hostname, `➜ ${host}:${port} from dns '${dnsName}'`)
         reject(new Error('timeout'))
         client.end()
       }, timeout)
