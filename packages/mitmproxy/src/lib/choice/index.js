@@ -157,7 +157,7 @@ class DynamicChoice {
     log.info(`DynamicChoice.doCount('${ip}', ${isError}):`, JSON.stringify(count))
 
     // 如果出错了，且当前使用的就是这个地址，且总计使用2次及以上时，才校验切换策略
-    if (isError && this.value === count.value && count.total >= 2) {
+    if (isError && this.value === count.value) {
       let changeReason
       if (count.keepErrorCount === 1 && count.total === 1) {
         changeReason = '首次访问就失败了' // 我觉得首次访问就失败的域名，应该不是很好的域名，所以这里直接切换掉
