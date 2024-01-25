@@ -6,12 +6,12 @@ module.exports = {
     let proxyConf = interceptOpt.proxy
     if (RequestCounter && interceptOpt.backup && interceptOpt.backup.length > 0) {
       // 优选逻辑
-      const backup = [proxyConf]
+      const backupList = [proxyConf]
       for (const bk of interceptOpt.backup) {
-        backup.push(bk)
+        backupList.push(bk)
       }
       const key = rOptions.hostname + '/' + interceptOpt.key
-      const count = RequestCounter.getOrCreate(key, backup)
+      const count = RequestCounter.getOrCreate(key, backupList)
       if (count.value == null) {
         count.doRank()
       }
