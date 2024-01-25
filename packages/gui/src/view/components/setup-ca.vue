@@ -73,7 +73,7 @@ export default {
     }
   },
   methods: {
-    openExternal (url) {
+    async openExternal (url) {
       this.$api.ipc.openExternal(url)
     },
     afterVisibleChange (val) {

@@ -93,7 +93,7 @@ export default {
   mounted () {
   },
   methods: {
-    openExternal (url) {
+    async openExternal (url) {
       this.$api.ipc.openExternal(url)
     },
     onAutoStartChange () {

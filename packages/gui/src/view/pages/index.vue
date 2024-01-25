@@ -333,7 +333,7 @@ export default {
     doCheckUpdate (fromUser = true) {
       this.$api.update.checkForUpdate(fromUser)
     },
-    openExternal (url) {
+    async openExternal (url) {
       this.$api.ipc.openExternal(url)
     },
     onShutdownTipClose (e) {

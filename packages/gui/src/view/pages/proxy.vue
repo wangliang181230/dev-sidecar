@@ -81,6 +81,9 @@ export default {
   mounted () {
   },
   methods: {
+    async openExternal (url) {
+      this.$api.ipc.openExternal(url)
+    },
     async applyAfter () {
       await this.$api.proxy.restart()
     },
