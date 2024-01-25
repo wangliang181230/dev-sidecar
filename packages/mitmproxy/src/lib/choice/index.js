@@ -60,7 +60,7 @@ class DynamicChoice {
   }
 
   newCount (ip) {
-    return { value: ip, total: 0, error: 0, keepErrorCount: 0, successRate: 1 }
+    return { value: ip, total: 0, error: 0, keepErrorCount: 0, successRate: 1, time: new Date() }
   }
 
   /**
@@ -103,6 +103,7 @@ class DynamicChoice {
     count.total = 0
     count.error = 0
     count.successRate = 1
+    count.time = new Date()
 
     const valueBackup = this.value
     if (this.backupList.length > 0) {
