@@ -254,7 +254,7 @@ module.exports = {
       },
       speedTest: {
         enabled: true,
-        interval: 60000,
+        interval: 300000,
         hostnameList: ['github.com'],
         dnsProviders: ['aliyun', 'usa', 'quad9']
       }
