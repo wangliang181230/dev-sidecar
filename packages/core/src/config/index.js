@@ -206,7 +206,7 @@ module.exports = {
       'www.baidu.com': true
     },
     // sniList: {
-    //   'github.com': 'abaidu.com'
+    //   'github.com': 'baidu.com'
     // },
     dns: {
       providers: {
@@ -242,9 +242,7 @@ module.exports = {
         '*github.io': 'quad9',
         '*.githubusercontent.com': 'quad9',
         '*.githubassets.com': 'quad9',
-        // "解决push的时候需要输入密码的问题",
-        'github.com': 'quad9',
-        '*github.com': 'quad9',
+        '*.github.com': 'quad9',
         '*.vuepress.vuejs.org': 'quad9',
         'gh.docmirror.top': 'quad9',
         '*v2ex.com': 'quad9',
@@ -255,8 +253,8 @@ module.exports = {
       speedTest: {
         enabled: true,
         interval: 60000,
-        hostnameList: ['github.com'],
-        dnsProviders: ['usa', 'quad9', 'rubyfish']
+        hostnameList: [],
+        dnsProviders: ['aliyun', 'usa', 'quad9']
       }
     }
   },

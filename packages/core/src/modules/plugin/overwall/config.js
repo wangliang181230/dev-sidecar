@@ -15,7 +15,6 @@ module.exports = {
     'v2ex.com': true,
     '*azureedge.net': true,
     '*cloudfront.net': true,
-    '*bing.com': true,
     '*discourse-cdn.com': true,
     '*gravatar.com': true,
     '*docker.com': true,
