@@ -232,7 +232,6 @@ const executor = {
       return _winUnsetProxy(exec, setEnv)
     } else {
       // 设置代理
-
       log.info('设置代理:', ip, port, setEnv)
       return _winSetProxy(exec, ip, port, setEnv)
     }
