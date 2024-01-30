@@ -28,6 +28,7 @@ const _lanIP = [
   '*.qq.com',
   '*.weixin.com',
   '*.weixinbridge.com',
+  '*.wechat.com',
   '*.idqqimg.com',
   '*.gtimg.com',
   '*.qpic.com',
@@ -48,7 +49,7 @@ const _lanIP = [
   '*.gitee.com',
   '*.gitee.io',
   '*.giteeusercontent.com',
-  // MozillaFirefox
+  // Mozilla Firefox
   '*.mozilla.org',
   '*.mozilla.com',
   '*.mozilla.net',
@@ -68,6 +69,9 @@ const _lanIP = [
   '*.windows.com',
   '*.office.com',
   '*.live.com',
+  '*.msn.com',
+  // WPS
+  '*.wps.com',
   // 360
   '*.360.com',
   '*.360safe.com',
