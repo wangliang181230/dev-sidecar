@@ -44,6 +44,7 @@ const _lanIP = [
   '*.dingtalk.com',
   '*.mmstat.com',
   '*.alicdn.com',
+  '*.hdslb.com',
   // Gitee
   'gitee.com',
   '*.gitee.com',
@@ -68,6 +69,7 @@ const _lanIP = [
   '*.microsoft.com',
   '*.windows.com',
   '*.office.com',
+  '*.office.net',
   '*.live.com',
   '*.msn.com',
   // WPS
@@ -86,6 +88,8 @@ const _lanIP = [
   '*.jcloudlb.com',
   // 哔哩哔哩
   '*.bilibili.com',
+  '*.bilivideo.com.com',
+  '*.biliapi.net',
   // 移动
   '*.10086.com',
   '*.10086cloud.com',
@@ -108,6 +112,8 @@ const _lanIP = [
   '*.zzzfun.vip',
   // 我的个人域名
   '*.easyj.icu',
+  // 未知公司
+  '*.bcebos.com',
   // endregion
 
   // 本地
