@@ -203,8 +203,8 @@ module.exports = {
       '*.microsoft.com': true,
       'alipay.com': true,
       '*.alipay.com': true,
-      'www.baidu.com': true,
-      '192.168.*': true
+      'baidu.com': true,
+      '*.baidu.com': true
     },
     // sniList: {
     //   'github.com': 'baidu.com'
