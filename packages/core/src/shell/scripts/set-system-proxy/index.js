@@ -10,19 +10,24 @@ const log = require('../../../utils/util.log')
 const extraPath = require('../extra-path/index')
 const _lanIP = [
   // region 常用国内可访问域名
+
   // 中国大陆
   '*.cn',
   'cn.*',
+
   // 系统之家
   '*.xitongzhijia.net',
+
   // CSDN
   '*.csdn.net',
+
   // 百度
   '*.baidu.com',
   '*.baiducontent.com',
   '*.bdimg.com',
   '*.bdstatic.com',
   '*.bdydns.com',
+
   // 腾讯
   '*.tencent.com',
   '*.qq.com',
@@ -35,6 +40,7 @@ const _lanIP = [
   '*.qlogo.com',
   '*.myapp.com',
   '*.myqcloud.com',
+
   // 阿里
   '*.aliyun.com',
   '*.alipay.com',
@@ -45,11 +51,13 @@ const _lanIP = [
   '*.mmstat.com',
   '*.alicdn.com',
   '*.hdslb.com',
+
   // Gitee
   'gitee.com',
   '*.gitee.com',
   '*.gitee.io',
   '*.giteeusercontent.com',
+
   // Mozilla Firefox
   '*.mozilla.org',
   '*.mozilla.com',
@@ -60,14 +68,18 @@ const _lanIP = [
   '*.mozillians.org',
   '*.mozillians.net',
   '*.mozillians.com',
+
   // Maven镜像
   '*.maven.org',
+
   // Maven Repository
   '*.mvnrepository.com',
   'challenges.cloudflare.com', // 访问 mvnrepository.com 时有个人机校验时使用，国内可直接访问，所以不需要代理，代理了反而变慢了。
+
   // 苹果
   '*.apple.com',
   '*.icloud.com',
+
   // 微软
   '*.microsoft.com',
   '*.windows.com',
@@ -75,13 +87,16 @@ const _lanIP = [
   '*.office.net',
   '*.live.com',
   '*.msn.com',
+
   // WPS
   '*.wps.com',
+
   // 360
   '*.360.com',
   '*.360safe.com',
   '*.360buyimg.com',
   '*.360buy.com',
+
   // 京东
   '*.jd.com',
   '*.jcloud.com',
@@ -89,15 +104,19 @@ const _lanIP = [
   '*.jcloudcache.com',
   '*.jcloudcdn.com',
   '*.jcloudlb.com',
+
   // 哔哩哔哩
   '*.bilibili.com',
   '*.bilivideo.com.com',
   '*.biliapi.net',
+
   // 移动
   '*.10086.com',
   '*.10086cloud.com',
+
   // 移动：139邮箱
   '*.139.com',
+
   // AGE动漫
   '*.agedm.*',
   '*.zhimg.com',
@@ -110,14 +129,20 @@ const _lanIP = [
   '*.aliyuncs.com',
   '*.127.net',
   '43.240.74.134',
+
   // ZzzFun
   '*.zzzfun.one',
   '*.zzzfun.vip',
+
   // 我的个人域名
   '*.easyj.icu',
+
   // 未知公司
   '*.bcebos.com',
+
   // endregion
+
+  // -----------------------------------------
 
   // 本地
   'localhost',
