@@ -69,9 +69,10 @@ const _lanIP = [
   '*.mozillians.net',
   '*.mozillians.com',
 
+  // OSS
+  '*.sonatype.org',
   // Maven镜像
   '*.maven.org',
-
   // Maven Repository
   '*.mvnrepository.com',
   'challenges.cloudflare.com', // 访问 mvnrepository.com 时有个人机校验时使用，国内可直接访问，所以不需要代理，代理了反而变慢了。
