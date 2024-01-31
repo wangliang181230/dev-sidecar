@@ -49,7 +49,12 @@
 				"*googleapis.com": true,
 				"*cloudflareinsights.com": true,
 				"*.intlify.dev": true,
-				"*segment.io": true
+				"*segment.io": true,
+				"*.jetbrains.com": true,
+				"*.zdassets.com": true,
+				"*.newrelic.com": true,
+				"*.sentry.io": true,
+				"*.google-analytics.com": true
 			}
 		}
 	}
