@@ -119,6 +119,9 @@ const _lanIP = [
   // 移动：139邮箱
   '*.139.com',
 
+  // 迅雷
+  '*.xunlei.com',
+
   // AGE动漫
   '*.agedm.*',
   '*.zhimg.com',
