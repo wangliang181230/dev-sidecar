@@ -14,6 +14,7 @@ const _lanIP = [
   // 中国大陆
   '*.cn',
   'cn.*',
+  '*china*',
 
   // 系统之家
   '*.xitongzhijia.net',
