@@ -150,6 +150,10 @@ const _lanIP = [
 
   // 未知公司
   '*.bcebos.com',
+  'icannwiki.org',
+  '*.icannwiki.org',
+  '*.sectigo.com',
+  '*.pingdom.net',
 
   // endregion
 
