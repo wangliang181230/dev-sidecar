@@ -136,6 +136,9 @@ const _lanIP = [
   '*.zzzfun.one',
   '*.zzzfun.vip',
 
+  // 必应
+  '*.bing.com',
+
   // 我的个人域名
   '*.easyj.icu',
 
