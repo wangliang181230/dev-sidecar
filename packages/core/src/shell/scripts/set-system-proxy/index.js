@@ -122,6 +122,9 @@ const _lanIP = [
   // 迅雷
   '*.xunlei.com',
 
+  // 网站ICP备案查询
+  '*.icpapi.com',
+
   // AGE动漫
   '*.agedm.*',
   '*.zhimg.com',
