@@ -87,21 +87,22 @@ const api = {
     return new Promise((resolve, reject) => {
       if (server) {
         server.close((err) => {
-          if (err) {
-            log.info('close error', err, ',', err.code, ',', err.message, ',', err.errno)
+          if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
             if (err.code === 'ERR_SERVER_NOT_RUNNING') {
-              log.info('代理服务关闭成功')
+              log.info('代理服务未运行，无需关闭')
               resolve()
-              return
+            } else {
+              log.error('代理服务关闭失败:', err)
+              reject(err)
             }
-            reject(err)
-          } else {
-            log.info('代理服务关闭成功')
-            resolve()
+            return
           }
+
+          log.info('代理服务关闭成功')
+          resolve()
         })
       } else {
-        log.info('server is null')
+        log.info('server is null, no need to close.')
         fireStatus(false)
         resolve()
       }
