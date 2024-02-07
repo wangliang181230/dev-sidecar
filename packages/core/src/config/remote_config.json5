@@ -7,6 +7,12 @@
 					"sni": "baidu.com"
 				}
 			},
+			"camo.githubusercontent.com": {
+				".*": {
+					"proxy": "camo.githubusercontent.com",
+					"sni": "baidu.com"
+				}
+			},
 			"www.gstatic.com": {
 				"/recaptcha/.*": {
 					"proxy": "www.recaptcha.net"

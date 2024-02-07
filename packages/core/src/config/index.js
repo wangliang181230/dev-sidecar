@@ -84,16 +84,18 @@ module.exports = {
       'github.githubassets.com': {
         '.*': {
           proxy: 'github.githubassets.com',
-          // backup: [
-          //   'assets.fastgit.org'
-          // ],
-          sni: 'assets.fastgit.org'
+          sni: 'baidu.com'
+        }
+      },
+      'camo.githubusercontent.com': {
+        '.*': {
+          proxy: 'camo.githubusercontent.com',
+          sni: 'baidu.com'
         }
       },
       'customer-stories-feed.github.com': {
         '.*': { proxy: 'customer-stories-feed.fastgit.org' }
       },
-
       'raw.githubusercontent.com': {
         '.*': {
           proxy: 'raw.githubusercontent.com',
@@ -237,16 +239,11 @@ module.exports = {
         // 'assets.fastgit.org': 'usa',
         '*.electronjs.org': 'quad9',
         '*amazonaws.com': 'quad9',
-        '*githubusercontent.com': 'quad9',
+        '*github*.com': 'quad9',
         '*yarnpkg.com': 'quad9',
         '*cloudfront.net': 'quad9',
         '*cloudflare.com': 'quad9',
         '*github.io': 'quad9',
-        '*.githubusercontent.com': 'quad9',
-        '*.githubassets.com': 'quad9',
-        // "解决push的时候需要输入密码的问题",
-        'github.com': 'quad9',
-        '*github.com': 'quad9',
         '*.vuepress.vuejs.org': 'quad9',
         'gh.docmirror.top': 'quad9',
         '*v2ex.com': 'quad9',
@@ -257,8 +254,8 @@ module.exports = {
       speedTest: {
         enabled: true,
         interval: 300000,
-        hostnameList: ['github.com'],
-        dnsProviders: ['aliyun', 'usa', 'quad9']
+        hostnameList: [],
+        dnsProviders: ['usa', 'quad9']
       }
     }
   },
