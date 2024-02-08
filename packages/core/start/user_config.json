@@ -3,7 +3,7 @@
 		"autoStart": {
 			"enabled": true
 		},
-		"mode": "default"
+		"mode": "ow"
 	},
 	"plugin": {
 		"node": {
@@ -15,7 +15,7 @@
 			"enabled": true
 		},
 		"overwall": {
-			"enabled": false,
+			"enabled": true,
 			"targets": {
 				"*gagedigital.com": true,
 				"*yonsz.net": true,

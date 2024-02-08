@@ -11,9 +11,9 @@ function getRootCaKeyPath () {
 }
 module.exports = {
   app: {
-    mode: 'default',
+    mode: 'ow',
     autoStart: {
-      enabled: false
+      enabled: true
     },
     remoteConfig: {
       enabled: true,
@@ -22,8 +22,8 @@ module.exports = {
     dock: {
       hideWhenWinClose: false
     },
-    closeStrategy: 0,
-    showShutdownTip: true
+    closeStrategy: 2,
+    showShutdownTip: false
   },
   server: {
     enabled: true,
@@ -115,8 +115,8 @@ module.exports = {
           sni: 'baidu.com'
         }
       },
-      'avatars.githubusercontent.com': {
-        desc: '注释：avatars.githubusercontent.com域名直连比较慢，暂时备份掉。',
+      'backup.avatars.githubusercontent.com': {
+        desc: '注释：avatars.githubusercontent.com域名直连比较慢，暂时备份掉，如需再拦截，请将上面的 `backup.` 去掉。',
         '.*': {
           proxy: 'avatars.githubusercontent.com',
           sni: 'baidu.com'
