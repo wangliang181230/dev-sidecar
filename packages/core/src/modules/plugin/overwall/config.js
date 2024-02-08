@@ -11,6 +11,7 @@ module.exports = {
   },
   targets: {
     '*github*.com': true,
+    '*mktoresp.com': true,
     '*.shields.io': true,
     '*.jsdelivr.net': true,
     '*.jetbrains.com': true,

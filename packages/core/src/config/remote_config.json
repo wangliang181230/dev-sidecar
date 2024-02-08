@@ -39,6 +39,7 @@
 		"overwall": {
 			"targets": {
 				"*github*.com": true,
+				"*mktoresp.com": true,
 				"*.shields.io": true,
 				"*.jsdelivr.net": true,
 				"*wikimedia.org": true,

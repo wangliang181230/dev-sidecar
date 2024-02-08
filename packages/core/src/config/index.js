@@ -134,6 +134,18 @@ module.exports = {
           sni: 'baidu.com'
         }
       },
+      "api.dso.docker.com": {
+        ".*": {
+          "proxy": "api.dso.docker.com",
+          "sni": "baidu.com"
+        }
+      },
+      "api.segment.io": {
+        ".*": {
+          "proxy": "api.segment.io",
+          "sni": "baidu.com"
+        }
+      },
       // 'v2ex.com': {
       //   '.*': {
       //     proxy: 'v2ex.com',
@@ -273,7 +285,7 @@ module.exports = {
       speedTest: {
         enabled: true,
         interval: 300000,
-        hostnameList: ['github.com', 'hub.docker.com'],
+        hostnameList: ['github.com', 'hub.docker.com', 'login.docker.com', 'api.dso.docker.com'],
         dnsProviders: ['usa', 'quad9']
       }
     }
