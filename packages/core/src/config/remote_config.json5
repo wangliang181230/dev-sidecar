@@ -13,6 +13,12 @@
 					"sni": "baidu.com"
 				}
 			},
+			"collector.github.com": {
+				".*": {
+					"proxy": "collector.github.com",
+					"sni": "baidu.com"
+				}
+			},
 			"www.gstatic.com": {
 				"/recaptcha/.*": {
 					"proxy": "www.recaptcha.net"

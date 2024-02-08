@@ -93,6 +93,12 @@ module.exports = {
           sni: 'baidu.com'
         }
       },
+      'collector.github.com': {
+        '.*': {
+          proxy: 'collector.github.com',
+          sni: 'baidu.com'
+        }
+      },
       'customer-stories-feed.github.com': {
         '.*': { proxy: 'customer-stories-feed.fastgit.org' }
       },
