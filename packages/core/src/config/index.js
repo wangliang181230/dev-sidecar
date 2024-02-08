@@ -16,7 +16,7 @@ module.exports = {
       enabled: true
     },
     remoteConfig: {
-      enabled: true,
+      enabled: false,
       url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/master/packages/core/src/config/remote_config.json'
     },
     dock: {
@@ -142,6 +142,11 @@ module.exports = {
         //   desc: '呀，被你发现了，偷偷的用，别声张'
         // }
       },
+      'www.gstatic.com': {
+        '/recaptcha/.*': {
+          proxy: 'www.recaptcha.net'
+        }
+      },
       'ajax.googleapis.com': {
         '.*': {
           proxy: 'ajax.lug.ustc.edu.cn',
@@ -255,6 +260,7 @@ module.exports = {
         '*v2ex.com': 'quad9',
         '*pypi.org': 'quad9',
         '*jetbrains.com': 'quad9',
+        '*stackoverflow.com': 'quad9',
         '*azureedge.net': 'quad9'
       },
       speedTest: {

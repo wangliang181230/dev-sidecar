@@ -11,6 +11,13 @@ module.exports = {
   },
   targets: {
     '*github*.com': true,
+    '*.shields.io': true,
+    '*.jsdelivr.net': true,
+    '*.jetbrains.com': true,
+    '*.zdassets.com': true,
+    '*.newrelic.com': true,
+    '*.sentry.io': true,
+    '*.google-analytics.com': true,
     '*wikimedia.org': true,
     'v2ex.com': true,
     '*azureedge.net': true,
