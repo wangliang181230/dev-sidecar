@@ -115,7 +115,7 @@ module.exports = {
           sni: 'baidu.com'
         }
       },
-      'backup.avatars.githubusercontent.com': {
+      'avatars.githubusercontent.com': {
         desc: '注释：avatars.githubusercontent.com域名直连比较慢，暂时备份掉。',
         '.*': {
           proxy: 'avatars.githubusercontent.com',
