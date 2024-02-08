@@ -77,27 +77,6 @@
         </div>
         <div class="right"></div>
       </div>
-      <div class="star" >
-        <div class="donate" @click="donateModal=true">
-          <a-icon type="like" theme="outlined"/>
-          捐赠
-        </div>
-        <div class="right">
-          <div>如果它解决了你的问题，请不要吝啬你的star哟！点这里
-            <a-icon style="margin-right:10px;" type="arrow-right" theme="outlined"/>
-          </div>
-          <a @click="openExternal('https://github.com/docmirror/dev-sidecar')"><img alt="GitHub stars"
-                                                                                    src="https://img.shields.io/github/stars/docmirror/dev-sidecar?logo=github"></a>
-        </div>
-      </div>
-
-      <a-modal title="捐赠" v-model="donateModal" width="550px" cancelText="不了" okText="果断支持" @ok="goDonate">
-        <div>* 本应用完全免费，如果觉得好用，可以给予捐赠。</div>
-        <div>* 开源项目持续发展离不开您的支持，感谢</div>
-        <div class="payQrcode">
-          <img height="200px" src="/pay.jpg"/>
-        </div>
-      </a-modal>
     </div>
 
   </ds-container>
@@ -125,7 +104,6 @@ export default {
   },
   data () {
     return {
-      donateModal: false,
       status: undefined,
       startup: {
         loading: false,
@@ -313,12 +291,6 @@ export default {
           return this.$api.server.restart()
         }
       })
-    },
-    goDonate () {
-      this.$message.info('感谢支持')
-    },
-    async openExternal (url) {
-      this.$api.ipc.openExternal(url)
     },
     onShutdownTipClose (e) {
       this.$confirm({
