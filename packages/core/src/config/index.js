@@ -207,6 +207,7 @@ module.exports = {
     whiteList: {
       '*.cn': true,
       'cn.*': true,
+      '*china*': true,
       'dingtalk.com': true,
       '*.dingtalk.com': true,
       'qq.com': true,
@@ -247,14 +248,13 @@ module.exports = {
         }
       },
       mapping: {
-        // 'assets.fastgit.org': 'usa',
+        '*github*.com': 'quad9',
+        '*github.io': 'quad9',
         '*.electronjs.org': 'quad9',
         '*amazonaws.com': 'quad9',
-        '*github*.com': 'quad9',
         '*yarnpkg.com': 'quad9',
         '*cloudfront.net': 'quad9',
         '*cloudflare.com': 'quad9',
-        '*github.io': 'quad9',
         '*.vuepress.vuejs.org': 'quad9',
         'gh.docmirror.top': 'quad9',
         '*v2ex.com': 'quad9',
