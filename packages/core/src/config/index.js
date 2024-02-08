@@ -256,6 +256,7 @@ module.exports = {
       mapping: {
         '*github*.com': 'quad9',
         '*github.io': 'quad9',
+        '*docker*.com': 'quad9',
         '*.electronjs.org': 'quad9',
         '*amazonaws.com': 'quad9',
         '*yarnpkg.com': 'quad9',
@@ -272,7 +273,7 @@ module.exports = {
       speedTest: {
         enabled: true,
         interval: 300000,
-        hostnameList: ['github.com'],
+        hostnameList: ['github.com', 'hub.docker.com'],
         dnsProviders: ['usa', 'quad9']
       }
     }
