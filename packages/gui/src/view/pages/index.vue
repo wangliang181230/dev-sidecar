@@ -3,18 +3,9 @@
     <template slot="header">
       给开发者的辅助工具
       <span>
-
           <a-button style="margin-right:10px" @click="openSetupCa">
             <a-badge :count="_rootCaSetuped?0:1" dot>安装根证书 </a-badge>
           </a-button>
-
-          <a-button style="margin-right:10px" @click="doCheckUpdate(true)" :loading="update.downloading"
-                    :title="'当前版本:'+info.version">
-            <a-badge :count="update.newVersion?1:0" dot>
-              <span v-if="update.downloading">{{ update.progress }}%</span>{{ update.downloading ? '新版本下载中' : '检查更新' }}
-            </a-badge>
-          </a-button>
-
       </span>
     </template>
 
@@ -173,10 +164,6 @@ export default {
     this.$set(this, 'status', this.$status)
     this.switchBtns = this.createSwitchBtns()
     this.$set(this, 'update', this.$global.update)
-    if (!this.update.autoChecked) {
-      this.update.autoChecked = true
-      this.doCheckUpdate(false)
-    }
     this.$api.info.get().then(ret => {
       this.info = ret
     })
@@ -329,9 +316,6 @@ export default {
     },
     goDonate () {
       this.$message.info('感谢支持')
-    },
-    doCheckUpdate (fromUser = true) {
-      this.$api.update.checkForUpdate(fromUser)
     },
     async openExternal (url) {
       this.$api.ipc.openExternal(url)
