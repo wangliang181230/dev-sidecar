@@ -128,6 +128,12 @@ module.exports = {
           desc: 'github的访问速度分析上传，没有必要，直接返回成功'
         }
       },
+      'hub.docker.com': {
+        '.*': {
+          proxy: 'hub.docker.com',
+          sni: 'baidu.com'
+        }
+      },
       // 'v2ex.com': {
       //   '.*': {
       //     proxy: 'v2ex.com',
