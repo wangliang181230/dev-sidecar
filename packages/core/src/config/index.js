@@ -16,8 +16,8 @@ module.exports = {
       enabled: true
     },
     remoteConfig: {
-      enabled: false,
-      url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/master/packages/core/src/config/remote_config.json'
+      enabled: true,
+      url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/myself/packages/core/src/config/remote_config.json'
     },
     dock: {
       hideWhenWinClose: false
@@ -134,16 +134,16 @@ module.exports = {
           sni: 'baidu.com'
         }
       },
-      "api.dso.docker.com": {
-        ".*": {
-          "proxy": "api.dso.docker.com",
-          "sni": "baidu.com"
+      'api.dso.docker.com': {
+        '.*': {
+          proxy: 'api.dso.docker.com',
+          sni: 'baidu.com'
         }
       },
-      "api.segment.io": {
-        ".*": {
-          "proxy": "api.segment.io",
-          "sni": "baidu.com"
+      'api.segment.io': {
+        '.*': {
+          proxy: 'api.segment.io',
+          sni: 'baidu.com'
         }
       },
       // 'v2ex.com': {
