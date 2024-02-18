@@ -1,4 +1,4 @@
-const config = require('../../config')
+const config = require('../../config.js')
 const event = require('../../event')
 const status = require('../../status')
 const lodash = require('lodash')
@@ -65,9 +65,10 @@ const serverApi = {
     serverConfig.plugin = allConfig.plugin
     // fireStatus('ing') // 启动中
     const basePath = serverConfig.setting.userBasePath
-    const runningConfig = path.join(basePath, '/running.json')
-    fs.writeFileSync(runningConfig, JSON.stringify(serverConfig, null, '\t'))
-    const serverProcess = fork(mitmproxyPath, [runningConfig])
+    const runningConfigPath = path.join(basePath, '/running.json')
+    fs.writeFileSync(runningConfigPath, JSON.stringify(serverConfig, null, '\t'))
+    log.info(`保存运行时配置成功: ${runningConfigPath}`, serverConfig)
+    const serverProcess = fork(mitmproxyPath, [runningConfigPath])
     server = {
       id: serverProcess.pid,
       process: serverProcess,
@@ -102,7 +103,7 @@ const serverApi = {
         event.fire('speed', msg.event)
       }
     })
-    return { port: runningConfig.port }
+    return { port: serverConfig.port }
   },
   async kill () {
     if (server) {

@@ -204,9 +204,9 @@
 				"gh.docmirror.top": "quad9",
 				"*v2ex.com": "quad9",
 				"*pypi.org": "quad9",
+				"*azureedge.net": "quad9",
 				"*jetbrains.com": "quad9",
-				"*stackoverflow.com": "quad9",
-				"*azureedge.net": "quad9"
+				"*stackoverflow.com": "quad9"
 			},
 			"speedTest": {
 				"interval": 300000,

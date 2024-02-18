@@ -63,6 +63,7 @@ const api = {
     } else {
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1'
     }
+    log.info('启动代理服务时的配置:', JSON.stringify(proxyOptions, null, '\t'))
     const newServer = mitmproxy.createProxy(proxyOptions, () => {
       fireStatus(true)
       log.info(`代理服务已启动：${proxyOptions.host}:${proxyOptions.port}`)

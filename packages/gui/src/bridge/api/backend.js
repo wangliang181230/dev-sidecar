@@ -64,6 +64,7 @@ const localApi = {
     save (setting = {}) {
       const settingPath = _getSettingsPath()
       fs.writeFileSync(settingPath, JSON.stringify(setting, null, '\t'))
+      log.info(`保存setting配置成功: ${settingPath}`, setting)
     }
   },
   /**

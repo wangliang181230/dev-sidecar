@@ -1,4 +1,5 @@
 // eslint-disable-next-line no-unused-vars
+const log = require('../utils/util.log')
 const server = require('@docmirror/mitmproxy')
 const configPath = process.argv[2]
 const fs = require('fs')
@@ -10,4 +11,5 @@ const config = JSON.parse(configJson)
 // const pacFilePath = '../extra/pac/pac.txt'
 // config.plugin.overwall.pac.customPacFilePath = path.join(__dirname, pacFilePath)
 config.setting.rootDir = path.join(__dirname, '../')
+log.info(`start mitmproxy config by gui bridge: ${configPath}`, config)
 server.start(config)

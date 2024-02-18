@@ -1,10 +1,13 @@
 // eslint-disable-next-line no-unused-vars
+const log = require('../src/utils/util.log')
 const server = require('@docmirror/mitmproxy')
 const path = require('path')
 const home = process.env.USER_HOME || process.env.HOME || 'C:/Users/Administrator/'
-let configPath = path.join(home, '.dev-sidecar/running.json')
+let configPath
 if (process.argv && process.argv.length > 3) {
   configPath = process.argv[2]
+} else {
+  configPath = path.join(home, '.dev-sidecar/running.json')
 }
 
 const fs = require('fs')
@@ -15,4 +18,5 @@ const config = JSON.parse(configJson)
 // const pacFilePath = '../../gui/extra/pac/pac.txt'
 // config.plugin.overwall.pac.customPacFilePath = path.join(__dirname, pacFilePath)
 config.setting.rootDir = path.join(__dirname, '../../gui/')
+log.info(`start mitmproxy config by core: ${configPath}`, config)
 server.start(config)

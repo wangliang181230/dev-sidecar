@@ -78,7 +78,10 @@ module.exports = {
       mapping: {
       },
       speedTest: {
-        enabled: true
+        enabled: true,
+        interval: 300000,
+        hostnameList: null,
+        dnsProviders: null
       }
     }
   },
