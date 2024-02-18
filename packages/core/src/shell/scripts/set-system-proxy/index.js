@@ -93,6 +93,9 @@ const _lanIP = [
   // WPS
   '*.wps.com',
 
+  // 奇虎
+  '*.qihoo.com',
+  '*.qihucdn.com',
   // 360
   '*.360.com',
   '*.360safe.com',
