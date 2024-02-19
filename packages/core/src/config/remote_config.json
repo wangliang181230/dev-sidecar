@@ -215,11 +215,6 @@
 			}
 		}
 	},
-	"proxy": {
-		"excludeIpArr": [
-			"192.168.*"
-		]
-	},
 	"plugin": {
 		"overwall": {
 			"targets": {
