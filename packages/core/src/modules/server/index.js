@@ -67,7 +67,7 @@ const serverApi = {
     const basePath = serverConfig.setting.userBasePath
     const runningConfigPath = path.join(basePath, '/running.json')
     fs.writeFileSync(runningConfigPath, JSON.stringify(serverConfig, null, '\t'))
-    log.info(`保存运行时配置成功: ${runningConfigPath}`, serverConfig)
+    log.info(`保存 running.json 成功: ${runningConfigPath}`, serverConfig)
     const serverProcess = fork(mitmproxyPath, [runningConfigPath])
     server = {
       id: serverProcess.pid,

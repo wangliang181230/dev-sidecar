@@ -161,7 +161,7 @@ const configApi = {
     const saveConfig = doMerge(defConfig, newConfig)
     const configPath = _getConfigPath()
     fs.writeFileSync(configPath, JSON.stringify(saveConfig, null, '\t'))
-    log.info(`保存个性化配置成功: ${configPath}`, saveConfig)
+    log.info(`保存 config.json 成功: ${configPath}`, saveConfig)
     configApi.reload()
     return saveConfig
   },
