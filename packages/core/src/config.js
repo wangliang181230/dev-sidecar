@@ -166,16 +166,11 @@ const configApi = {
     }
     const merged = lodash.cloneDeep(newConfig)
     const clone = lodash.cloneDeep(defConfig)
+    const remoteConfig = configApi.readRemoteConfig()
 
-    function customizer (objValue, srcValue) {
-      if (lodash.isArray(objValue)) {
-        return srcValue
-      }
-    }
-
-    lodash.mergeWith(merged, clone, customizer)
-    lodash.mergeWith(merged, configApi.readRemoteConfig(), customizer)
-    lodash.mergeWith(merged, newConfig, customizer)
+    api.doMerge(merged, clone)
+    api.doMerge(merged, remoteConfig)
+    api.doMerge(merged, newConfig)
     _deleteDisabledItem(merged)
     configTarget = merged
     log.info('加载及合并远端配置完成')
