@@ -33,7 +33,7 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
     }
   }
 
-  console.log('sni config:', sniConfig)
+  log.info('sni config:', sniConfig)
   // const sniRegexpMap = matchUtil.domainMapRegexply(sniConfig)
   return function connectHandler (req, cltSocket, head) {
     // eslint-disable-next-line node/no-deprecated-api

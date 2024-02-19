@@ -6,6 +6,7 @@ const fork = require('child_process').fork
 const log = require('../../utils/util.log')
 const fs = require('fs')
 const path = require('path')
+const api = require('../../api.js')
 
 let server = null
 function fireStatus (status) {
@@ -66,8 +67,9 @@ const serverApi = {
     // fireStatus('ing') // 启动中
     const basePath = serverConfig.setting.userBasePath
     const runningConfigPath = path.join(basePath, '/running.json')
-    fs.writeFileSync(runningConfigPath, JSON.stringify(serverConfig, null, '\t'))
-    log.info(`保存 running.json 成功: ${runningConfigPath}`, serverConfig)
+    const serverConfigJsonStr = api.toJson(serverConfig)
+    fs.writeFileSync(runningConfigPath, serverConfigJsonStr)
+    log.info(`保存 running.json 成功: ${runningConfigPath}`, serverConfigJsonStr)
     const serverProcess = fork(mitmproxyPath, [runningConfigPath])
     server = {
       id: serverProcess.pid,

@@ -216,7 +216,7 @@
 		}
 	},
 	"proxy": {
-		"excludeIPArr": [
+		"excludeIpArr": [
 			"192.168.*"
 		]
 	},

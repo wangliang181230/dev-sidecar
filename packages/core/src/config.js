@@ -7,6 +7,8 @@ const path = require('path')
 const log = require('./utils/util.log')
 let configTarget = lodash.cloneDeep(defConfig)
 
+const api = require('./api.js')
+
 function get () {
   return configTarget
 }
@@ -21,9 +23,11 @@ function _deleteDisabledItem (target) {
     }
   })
 }
+
 const getDefaultConfigBasePath = function () {
   return get().server.setting.userBasePath
 }
+
 function _getRemoteSavePath () {
   const dir = getDefaultConfigBasePath()
   if (!fs.existsSync(dir)) {
@@ -31,6 +35,7 @@ function _getRemoteSavePath () {
   }
   return path.join(dir, 'remote_config.json')
 }
+
 function _getConfigPath () {
   const dir = getDefaultConfigBasePath()
   if (!fs.existsSync(dir)) {
@@ -39,46 +44,6 @@ function _getConfigPath () {
   return dir + '/config.json'
 }
 
-function doMerge (defObj, newObj) {
-  if (newObj == null) {
-    return defObj
-  }
-  const defObj2 = { ...defObj }
-  const newObj2 = {}
-  for (const key in newObj) {
-    const newValue = newObj[key]
-    const defValue = defObj[key]
-    if (newValue != null && defValue == null) {
-      newObj2[key] = newValue
-      continue
-    }
-    if (lodash.isEqual(newValue, defValue)) {
-      delete defObj2[key]
-      continue
-    }
-
-    if (lodash.isArray(newValue)) {
-      delete defObj2[key]
-      newObj2[key] = newValue
-      continue
-    }
-    if (lodash.isObject(newValue)) {
-      newObj2[key] = doMerge(defValue, newValue)
-      delete defObj2[key]
-      continue
-    } else {
-      // 基础类型，直接覆盖
-      delete defObj2[key]
-      newObj2[key] = newValue
-      continue
-    }
-  }
-  // defObj 里面剩下的是被删掉的
-  lodash.forEach(defObj2, (defValue, key) => {
-    newObj2[key] = null
-  })
-  return newObj2
-}
 let timer
 const configApi = {
   async startAutoDownloadRemoteConfig () {
@@ -154,18 +119,25 @@ const configApi = {
    */
   save (newConfig) {
     // 对比默认config的异同
-    const defConfig = configApi.getDefault()
+    let saveConfig = configApi.getDefault()
+    log.info('saveConfig:', api.toJson(saveConfig))
     if (get().app.remoteConfig.enabled === true) {
-      doMerge(defConfig, configApi.readRemoteConfig())
+      const remoteConfig = configApi.readRemoteConfig()
+      log.info('remoteConfig:', api.toJson(remoteConfig))
+      saveConfig = api.doMerge(saveConfig, remoteConfig)
+      log.info('saveConfig 合并 remoteConfig 后:', api.toJson(saveConfig))
     }
-    const saveConfig = doMerge(defConfig, newConfig)
+    log.info('newConfig:', api.toJson(newConfig))
+    saveConfig = api.doDiff(saveConfig, newConfig)
     const configPath = _getConfigPath()
-    fs.writeFileSync(configPath, JSON.stringify(saveConfig, null, '\t'))
-    log.info(`保存 config.json 成功: ${configPath}`, saveConfig)
+    const saveConfigJsonStr = api.toJson(saveConfig)
+    fs.writeFileSync(configPath, saveConfigJsonStr)
+    log.info(`保存 config.json 成功: ${configPath}`, saveConfigJsonStr)
     configApi.reload()
     return saveConfig
   },
-  doMerge,
+  doMerge: api.doMerge,
+  doDiff: api.doDiff,
   /**
    * 读取 config.json 后，合并配置
    * @returns {*}
@@ -194,11 +166,13 @@ const configApi = {
     }
     const merged = lodash.cloneDeep(newConfig)
     const clone = lodash.cloneDeep(defConfig)
+
     function customizer (objValue, srcValue) {
       if (lodash.isArray(objValue)) {
         return srcValue
       }
     }
+
     lodash.mergeWith(merged, clone, customizer)
     lodash.mergeWith(merged, configApi.readRemoteConfig(), customizer)
     lodash.mergeWith(merged, newConfig, customizer)
