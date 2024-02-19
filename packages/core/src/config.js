@@ -173,7 +173,7 @@ const configApi = {
     api.doMerge(merged, newConfig)
     _deleteDisabledItem(merged)
     configTarget = merged
-    log.info('加载及合并远端配置完成')
+    log.info('加载及合并远程配置完成')
     return configTarget
   },
   getDefault () {
