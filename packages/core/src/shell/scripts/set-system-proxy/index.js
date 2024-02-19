@@ -38,21 +38,20 @@ async function _winSetProxy (exec, ip, port, setEnv) {
   if (config === null) {
     config = require('../../../config.js')
   }
-  let lanIpStr = ''
-  const lanIpList = config.get().proxy.excludeIpArr
-  for (const ipPattern of lanIpList) {
+  let excludeIpStr = ''
+  for (const excludeIpPattern of config.get().proxy.excludeIpArr) {
     // 跳过用于注释的数据
-    if (ipPattern.indexOf('#') === 0) {
+    if (excludeIpPattern.indexOf('#') === 0) {
       continue
     }
-    lanIpStr += ipPattern + ';'
+    excludeIpStr += excludeIpPattern + ';'
   }
   // http=127.0.0.1:8888;https=127.0.0.1:8888 考虑这种方式
   const proxyPath = extraPath.getProxyExePath()
   const execFun = 'global'
   const proxyAddr = `http=http://${ip}:${port};https=http://${ip}:${port}`
-  log.info(`执行“设置系统代理”的命令: ${proxyPath} ${execFun} ${proxyAddr} ${lanIpStr}`)
-  await execFile(proxyPath, [execFun, proxyAddr, lanIpStr])
+  log.info(`执行“设置系统代理”的命令: ${proxyPath} ${execFun} ${proxyAddr} ${excludeIpStr}`)
+  await execFile(proxyPath, [execFun, proxyAddr, excludeIpStr])
 
   if (setEnv) {
     log.info('同时设置 https_proxy')
