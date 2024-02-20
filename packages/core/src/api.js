@@ -11,8 +11,16 @@ function doDiff (oldObj, newObj) {
   if (newObj == null) {
     return oldObj
   }
+
+  // 临时的对象，用于找出被删除的属性
   const tempObj = { ...oldObj }
+  // 删除空项，使差异对象更干净一些，体现出自定义内容
+  deleteNullItems(tempObj)
+
+  // 保存差异的对象
   const diffObj = {}
+
+  // 读取新对象，并解析
   for (const key in newObj) {
     const newValue = newObj[key]
     const oldValue = oldObj[key]
@@ -48,19 +56,20 @@ function doDiff (oldObj, newObj) {
 
   // tempObj 里面剩下的是被删掉的
   lodash.forEach(tempObj, (defValue, key) => {
-    // 将被删除的属性设置为null，目的是为了重新merge回原对象时，将被删掉的对象设置为null，达到删除的目的
+    // 将被删除的属性设置为null，目的是为了merge时，将被删掉的对象设置为null，达到删除的目的
     diffObj[key] = null
   })
+
   return diffObj
 }
 
-function deleteDisabledItem (target) {
+function deleteNullItems (target) {
   lodash.forEach(target, (item, key) => {
     if (item == null) {
       delete target[key]
     }
     if (lodash.isObject(item)) {
-      deleteDisabledItem(item)
+      deleteNullItems(item)
     }
   })
 }
@@ -77,5 +86,5 @@ module.exports = {
   toJson: function (obj) {
     return JSON.stringify(obj, null, '\t')
   },
-  deleteDisabledItem
+  deleteNullItems
 }

@@ -13,17 +13,6 @@ function get () {
   return configTarget
 }
 
-function _deleteDisabledItem (target) {
-  lodash.forEach(target, (item, key) => {
-    if (item == null) {
-      delete target[key]
-    }
-    if (lodash.isObject(item)) {
-      _deleteDisabledItem(item)
-    }
-  })
-}
-
 const getDefaultConfigBasePath = function () {
   return get().server.setting.userBasePath
 }
@@ -120,14 +109,10 @@ const configApi = {
   save (newConfig) {
     // 对比默认config的异同
     let saveConfig = configApi.getDefault()
-    log.info('saveConfig:', api.toJson(saveConfig))
     if (get().app.remoteConfig.enabled === true) {
       const remoteConfig = configApi.readRemoteConfig()
-      log.info('remoteConfig:', api.toJson(remoteConfig))
       saveConfig = api.doMerge(saveConfig, remoteConfig)
-      log.info('saveConfig 合并 remoteConfig 后:', api.toJson(saveConfig))
     }
-    log.info('newConfig:', api.toJson(newConfig))
     saveConfig = api.doDiff(saveConfig, newConfig)
     const configPath = _getConfigPath()
     const saveConfigJsonStr = api.toJson(saveConfig)
@@ -165,13 +150,13 @@ const configApi = {
       newConfig = {}
     }
     const merged = lodash.cloneDeep(newConfig)
-    const clone = lodash.cloneDeep(defConfig)
+    const cloneDefault = lodash.cloneDeep(defConfig)
     const remoteConfig = configApi.readRemoteConfig()
 
-    api.doMerge(merged, clone)
+    api.doMerge(merged, cloneDefault)
     api.doMerge(merged, remoteConfig)
     api.doMerge(merged, newConfig)
-    _deleteDisabledItem(merged)
+    api.deleteNullItems(merged)
     configTarget = merged
     log.info('加载及合并远程配置完成')
     return configTarget

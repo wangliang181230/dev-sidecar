@@ -49,9 +49,9 @@ module.exports = {
     },
     whiteList: {
     },
-    // sniList: {
-    //   'github.com': 'baidu.com'
-    // },
+    sniList: {
+      // 'github.com': 'baidu.com'
+    },
     dns: {
       providers: {
         aliyun: {

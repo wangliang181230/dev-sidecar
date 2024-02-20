@@ -17,7 +17,9 @@ const defConfig = {
   f: {
     x: 1
   },
-  g: [1, 2]
+  g: [1, 2],
+  h: null,
+  i: null
 }
 
 // 自定义配置
@@ -35,7 +37,8 @@ const customConfig = {
     ff: 6
   },
   f: {},
-  g: [1, 2]
+  g: [1, 2],
+  h: null
 }
 
 // doDiff
@@ -62,7 +65,8 @@ console.log('\r')
 
 // doMerge
 const doMergeResult = api.doMerge(defConfig, doDiffResult)
-api.deleteDisabledItem(doMergeResult)
+// delete null item
+api.deleteNullItems(doMergeResult)
 console.log('running:', JSON.stringify(doMergeResult, null, 2))
 // 校验doMerge结果
 const doMergeExpect = {
