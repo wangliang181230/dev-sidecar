@@ -32,7 +32,7 @@
        <a-button @click="loopbackVisible=true">去设置</a-button>
         <div class="form-help">解决OneNote、MicrosoftStore、Outlook等UWP应用开启代理后无法访问网络的问题</div>
       </a-form-item>
-      <a-form-item label="排除配置" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-item label="排除域名或IP" :label-col="labelCol" :wrapper-col="wrapperCol">
         <div>
           <a-row :gutter="10">
             <a-col :span="22">
