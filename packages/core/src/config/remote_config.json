@@ -248,7 +248,9 @@
 				"*.newrelic.com": true,
 				"*.sentry.io": true,
 				"*.google-analytics.com": true,
-				"*saucenao.com": true
+				"*saucenao.com": true,
+				"*pixiv.com": true,
+				"*pixiv.net": true
 			}
 		}
 	}
