@@ -1,75 +1,68 @@
 const lodash = require('lodash')
 
-function log (msg) {
-  // console.log(msg)
-}
-
-function ifEmpty (obj, defaultValue) {
-  return obj || defaultValue || ''
-}
-
 /**
- * 找出 newObj 中相对于 oldObj 有变化的部分
+ * 找出 newObj 相对于 oldObj 有差异的部分
  *
  * @param oldObj
  * @param newObj
- * @param parentKey
  * @returns {{}|*}
  */
-function doDiff (oldObj, newObj, parentKey) {
-  if (lodash.isEmpty(newObj)) {
+function doDiff (oldObj, newObj) {
+  if (newObj == null) {
     return oldObj
   }
+  const tempObj = { ...oldObj }
   const diffObj = {}
   for (const key in newObj) {
     const newValue = newObj[key]
     const oldValue = oldObj[key]
-    log(`${ifEmpty(parentKey)}.key:`, key, ', newValue:', newValue, ', oldValue:', oldValue)
 
-    // 新旧值相等时，忽略
-    if (lodash.isEqual(newValue, oldValue)) {
-      log(`skip ${ifEmpty(parentKey)}.${key} isEquals`)
+    // 新值不为空，旧值为空时，直接取新值
+    if (newValue != null && oldValue == null) {
+      diffObj[key] = newValue
       continue
     }
-    // 新值不为空，旧值为空时，直接取新值
-    if (!lodash.isEmpty(newValue) && lodash.isEmpty(oldValue)) {
-      diffObj[key] = newValue
-      log(`${ifEmpty(parentKey)}.${key} = `, newValue)
+    // 新旧值相等时，忽略
+    if (lodash.isEqual(newValue, oldValue)) {
+      delete tempObj[key]
       continue
     }
     // 新的值为数组时，直接取新值
     if (lodash.isArray(newValue)) {
       diffObj[key] = newValue
-      log(`${ifEmpty(parentKey)}.${key} = `, newValue)
+      delete tempObj[key]
       continue
     }
 
     // 新的值为对象时，递归合并
     if (lodash.isObject(newValue)) {
-      log('------------------')
-      const diffObj2 = doDiff(oldValue, newValue, key)
-      if (!lodash.isEmpty(diffObj2)) {
-        diffObj[key] = diffObj2
-        log(`${ifEmpty(parentKey)}.${key} = `, diffObj[key])
-      } else {
-        log(`skip ${ifEmpty(parentKey)}.${key} isEmpty(diffObj2)`)
-      }
-      log('------------------')
-      continue
-    }
-
-    // 新值为空时，忽略
-    if (newValue == null) {
-      log(`skip ${ifEmpty(parentKey)}.${key} isEmpty(newValue):`, newValue)
+      diffObj[key] = doDiff(oldValue, newValue)
+      delete tempObj[key]
       continue
     }
 
     // 基础类型，直接覆盖
+    delete tempObj[key]
     diffObj[key] = newValue
-    log(`${ifEmpty(parentKey)}.${key} = `, newValue)
   }
 
+  // tempObj 里面剩下的是被删掉的
+  lodash.forEach(tempObj, (defValue, key) => {
+    // 将被删除的属性设置为null，目的是为了重新merge回原对象时，将被删掉的对象设置为null，达到删除的目的
+    diffObj[key] = null
+  })
   return diffObj
+}
+
+function deleteDisabledItem (target) {
+  lodash.forEach(target, (item, key) => {
+    if (item == null) {
+      delete target[key]
+    }
+    if (lodash.isObject(item)) {
+      deleteDisabledItem(item)
+    }
+  })
 }
 
 module.exports = {
@@ -83,5 +76,6 @@ module.exports = {
   },
   toJson: function (obj) {
     return JSON.stringify(obj, null, '\t')
-  }
+  },
+  deleteDisabledItem
 }
