@@ -16,7 +16,8 @@ const defConfig = {
   },
   f: {
     x: 1
-  }
+  },
+  g: [1, 2]
 }
 
 // 自定义配置
@@ -33,7 +34,8 @@ const customConfig = {
     ee: 5,
     ff: 6
   },
-  f: {}
+  f: {},
+  g: [1, 2]
 }
 
 // doDiff
@@ -75,7 +77,8 @@ const doMergeExpect = {
     ee: 5,
     ff: 6
   },
-  f: {}
+  f: {},
+  g: [1, 2]
 }
 console.log('check merge result:', lodash.isEqual(doMergeResult, doMergeExpect))
 console.log('\r')
