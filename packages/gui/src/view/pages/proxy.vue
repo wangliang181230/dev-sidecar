@@ -32,6 +32,26 @@
        <a-button @click="loopbackVisible=true">去设置</a-button>
         <div class="form-help">解决OneNote、MicrosoftStore、Outlook等UWP应用开启代理后无法访问网络的问题</div>
       </a-form-item>
+      <a-form-item label="排除配置" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <div>
+          <a-row :gutter="10">
+            <a-col :span="22">
+              <span>访问的域名或IP符合下列格式时，将跳过系统代理</span>
+            </a-col>
+            <a-col :span="2">
+              <a-button type="primary" icon="plus" @click="addExcludeIp()" />
+            </a-col>
+          </a-row>
+          <a-row :gutter="10" v-for="(item,index) of getProxyConfig().excludeIpArr" :key='index'>
+            <a-col :span="22">
+              <a-input v-model="getProxyConfig().excludeIpArr[index]"></a-input>
+            </a-col>
+            <a-col :span="2">
+              <a-button  type="danger" icon="minus" @click="delExcludeIp(item,index)" />
+            </a-col>
+          </a-row>
+        </div>
+      </a-form-item>
     </div>
     <template slot="footer">
       <div class="footer-bar">
@@ -97,6 +117,15 @@ export default {
         }
         this.$message.error('打开失败：' + e.message)
       }
+    },
+    getProxyConfig () {
+      return this.config.proxy
+    },
+    addExcludeIp () {
+      this.getProxyConfig().excludeIpArr.unshift('')
+    },
+    delExcludeIp (item, index) {
+      this.getProxyConfig().excludeIpArr.splice(index, 1)
     }
   }
 }
