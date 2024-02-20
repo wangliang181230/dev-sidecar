@@ -1,5 +1,13 @@
 const lodash = require('lodash')
 
+function log (msg) {
+  // console.log(msg)
+}
+
+function ifEmpty (obj, defaultValue) {
+  return obj || defaultValue || ''
+}
+
 /**
  * 找出 newObj 中相对于 oldObj 有变化的部分
  *
@@ -9,7 +17,6 @@ const lodash = require('lodash')
  * @returns {{}|*}
  */
 function doDiff (oldObj, newObj, parentKey) {
-  const empty = ''
   if (lodash.isEmpty(newObj)) {
     return oldObj
   }
@@ -17,49 +24,49 @@ function doDiff (oldObj, newObj, parentKey) {
   for (const key in newObj) {
     const newValue = newObj[key]
     const oldValue = oldObj[key]
-    console.log(`${parentKey ? parentKey : empty}.key:`, key, ', newValue:', newValue, ', oldValue:', oldValue)
+    log(`${ifEmpty(parentKey)}.key:`, key, ', newValue:', newValue, ', oldValue:', oldValue)
 
     // 新旧值相等时，忽略
     if (lodash.isEqual(newValue, oldValue)) {
-      console.log(`skip ${parentKey ? parentKey : empty}.${key} isEquals`)
+      log(`skip ${ifEmpty(parentKey)}.${key} isEquals`)
       continue
     }
     // 新值不为空，旧值为空时，直接取新值
     if (!lodash.isEmpty(newValue) && lodash.isEmpty(oldValue)) {
       diffObj[key] = newValue
-      console.log(`${parentKey ? parentKey : empty}.${key} = `, newValue)
+      log(`${ifEmpty(parentKey)}.${key} = `, newValue)
       continue
     }
     // 新的值为数组时，直接取新值
     if (lodash.isArray(newValue)) {
       diffObj[key] = newValue
-      console.log(`${parentKey ? parentKey : empty}.${key} = `, newValue)
+      log(`${ifEmpty(parentKey)}.${key} = `, newValue)
       continue
     }
 
     // 新的值为对象时，递归合并
     if (lodash.isObject(newValue)) {
-      console.log('------------------')
+      log('------------------')
       const diffObj2 = doDiff(oldValue, newValue, key)
       if (!lodash.isEmpty(diffObj2)) {
         diffObj[key] = diffObj2
-        console.log(`${parentKey ? parentKey : empty}.${key} = `, diffObj[key])
+        log(`${ifEmpty(parentKey)}.${key} = `, diffObj[key])
       } else {
-        console.log(`skip ${parentKey ? parentKey : empty}.${key} isEmpty(diffObj2)`)
+        log(`skip ${ifEmpty(parentKey)}.${key} isEmpty(diffObj2)`)
       }
-      console.log('------------------')
+      log('------------------')
       continue
     }
 
     // 新值为空时，忽略
     if (newValue == null) {
-      console.log(`skip ${parentKey ? parentKey : empty}.${key} isEmpty(newValue):`, newValue)
+      log(`skip ${ifEmpty(parentKey)}.${key} isEmpty(newValue):`, newValue)
       continue
     }
 
     // 基础类型，直接覆盖
     diffObj[key] = newValue
-    console.log(`${parentKey ? parentKey : empty}.${key} = `, newValue)
+    log(`${ifEmpty(parentKey)}.${key} = `, newValue)
   }
 
   return diffObj
