@@ -247,7 +247,8 @@
 				"*.zdassets.com": true,
 				"*.newrelic.com": true,
 				"*.sentry.io": true,
-				"*.google-analytics.com": true
+				"*.google-analytics.com": true,
+				"*saucenao.com": true
 			}
 		}
 	}
