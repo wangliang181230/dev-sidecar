@@ -359,6 +359,7 @@ git clone https://github.com/docmirror/dev-sidecar
 
 cd dev-sidecar 
 
+# 注意不要使用 `npm install` 来安装依赖，因为 `lerna bootstrap` 会自动安装依赖
 lerna bootstrap
 
 cd packages/gui
