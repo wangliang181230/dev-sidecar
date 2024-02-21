@@ -82,10 +82,10 @@
             </a-row>
             <a-row :gutter="10" style="margin-top: 10px" v-for="(item,index) of whiteList" :key='index'>
               <a-col :span="19">
-                <a-input :disabled="item.value ===false" v-model="item.key"></a-input>
+                <a-input :disabled="item.value === false" v-model="item.key"></a-input>
               </a-col>
               <a-col :span="3">
-                <a-button v-if="item.value!==false" type="danger" icon="minus" @click="deleteWhiteList(item,index)"/>
+                <a-button v-if="item.value !== false" type="danger" icon="minus" @click="deleteWhiteList(item,index)"/>
               </a-col>
             </a-row>
         </a-tab-pane>
@@ -101,18 +101,18 @@
             </a-row>
             <a-row :gutter="10" style="margin-top: 10px" v-for="(item,index) of dnsMappings" :key='index'>
               <a-col :span="14">
-                <a-input :disabled="item.value ===false" v-model="item.key"></a-input>
+                <a-input :disabled="item.value === false" v-model="item.key"></a-input>
               </a-col>
               <a-col :span="5">
-                <a-select :disabled="item.value ===false" v-model="item.value" style="width: 100%">
+                <a-select :disabled="item.value === false" v-model="item.value" style="width: 100%">
                   <a-select-option v-for="(item) of speedDnsOptions" :key="item.value" :value="item.value">
                     {{ item.value }}
                   </a-select-option>
                 </a-select>
               </a-col>
               <a-col :span="3">
-                <a-button v-if="item.value!==false" type="danger" icon="minus" @click="deleteDnsMapping(item,index)"/>
-                <a-button v-if="item.value===false" type="primary" icon="checked"
+                <a-button v-if="item.value !== false" type="danger" icon="minus" @click="deleteDnsMapping(item,index)"/>
+                <a-button v-if="item.value === false" type="primary" icon="checked"
                           @click="restoreDefDnsMapping(item,index)"></a-button>
               </a-col>
             </a-row>
@@ -230,8 +230,6 @@ export default {
   data () {
     return {
       key: 'server',
-      labelCol: { span: 4 },
-      wrapperCol: { span: 20 },
       dnsMappings: [],
       speedTestList: [],
       whiteList: [],
