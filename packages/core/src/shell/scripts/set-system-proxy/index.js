@@ -3,12 +3,13 @@
  */
 const Shell = require('../../shell')
 const Registry = require('winreg')
-let config = null
 
 const execute = Shell.execute
 const execFile = Shell.execFile
 const log = require('../../../utils/util.log')
 const extraPath = require('../extra-path/index')
+
+let config = null
 
 async function _winUnsetProxy (exec, setEnv) {
   // eslint-disable-next-line no-constant-condition
@@ -30,18 +31,20 @@ async function _winUnsetProxy (exec, setEnv) {
       }
     })
   } catch (e) {
-    log.error(e)
+    log.error('启动系统代理失败:', e)
   }
 }
 
 async function _winSetProxy (exec, ip, port, setEnv) {
-  if (config === null) {
+  // 延迟加载config
+  if (config == null) {
     config = require('../../../config.js')
   }
+
   let excludeIpStr = ''
-  for (const excludeIpPattern of config.get().proxy.excludeIpArr) {
-    // 跳过用于注释的数据
-    if (excludeIpPattern.indexOf('#') === 0) {
+  for (const excludeIpPattern of config.get().proxy.excludeIpList) {
+    // 跳过起注释作用的数据
+    if (excludeIpPattern.indexOf('#') >= 0) {
       continue
     }
     excludeIpStr += excludeIpPattern + ';'

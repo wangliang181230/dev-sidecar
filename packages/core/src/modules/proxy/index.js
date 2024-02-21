@@ -55,7 +55,7 @@ module.exports = {
     use: 'local',
     other: [],
     setEnv: false,
-    excludeIpArr: [
+    excludeIpList: [
       // region 常用国内可访问域名
 
       // 中国大陆
@@ -123,7 +123,7 @@ module.exports = {
       '*.maven.org',
       // Maven Repository
       '*.mvnrepository.com',
-      'challenges.cloudflare.com', // 访问 mvnrepository.com 时有个人机校验时使用，国内可直接访问，所以不需要代理，代理了反而变慢了。
+      'challenges.cloudflare.com', // 在访问 mvnrepository.com 的人机校验时使用，国内可直接访问，所以不需要代理，代理了反而变慢了。
 
       // 苹果
       '*.apple.com',
@@ -207,14 +207,13 @@ module.exports = {
 
       // endregion
 
-      // -----------------------------------------
-
-      // 本地
+      // 本地地址，无需代理
       'localhost',
-      'localhost.*',
+      'localhost.*', // 部分VPN会在host中添加这种格式的域名指向127.0.0.1，所以也排除掉
       '127.*',
-      'test.*',
-      // 服务端常用域名
+      'test.*', // 本地开发时，测试用的虚拟域名格式，无需代理
+
+      // 服务器端常用地址，无需代理
       '10.*',
       '172.16.*',
       '172.17.*',
@@ -232,7 +231,8 @@ module.exports = {
       '172.29.*',
       '172.30.*',
       '172.31.*',
-      // 局域网
+
+      // 局域网地址，无需代理
       '192.168.*'
     ]
   },

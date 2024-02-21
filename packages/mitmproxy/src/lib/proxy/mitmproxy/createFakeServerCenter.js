@@ -1,7 +1,6 @@
 const fs = require('fs')
 const forge = require('node-forge')
 const FakeServersCenter = require('../tls/FakeServersCenter')
-// const colors = require('colors')
 const log = require('../../../utils/util.log')
 module.exports = function createFakeServerCenter ({
   caCertPath,

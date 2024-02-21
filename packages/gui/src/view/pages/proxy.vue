@@ -42,9 +42,9 @@
               <a-button type="primary" icon="plus" @click="addExcludeIp()" />
             </a-col>
           </a-row>
-          <a-row :gutter="10" v-for="(item,index) of getProxyConfig().excludeIpArr" :key='index'>
+          <a-row :gutter="10" v-for="(item,index) of getProxyConfig().excludeIpList" :key='index'>
             <a-col :span="22">
-              <a-input v-model="getProxyConfig().excludeIpArr[index]"></a-input>
+              <a-input v-model="getProxyConfig().excludeIpList[index]"></a-input>
             </a-col>
             <a-col :span="2">
               <a-button  type="danger" icon="minus" @click="delExcludeIp(item,index)" />
@@ -122,10 +122,10 @@ export default {
       return this.config.proxy
     },
     addExcludeIp () {
-      this.getProxyConfig().excludeIpArr.unshift('')
+      this.getProxyConfig().excludeIpList.unshift('')
     },
     delExcludeIp (item, index) {
-      this.getProxyConfig().excludeIpArr.splice(index, 1)
+      this.getProxyConfig().excludeIpList.splice(index, 1)
     }
   }
 }

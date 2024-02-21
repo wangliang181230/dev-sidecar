@@ -1,9 +1,6 @@
-// const util = require('util')
 const os = require('os')
 const childProcess = require('child_process')
-// const _exec = childProcess.exec
 const _execFile = childProcess.execFile
-// const exec = util.promisify(_exec)
 const PowerShell = require('node-powershell')
 const log = require('../utils/util.log')
 const fixPath = require('fix-path')

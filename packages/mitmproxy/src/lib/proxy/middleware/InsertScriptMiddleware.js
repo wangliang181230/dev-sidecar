@@ -1,7 +1,5 @@
 const through = require('through2')
 const zlib = require('zlib')
-// eslint-disable-next-line no-unused-vars
-// const url = require('url')
 
 const httpUtil = {}
 httpUtil.getCharset = function (res) {

@@ -1,5 +1,5 @@
 const lodash = require('lodash')
-const api = require('../src/api.js')
+const mergeApi = require('../src/merge.js')
 
 // 默认配置
 const defConfig = {
@@ -42,7 +42,7 @@ const customConfig = {
 }
 
 // doDiff
-const doDiffResult = api.doDiff(defConfig, customConfig)
+const doDiffResult = mergeApi.doDiff(defConfig, customConfig)
 console.log('doDiffResult:', JSON.stringify(doDiffResult, null, 2))
 console.log('\r')
 // 校验doDiff结果
@@ -64,9 +64,9 @@ console.log('check diff result:', lodash.isEqual(doDiffResult, doDiffExpect))
 console.log('\r')
 
 // doMerge
-const doMergeResult = api.doMerge(defConfig, doDiffResult)
+const doMergeResult = mergeApi.doMerge(defConfig, doDiffResult)
 // delete null item
-api.deleteNullItems(doMergeResult)
+mergeApi.deleteNullItems(doMergeResult)
 console.log('running:', JSON.stringify(doMergeResult, null, 2))
 // 校验doMerge结果
 const doMergeExpect = {

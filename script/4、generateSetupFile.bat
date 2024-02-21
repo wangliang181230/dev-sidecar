@@ -1,3 +1,3 @@
-cd packages/gui
+cd ../packages/gui
 
 npm run electron:build

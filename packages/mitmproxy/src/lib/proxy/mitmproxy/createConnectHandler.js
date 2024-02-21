@@ -1,13 +1,10 @@
 const net = require('net')
 const url = require('url')
 const log = require('../../../utils/util.log')
-// const colors = require('colors')
 const DnsUtil = require('../../dns/index')
 const localIP = '127.0.0.1'
 const defaultDns = require('dns')
-// const matchUtil = require('../../../utils/util.match')
 const speedTest = require('../../speed/index.js')
-// const sniExtract = require('../tls/sniUtil.js')
 function isSslConnect (sslConnectInterceptors, req, cltSocket, head) {
   for (const intercept of sslConnectInterceptors) {
     const ret = intercept(req, cltSocket, head)

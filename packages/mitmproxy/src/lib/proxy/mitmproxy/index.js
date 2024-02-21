@@ -1,14 +1,11 @@
 const tlsUtils = require('../tls/tlsUtils')
 const http = require('http')
-// const https = require('https')
 const config = require('../common/config')
 const log = require('../../../utils/util.log')
 const createRequestHandler = require('./createRequestHandler')
 const createConnectHandler = require('./createConnectHandler')
 const createFakeServerCenter = require('./createFakeServerCenter')
 const createUpgradeHandler = require('./createUpgradeHandler')
-// const DnsUtil = require('../../dns/index')
-// const defaultDns = require('dns')
 const speedTest = require('../../speed/index.js')
 module.exports = {
   createProxy ({

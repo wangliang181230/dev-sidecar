@@ -1,14 +1,18 @@
 const path = require('path')
+
 function getUserBasePath () {
   const userHome = process.env.USERPROFILE || process.env.HOME || '/'
   return path.resolve(userHome, './.dev-sidecar')
 }
+
 function getRootCaCertPath () {
   return getUserBasePath() + '/dev-sidecar.ca.crt'
 }
+
 function getRootCaKeyPath () {
   return getUserBasePath() + '/dev-sidecar.ca.key.pem'
 }
+
 module.exports = {
   app: {
     mode: 'ow',
@@ -45,12 +49,10 @@ module.exports = {
     intercept: {
       enabled: true
     },
-    intercepts: {
-    },
-    whiteList: {
-    },
+    intercepts: {},
+    whiteList: {},
     sniList: {
-      // 'github.com': 'baidu.com'
+    //   'github.com': 'abaidu.com'
     },
     dns: {
       providers: {
@@ -75,13 +77,12 @@ module.exports = {
           cacheSize: 1000
         }
       },
-      mapping: {
-      },
+      mapping: {},
       speedTest: {
         enabled: true,
-        interval: 300000//,
-        // hostnameList: ['github.com', 'hub.docker.com', 'login.docker.com', 'api.dso.docker.com'],
-        // dnsProviders: ['usa', 'quad9']
+        interval: 300000,
+        hostnameList: ['github.com'],
+        dnsProviders: ['usa', 'quad9']
       }
     }
   },

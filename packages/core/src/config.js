@@ -7,7 +7,7 @@ const path = require('path')
 const log = require('./utils/util.log')
 let configTarget = lodash.cloneDeep(defConfig)
 
-const api = require('./api.js')
+const mergeApi = require('./merge.js')
 
 function get () {
   return configTarget
@@ -108,21 +108,27 @@ const configApi = {
    */
   save (newConfig) {
     // 对比默认config的异同
-    let saveConfig = configApi.getDefault()
+    let defConfig = configApi.getDefault()
+
+    // 如果开启了远程配置，则读取远程配置，合并到默认配置中
     if (get().app.remoteConfig.enabled === true) {
-      const remoteConfig = configApi.readRemoteConfig()
-      saveConfig = api.doMerge(saveConfig, remoteConfig)
+      defConfig = mergeApi.doMerge(defConfig, configApi.readRemoteConfig())
     }
-    saveConfig = api.doDiff(saveConfig, newConfig)
+
+    // 计算新配置与默认配置（启用远程配置时，含远程配置）的差异，并保存到 config.json5 中
+    const diffConfig = mergeApi.doDiff(defConfig, newConfig)
     const configPath = _getConfigPath()
-    const saveConfigJsonStr = api.toJson(saveConfig)
+    const saveConfigJsonStr = mergeApi.toJson(diffConfig)
     fs.writeFileSync(configPath, saveConfigJsonStr)
     log.info(`保存 config.json 成功: ${configPath}`, saveConfigJsonStr)
+
+    // 重载配置
     configApi.reload()
-    return saveConfig
+
+    return diffConfig
   },
-  doMerge: api.doMerge,
-  doDiff: api.doDiff,
+  doMerge: mergeApi.doMerge,
+  doDiff: mergeApi.doDiff,
   /**
    * 读取 config.json 后，合并配置
    * @returns {*}
@@ -130,11 +136,11 @@ const configApi = {
   reload () {
     const configPath = _getConfigPath()
     let userConfig
-    if (fs.existsSync(configPath)) {
+    if (!fs.existsSync(configPath)) {
+      userConfig = {}
+    } else {
       const file = fs.readFileSync(configPath)
       userConfig = JSON.parse(file.toString())
-    } else {
-      userConfig = {}
     }
 
     const config = configApi.set(userConfig)
@@ -149,16 +155,16 @@ const configApi = {
     if (newConfig == null) {
       newConfig = {}
     }
-    const merged = lodash.cloneDeep(newConfig)
-    const cloneDefault = lodash.cloneDeep(defConfig)
+
+    const merged = lodash.cloneDeep(defConfig)
     const remoteConfig = configApi.readRemoteConfig()
 
-    api.doMerge(merged, cloneDefault)
-    api.doMerge(merged, remoteConfig)
-    api.doMerge(merged, newConfig)
-    api.deleteNullItems(merged)
+    mergeApi.doMerge(merged, remoteConfig)
+    mergeApi.doMerge(merged, newConfig)
+    mergeApi.deleteNullItems(merged)
     configTarget = merged
     log.info('加载及合并远程配置完成')
+
     return configTarget
   },
   getDefault () {
