@@ -42,13 +42,12 @@ async function _winSetProxy (exec, ip, port, setEnv) {
   }
 
   let excludeIpStr = ''
-  for (const excludeIpPattern of config.get().proxy.excludeIpList) {
-    // 跳过起注释作用的数据
-    if (excludeIpPattern.indexOf('#') >= 0) {
-      continue
+  for (const ip in config.get().proxy.excludeIpList) {
+    if (config.get().proxy.excludeIpList[ip] === true) {
+      excludeIpStr += ip + ';'
     }
-    excludeIpStr += excludeIpPattern + ';'
   }
+
   // http=127.0.0.1:8888;https=127.0.0.1:8888 考虑这种方式
   const proxyPath = extraPath.getProxyExePath()
   const execFun = 'global'
