@@ -215,6 +215,10 @@
 			}
 		}
 	},
+	"proxy": {
+		"excludeIpList": {
+		}
+	},
 	"plugin": {
 		"overwall": {
 			"targets": {
