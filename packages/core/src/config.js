@@ -65,9 +65,21 @@ const configApi = {
           return
         }
         if (response && response.statusCode === 200) {
-          const remoteSavePath = _getRemoteSavePath()
-          fs.writeFileSync(remoteSavePath, body)
-          log.info(`下载并保存远程配置成功: ${remoteSavePath}`, body)
+          // 尝试解析远程配置，如果解析失败，则不保存它
+          let remoteConfig
+          try {
+            remoteConfig = JSON.parse(body)
+          } catch (e) {
+            log.error('远程配置内容格式不正确:', body)
+            remoteConfig = null
+          }
+
+          if (remoteConfig != null) {
+            const remoteSavePath = _getRemoteSavePath()
+            fs.writeFileSync(remoteSavePath, body)
+            log.info(`下载并保存远程配置成功: ${remoteSavePath}`, body)
+          }
+
           resolve()
         } else {
           log.error('下载远程配置失败, response:', response, ', body:', body)
@@ -153,7 +165,7 @@ const configApi = {
   get,
   set (newConfig) {
     if (newConfig == null) {
-      newConfig = {}
+      return configTarget
     }
 
     const merged = lodash.cloneDeep(defConfig)
