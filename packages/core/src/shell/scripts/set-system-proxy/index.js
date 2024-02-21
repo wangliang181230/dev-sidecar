@@ -48,7 +48,6 @@ async function _winSetProxy (exec, ip, port, setEnv) {
     }
   }
 
-  // http=127.0.0.1:8888;https=127.0.0.1:8888 考虑这种方式
   const proxyPath = extraPath.getProxyExePath()
   const execFun = 'global'
   const proxyAddr = `http=http://${ip}:${port};https=http://${ip}:${port}`
