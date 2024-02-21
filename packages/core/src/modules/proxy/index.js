@@ -60,7 +60,7 @@ module.exports = {
 
       // 中国大陆
       '*.cn': true,
-      'cn.*': false,
+      'cn.*': true,
       '*china*': true,
 
       // 系统之家
