@@ -77,7 +77,7 @@ const configApi = {
           if (remoteConfig != null) {
             const remoteSavePath = _getRemoteSavePath()
             fs.writeFileSync(remoteSavePath, body)
-            log.info(`下载并保存远程配置成功: ${remoteSavePath}`, body)
+            log.info(`下载并保存远程配置成功: ${remoteSavePath}`)
           }
 
           resolve()
@@ -127,17 +127,20 @@ const configApi = {
       defConfig = mergeApi.doMerge(defConfig, configApi.readRemoteConfig())
     }
 
-    // 计算新配置与默认配置（启用远程配置时，含远程配置）的差异，并保存到 config.json5 中
+    // 计算新配置与默认配置（启用远程配置时，含远程配置）的差异，并保存到 config.json 中
     const diffConfig = mergeApi.doDiff(defConfig, newConfig)
     const configPath = _getConfigPath()
     const saveConfigJsonStr = mergeApi.toJson(diffConfig)
     fs.writeFileSync(configPath, saveConfigJsonStr)
-    log.info(`保存 config.json 成功: ${configPath}`, saveConfigJsonStr)
+    log.info(`保存 config.json 成功: ${configPath}`)
 
     // 重载配置
-    configApi.reload()
+    const allConfig = configApi.reload()
 
-    return diffConfig
+    return {
+      diffConfig,
+      allConfig
+    }
   },
   doMerge: mergeApi.doMerge,
   doDiff: mergeApi.doDiff,
