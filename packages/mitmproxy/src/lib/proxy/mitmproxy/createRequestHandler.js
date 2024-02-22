@@ -110,7 +110,9 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
         function onFree () {
           const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
           const start = new Date().getTime()
-          log.info('发起代理请求:', url)
+          const referer = rOptions.headers.referer
+          const userAgent = rOptions.headers['user-agent']
+          log.info('发起代理请求:', url, ', referer:', referer, ', userAgent:', userAgent)
           let isDnsIntercept
           if (dnsConfig) {
             const dns = DnsUtil.hasDnsLookup(dnsConfig, rOptions.hostname)
