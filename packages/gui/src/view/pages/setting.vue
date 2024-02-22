@@ -86,7 +86,6 @@
 
 <script>
 import Plugin from '../mixins/plugin'
-
 export default {
   name: 'Setting',
   mixins: [Plugin],
@@ -114,16 +113,22 @@ export default {
       if (this.status.server.enabled || this.status.proxy.enabled) {
         await this.$api.proxy.restart()
         await this.$api.server.restart()
+        this.$message.info('代理服务和系统代理重启成功')
+      } else {
+        this.$message.info('代理服务和系统代理未启动，无需重启')
       }
     },
     async onRemoteConfigEnabledChange () {
-      this.saveConfig()
+      await this.saveConfig()
       if (this.config.app.remoteConfig.enabled === true) {
         this.reloadLoading = true
+        this.$message.info('开始下载远程配置')
         await this.$api.config.downloadRemoteConfig()
+        this.$message.info('下载远程配置成功，开始重启代理服务和系统代理')
         await this.reloadAndRestart()
         this.reloadLoading = false
       } else {
+        this.$message.info('开始重启代理服务和系统代理')
         await this.reloadAndRestart()
       }
     },
