@@ -107,8 +107,8 @@ export default {
       } else {
         this.$api.config.reload()
       }
-      this.$api.server.restart()
-      this.$api.proxy.restart()
+      await this.$api.server.restart()
+      await this.$api.proxy.restart()
     }
   }
 }
