@@ -109,7 +109,7 @@ export default {
         this.$api.config.reload()
       }
       if (this.status.server.enabled || this.status.proxy.enabled) {
-        this.$api.proxy.restart()
+        await this.$api.proxy.restart()
         this.$api.server.restart()
       }
     }
