@@ -79,6 +79,7 @@ export default {
         this.$message.info('设置已保存')
         this.setConfig(ret.allConfig)
         this.printConfig('after saveConfig(), ')
+        return ret
       })
     },
     getConfig (key) {

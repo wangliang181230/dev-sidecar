@@ -4,7 +4,7 @@
       给开发者的辅助工具
       <span>
           <a-button style="margin-right:10px" @click="openSetupCa">
-            <a-badge :count="_rootCaSetuped?0:1" dot>安装根证书 </a-badge>
+            <a-badge :count="_rootCaSetuped?0:1" dot>安装根证书</a-badge>
           </a-button>
       </span>
     </template>
