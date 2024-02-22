@@ -177,6 +177,8 @@ module.exports = {
       '*.icpapi.com': true,
 
       // AGE动漫
+      '*.age.tv': true,
+      '*.agefuns.com': true,
       '*.agedm.*': true,
       '*.zhimg.com': true,
       '*.bdxiguaimg.com': true,

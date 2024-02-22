@@ -20,7 +20,7 @@ module.exports = {
       enabled: true
     },
     remoteConfig: {
-      enabled: false,
+      enabled: true,
       url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/remote_config/packages/core/src/config/remote_config.json'
     },
     dock: {
