@@ -11,5 +11,5 @@ const config = JSON.parse(configJson)
 // const pacFilePath = '../extra/pac/pac.txt'
 // config.plugin.overwall.pac.customPacFilePath = path.join(__dirname, pacFilePath)
 config.setting.rootDir = path.join(__dirname, '../')
-log.info(`start mitmproxy config by gui bridge: ${configPath}`, config)
+log.info(`start mitmproxy config by gui bridge: ${configPath}`)
 server.start(config)

@@ -69,7 +69,7 @@ const serverApi = {
     const runningConfigPath = path.join(basePath, '/running.json')
     const serverConfigJsonStr = mergeApi.toJson(serverConfig)
     fs.writeFileSync(runningConfigPath, serverConfigJsonStr)
-    log.info(`保存 running.json 成功: ${runningConfigPath}`, serverConfigJsonStr)
+    log.info(`保存 running.json 成功: ${runningConfigPath}`)
     const serverProcess = fork(mitmproxyPath, [runningConfigPath])
     server = {
       id: serverProcess.pid,

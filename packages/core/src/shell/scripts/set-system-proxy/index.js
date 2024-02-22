@@ -74,11 +74,11 @@ const executor = {
     const { ip, port, setEnv } = params
     if (ip == null) {
       // 清空代理
-      log.info('关闭代理')
+      log.info('关闭windows系统代理')
       return _winUnsetProxy(exec, setEnv)
     } else {
       // 设置代理
-      log.info('设置代理:', ip, port, setEnv)
+      log.info('设置windows系统代理:', ip, port, setEnv)
       return _winSetProxy(exec, ip, port, setEnv)
     }
   },
