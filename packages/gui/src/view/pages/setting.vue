@@ -35,6 +35,13 @@
       <a-form-item label="远程配置地址" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input v-model="config.app.remoteConfig.url"></a-input>
       </a-form-item>
+      <a-form-item label="重载远程配置" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-button :disabled="config.app.remoteConfig.enabled === false" :loading="reloadLoading" icon="sync" @click="reloadRemoteConfig()">重载远程配置</a-button>
+        <div class="form-help">
+          注意，部分远程配置文件所在站点，修改内容后可能需要等待一段时间才能生效。
+          <br/>如果重载远程配置后发现下载的还是修改前的内容，请稍等片刻再重试。
+        </div>
+      </a-form-item>
       <a-form-item label="首页提示" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-radio-group v-model="config.app.showShutdownTip"
                        default-value="true" button-style="solid">
@@ -85,7 +92,8 @@ export default {
   mixins: [Plugin],
   data () {
     return {
-      key: 'app'
+      key: 'app',
+      reloadLoading: false
     }
   },
   created () {
@@ -101,17 +109,42 @@ export default {
       this.$api.autoStart.enabled(this.config.app.autoStart.enabled)
       this.saveConfig()
     },
+    async reloadAndRestart () {
+      this.$api.config.reload()
+      if (this.status.server.enabled || this.status.proxy.enabled) {
+        await this.$api.proxy.restart()
+        await this.$api.server.restart()
+      }
+    },
     async onRemoteConfigEnabledChange () {
       this.saveConfig()
       if (this.config.app.remoteConfig.enabled === true) {
-        await this.$api.config.startAutoDownloadRemoteConfig()
+        this.reloadLoading = true
+        await this.$api.config.downloadRemoteConfig()
+        await this.reloadAndRestart()
+        this.reloadLoading = false
       } else {
-        this.$api.config.reload()
+        await this.reloadAndRestart()
       }
-      if (this.status.server.enabled || this.status.proxy.enabled) {
-        await this.$api.proxy.restart()
-        this.$api.server.restart()
+    },
+    async reloadRemoteConfig () {
+      this.reloadLoading = true
+
+      const remoteConfig = {}
+
+      await this.$api.config.readRemoteConfigStr().then((ret) => { remoteConfig.old = ret })
+      await this.$api.config.downloadRemoteConfig()
+      await this.$api.config.readRemoteConfigStr().then((ret) => { remoteConfig.new = ret })
+
+      if (remoteConfig.old === remoteConfig.new) {
+        this.$message.info('远程配置没有变化，不做任何处理。')
+        this.$message.info('如果您确实修改了远程配置，请稍等片刻再重试！')
+      } else {
+        this.$message.info('获取到了最新的远程配置，开始重启代理服务和系统代理')
+        await this.reloadAndRestart()
       }
+
+      this.reloadLoading = false
     }
   }
 }
