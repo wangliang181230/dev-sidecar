@@ -52,14 +52,14 @@ module.exports = {
     intercepts: {
       'github.com': {
         '/.*/.*/releases/download/': {
-          redirect: 'download.fastgit.org',
+          redirect: 'gh.api.99988866.xyz/https://github.com',
           desc: 'release文件加速下载跳转地址'
         },
         '/.*/.*/archive/': {
-          redirect: 'download.fastgit.org'
+          redirect: 'gh.api.99988866.xyz/https://github.com'
         },
         '/.*/.*/blame/': {
-          redirect: 'hub.fastgit.org'
+          redirect: 'gh.api.99988866.xyz/https://github.com'
         },
         '^/[^/]+/[^/]+(/releases(/.*)?)?$': {
           script: [
@@ -99,7 +99,8 @@ module.exports = {
       },
       'customer-stories-feed.github.com': {
         '.*': {
-          proxy: 'customer-stories-feed.fastgit.org'
+          proxy: 'customer-stories-feed.github.com',
+          sni: 'baidu.com'
         }
       },
       'raw.githubusercontent.com': {
