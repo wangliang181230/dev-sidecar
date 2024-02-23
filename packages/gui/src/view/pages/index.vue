@@ -196,7 +196,7 @@ export default {
       this.$confirm({
         title: '第一次使用，请先安装CA根证书',
         content: '本应用正常使用，必须安装和信任CA根证书',
-        cancelText: '下次',
+        cancelText: '下次安装',
         okText: '去安装',
         onOk: () => {
           this.openSetupCa()
