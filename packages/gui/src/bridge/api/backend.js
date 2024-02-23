@@ -56,6 +56,14 @@ const localApi = {
         setting.overwall = true
       }
 
+      if (setting.rootCa == null) {
+        // rootCa没有时，根据证书文件是否存在来初始化 rootCa.setuped 的值
+        const certPath = DevSidecar.api.config.get().server.setting.rootCaFile.certPath
+        setting.rootCa = {
+          setuped: fs.existsSync(certPath)
+        }
+      }
+
       if (setting.installTime == null) {
         setting.installTime = new Date().getTime()
         localApi.setting.save(setting)
