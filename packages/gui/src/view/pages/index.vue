@@ -232,9 +232,8 @@ export default {
       rootCa.setupTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`
       // 保存安装描述
       rootCa.desc = '根证书已安装'
-      if (rootCa.noTip) {
-        delete rootCa.noTip
-      }
+      // 删除noTip数据
+      delete rootCa.noTip
 
       this.$set(this, 'setting', this.setting)
       this.$api.setting.save(this.setting)
