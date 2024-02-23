@@ -69,7 +69,7 @@
         </a-tab-pane>
         <a-tab-pane tab="拦截设置" key="2">
           <vue-json-editor style="height:100%;" ref="editor" v-model="config.server.intercepts" mode="code"
-                           :show-btns="false" :expandedOnStart="true" @json-change="onJsonChange"></vue-json-editor>
+                           :show-btns="false" :expandedOnStart="true"></vue-json-editor>
         </a-tab-pane>
         <a-tab-pane tab="域名白名单" key="3">
             <a-row style="margin-top:10px">
@@ -217,7 +217,7 @@
 </template>
 
 <script>
-import vueJsonEditor from 'vue-json-editor'
+import vueJsonEditor from 'vue-json-editor-fix-cn'
 import Plugin from '../mixins/plugin'
 import _ from 'lodash'
 
@@ -268,8 +268,6 @@ export default {
       if (value != null && value.length > 0) {
         this.config.server.setting.rootCaFile.keyPath = value[0]
       }
-    },
-    onJsonChange (json) {
     },
     ready () {
       this.initDnsMapping()
