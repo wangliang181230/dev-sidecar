@@ -56,16 +56,28 @@ const localApi = {
         setting.overwall = true
       }
 
-      if (setting.rootCa == null) {
-        // rootCa没有时，根据证书文件是否存在来初始化 rootCa.setuped 的值
-        const certPath = DevSidecar.api.config.get().server.setting.rootCaFile.certPath
-        setting.rootCa = {
-          setuped: fs.existsSync(certPath)
-        }
-      }
-
       if (setting.installTime == null) {
-        setting.installTime = new Date().getTime()
+        // 初始化安装时间
+        const date = new Date() // 创建一个表示当前日期和时间的 Date 对象
+        const year = date.getFullYear() // 获取年份
+        const month = String(date.getMonth() + 1).padStart(2, '0') // 获取月份（注意月份从 0 开始计数）
+        const day = String(date.getDate()).padStart(2, '0') // 获取天数
+        const hours = String(date.getHours()).padStart(2, '0') // 获取小时
+        const minutes = String(date.getMinutes()).padStart(2, '0') // 获取分钟
+        const seconds = String(date.getSeconds()).padStart(2, '0') // 获取秒数
+        const milliseconds = String(date.getMilliseconds()).padStart(3, '0') // 获取毫秒
+        setting.installTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`
+
+        // 初始化 rootCa.setuped
+        if (setting.rootCa == null) {
+          // rootCa没有时，根据证书文件是否存在来初始化 rootCa.setuped 的值
+          const certPath = DevSidecar.api.config.get().server.setting.rootCaFile.certPath
+          setting.rootCa = {
+            setuped: fs.existsSync(certPath)
+          }
+        }
+
+        // 保存 setting.json
         localApi.setting.save(setting)
       }
       return setting
