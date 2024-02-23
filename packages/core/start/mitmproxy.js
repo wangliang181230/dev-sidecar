@@ -12,7 +12,7 @@ if (process.argv && process.argv.length > 3) {
 
 const fs = require('fs')
 const configJson = fs.readFileSync(configPath)
-const config = JSON.parse(configJson)
+const config = JSON.parse(configJson.toString())
 // const scriptDir = '../../gui/extra/scripts/'
 // config.setting.script.defaultDir = path.join(__dirname, scriptDir)
 // const pacFilePath = '../../gui/extra/pac/pac.txt'
