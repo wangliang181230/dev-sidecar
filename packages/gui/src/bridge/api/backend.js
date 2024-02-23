@@ -72,14 +72,23 @@ const localApi = {
         if (setting.rootCa == null) {
           // rootCa没有时，根据证书文件是否存在来初始化 rootCa.setuped 的值
           const certPath = DevSidecar.api.config.get().server.setting.rootCaFile.certPath
-          setting.rootCa = {
-            setuped: fs.existsSync(certPath)
+          if (fs.existsSync(certPath)) {
+            setting.rootCa = {
+              noTip: fs.existsSync(certPath),
+              desc: '检测到根证书文件已存在，视为已安装过证书，不提示安装'
+            }
+          } else {
+            setting.rootCa = {
+              setuped: false,
+              desc: '根证书未安装'
+            }
           }
         }
 
         // 保存 setting.json
         localApi.setting.save(setting)
       }
+
       return setting
     },
     save (setting = {}) {

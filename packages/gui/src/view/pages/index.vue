@@ -217,7 +217,22 @@ export default {
       await this.$api.shell.setupCa({ certPath: this.config.server.setting.rootCaFile.certPath })
       this.setting.rootCa = this.setting.rootCa || {}
       const rootCa = this.setting.rootCa
+
+      // 根证书已安装
       rootCa.setuped = true
+      // 保存安装时间
+      const date = new Date() // 创建一个表示当前日期和时间的 Date 对象
+      const year = date.getFullYear() // 获取年份
+      const month = String(date.getMonth() + 1).padStart(2, '0') // 获取月份（注意月份从 0 开始计数）
+      const day = String(date.getDate()).padStart(2, '0') // 获取天数
+      const hours = String(date.getHours()).padStart(2, '0') // 获取小时
+      const minutes = String(date.getMinutes()).padStart(2, '0') // 获取分钟
+      const seconds = String(date.getSeconds()).padStart(2, '0') // 获取秒数
+      const milliseconds = String(date.getMilliseconds()).padStart(3, '0') // 获取毫秒
+      rootCa.setupTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`
+      // 保存安装描述
+      rootCa.desc = '根证书已安装'
+
       this.$set(this, 'setting', this.setting)
       this.$api.setting.save(this.setting)
     },
