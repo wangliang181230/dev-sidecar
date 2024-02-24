@@ -156,7 +156,7 @@ export default {
     async restoreFactorySettings () {
       this.$confirm({
         title: '提示',
-        content: '确定要恢复出厂设置（即：删除个性化配置）吗？',
+        content: '确定要恢复出厂设置吗？？？？？？？？？？？？——————————————————————警告：该功能将删除您的所有页面的个性化配置，并重载默认配置及远程配置（如果启用了的话），请谨慎操作！！！',
         cancelText: '取消',
         okText: '确定',
         onOk: async () => {

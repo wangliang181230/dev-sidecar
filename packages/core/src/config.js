@@ -189,6 +189,7 @@ const configApi = {
   get,
   set (newConfig) {
     if (newConfig == null) {
+      log.warn('newConfig 为空，不做任何操作')
       return configTarget
     }
     return configApi.load(newConfig)
@@ -219,8 +220,8 @@ const configApi = {
       // 读取 config.json 文件内容
       const fileStr = fs.readFileSync(configPath).toString().replace(/\s/g, '')
 
-      // 删除用户自定义配置文件
-      fs.rmSync(configPath)
+      // 备份用户自定义配置文件
+      fs.renameSync(configPath, configPath + '.bak' + new Date().getTime() + '.json')
 
       // 判断文件内容是否为空配置
       if (fileStr === '' || fileStr === '{}') {
