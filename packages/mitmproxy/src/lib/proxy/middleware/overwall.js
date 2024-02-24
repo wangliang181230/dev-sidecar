@@ -92,7 +92,7 @@ module.exports = function createOverWallIntercept (overWallConfig) {
       if (URL.port == null) {
         rOptions.port = port || (rOptions.protocol === 'https:' ? 443 : 80)
       }
-      log.info('OverWall:', rOptions.hostname, proxyTarget)
+      log.info('OverWall:', rOptions.hostname, '➜', proxyTarget)
       if (context.requestCount) {
         log.debug('OverWall choice:', JSON.stringify(context.requestCount))
       }

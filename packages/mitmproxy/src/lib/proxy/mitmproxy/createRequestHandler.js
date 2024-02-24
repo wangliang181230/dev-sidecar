@@ -251,6 +251,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
       await requestInterceptorPromise()
 
       if (res.writableEnded) {
+        log.info('res is writableEnded, return false')
         return false
       }
 
@@ -283,11 +284,13 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             let body = ''
             for (const resIncpt of resIncpts) {
               const append = resIncpt.responseIntercept(context, req, res, proxyReq, proxyRes, ssl)
-              if (append && append.head) {
-                head += append.head
-              }
-              if (append && append.body) {
-                body += append.body
+              if (append) {
+                if (append.head) {
+                  head += append.head
+                }
+                if (append.body) {
+                  body += append.body
+                }
               }
             }
             InsertScriptMiddleware.responseInterceptor(req, res, proxyReq, proxyRes, ssl, next, {
