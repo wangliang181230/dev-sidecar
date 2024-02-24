@@ -115,7 +115,7 @@ export default {
       if (this.status.server.enabled || this.status.proxy.enabled) {
         await this.$api.proxy.restart()
         await this.$api.server.restart()
-        this.$message.info('代理服务和系统代理重启成功')
+        this.$message.success('代理服务和系统代理重启成功')
       } else {
         this.$message.info('代理服务和系统代理未启动，无需重启')
       }

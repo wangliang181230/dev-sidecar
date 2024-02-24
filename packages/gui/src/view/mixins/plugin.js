@@ -76,7 +76,7 @@ export default {
     },
     saveConfig () {
       return this.$api.config.save(this.config).then((ret) => {
-        this.$message.info('设置已保存')
+        this.$message.success('设置已保存')
         this.setConfig(ret.allConfig)
         this.printConfig('after saveConfig(), ')
         return ret

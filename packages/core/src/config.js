@@ -220,13 +220,14 @@ const configApi = {
       // 读取 config.json 文件内容
       const fileStr = fs.readFileSync(configPath).toString().replace(/\s/g, '')
 
-      // 备份用户自定义配置文件
-      fs.renameSync(configPath, configPath + '.bak' + new Date().getTime() + '.json')
-
-      // 判断文件内容是否为空配置
+      // 判断文件内容是否为空或空配置
       if (fileStr === '' || fileStr === '{}') {
+        fs.rmSync(configPath)
         return false // config.json 内容为空，或为空json
       }
+
+      // 备份用户自定义配置文件
+      fs.renameSync(configPath, configPath + '.bak' + new Date().getTime() + '.json')
 
       // 重新加载配置
       configApi.load(null)

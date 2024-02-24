@@ -209,7 +209,7 @@ export default {
           this.npmVariables = ret
         })
       }).then(() => {
-        this.$message.info('设置成功')
+        this.$message.success('设置成功')
       })
     },
     addNpmVariable () {

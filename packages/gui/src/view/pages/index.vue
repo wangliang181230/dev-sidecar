@@ -170,7 +170,7 @@ export default {
         this.config.plugin.overwall.enabled = true
       }
       this.$api.config.save(this.config).then(() => {
-        this.$message.info('设置已保存')
+        this.$message.success('设置已保存')
       })
       if (this.status.server.enabled) {
         return this.$api.server.restart()
