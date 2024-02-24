@@ -2,7 +2,7 @@ module.exports = {
   name: 'custom',
   requestIntercept (context, interceptOpt, req, res, ssl, next) {
     const { rOptions, log } = context
-    const response = interceptOpt.response
+    const response = interceptOpt.customResponse
 
     const body = response.html || response.json || response.text || response.body
 
@@ -40,6 +40,6 @@ module.exports = {
     return true // true代表请求结束
   },
   is (interceptOpt) {
-    return !!interceptOpt.custom && !!interceptOpt.response
+    return !!interceptOpt.customResponse
   }
 }
