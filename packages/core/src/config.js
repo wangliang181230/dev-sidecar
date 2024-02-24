@@ -77,7 +77,7 @@ const configApi = {
           if (remoteConfig != null) {
             const remoteSavePath = _getRemoteSavePath()
             fs.writeFileSync(remoteSavePath, body)
-            log.info(`下载并保存远程配置成功: ${remoteSavePath}`)
+            log.info('下载并保存远程配置成功:', remoteSavePath)
           }
 
           resolve()
@@ -151,7 +151,7 @@ const configApi = {
     const configPath = _getConfigPath()
     const saveConfigJsonStr = mergeApi.toJson(diffConfig)
     fs.writeFileSync(configPath, saveConfigJsonStr)
-    log.info(`保存 config.json 成功: ${configPath}`)
+    log.info('保存 config.json 成功:', configPath)
 
     // 重载配置
     const allConfig = configApi.reload()
@@ -172,9 +172,11 @@ const configApi = {
     let userConfig
     if (!fs.existsSync(configPath)) {
       userConfig = {}
+      log.info('config.json 文件不存在:', configPath)
     } else {
       const file = fs.readFileSync(configPath)
       userConfig = JSON.parse(file.toString())
+      log.info('读取 config.json 文件:', configPath)
     }
 
     const config = configApi.set(userConfig)
