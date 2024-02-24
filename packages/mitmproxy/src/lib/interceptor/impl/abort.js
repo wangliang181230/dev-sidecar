@@ -1,12 +1,24 @@
 module.exports = {
-  requestIntercept (context, interceptOpts, req, res, ssl, next) {
+  name: 'abort',
+  requestIntercept (context, interceptOpt, req, res, ssl, next) {
     const { rOptions, log } = context
-    const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
-    log.info(`abort: ${url}`)
-    res.writeHead(403)
-    res.write('DevSidecar 403: Request abort.\n\nThis request is matched by abort intercept.')
+
+    const status = interceptOpt.status || 403
+
+    res.writeHead(status, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Dev-Sidecar-Interceptor': 'abort'
+    })
+    res.write(
+      `DevSidecar ${status}: Request abort.\n\n` +
+      '  This request is matched by abort intercept.\r\n' +
+      '  因配置abort拦截器，本请求直接返回403禁止访问。'
+    )
     res.end()
-    return true// 是否结束
+
+    const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${req.url}`
+    log.info('abort intercept:', url)
+    return true // true代表请求结束
   },
   is (interceptOpt) {
     return !!interceptOpt.abort

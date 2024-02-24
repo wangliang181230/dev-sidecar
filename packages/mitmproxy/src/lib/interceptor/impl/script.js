@@ -13,6 +13,7 @@ function getScript (key, script) {
 }
 
 module.exports = {
+  name: 'script',
   responseIntercept (context, interceptOpt, req, res, proxyReq, proxyRes, ssl, next) {
     const { rOptions, log, setting } = context
     let keys = interceptOpt.script
@@ -29,7 +30,7 @@ module.exports = {
         const scriptTag = getScript(key, script.script)
         tags += '\r\n' + scriptTag
       }
-      log.info('responseIntercept: insert script', rOptions.hostname, rOptions.path)
+      log.info('script response intercept: insert script', rOptions.hostname, rOptions.path)
       return {
         head: tags
       }

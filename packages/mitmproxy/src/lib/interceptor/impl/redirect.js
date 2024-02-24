@@ -1,17 +1,28 @@
 module.exports = {
+  name: 'redirect',
   requestIntercept (context, interceptOpt, req, res, ssl, next) {
     const { rOptions, log } = context
-    const url = req.url
+
     let redirect
     if (typeof interceptOpt.redirect === 'string') {
-      redirect = rOptions.protocol + '//' + interceptOpt.redirect + url
+      if (redirect.indexOf('http') < 0) {
+        redirect = rOptions.protocol + '//' + interceptOpt.redirect + req.url
+      } else {
+        redirect = interceptOpt.redirect
+      }
     } else {
-      redirect = interceptOpt.redirect(url)
+      redirect = interceptOpt.redirect(req.url)
     }
-    log.info('请求重定向：', rOptions.hostname, url, redirect)
-    res.writeHead(302, { Location: redirect })
+
+    res.writeHead(302, {
+      Location: redirect,
+      'Dev-Sidecar-Interceptor': 'redirect'
+    })
     res.end()
-    return true// 是否结束
+
+    const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${req.url}`
+    log.info(`redirect intercept: ${url} ➜ ${redirect}`)
+    return true // true代表请求结束
   },
   is (interceptOpt) {
     return interceptOpt.redirect // 如果配置中有redirect，那么这个配置是需要redirect拦截的

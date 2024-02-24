@@ -1,4 +1,4 @@
-const interceptors = require('./lib/interceptor')
+const interceptorImpls = require('./lib/interceptor')
 const dnsUtil = require('./lib/dns')
 const log = require('./utils/util.log')
 const matchUtil = require('./utils/util.match')
@@ -56,8 +56,8 @@ module.exports = (config) => {
     },
     createIntercepts: (context) => {
       const rOptions = context.rOptions
-      const hostname = rOptions.hostname
-      const interceptOpts = matchUtil.matchHostname(intercepts, hostname)
+      const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
+      const interceptOpts = matchUtil.matchHostname(intercepts, rOptions.hostname)
       if (!interceptOpts) { // 该域名没有配置拦截器，直接过
         return
       }
@@ -71,7 +71,8 @@ module.exports = (config) => {
             continue
           }
         }
-        for (const impl of interceptors) {
+        log.info(`interceptor matched, regexp: '${regexp}' =>`, JSON.stringify(interceptOpt), ', url:', url)
+        for (const impl of interceptorImpls) {
           // 根据拦截配置挑选合适的拦截器来处理
           if (impl.is && impl.is(interceptOpt)) {
             const interceptor = {}
@@ -86,6 +87,7 @@ module.exports = (config) => {
                 return impl.responseIntercept(context, interceptOpt, req, res, proxyReq, proxyRes, ssl, next)
               }
             }
+            log.info(`add interceptor: ${impl.name}, hostname: ${rOptions.hostname}`)
             matchIntercepts.push(interceptor)
           }
         }

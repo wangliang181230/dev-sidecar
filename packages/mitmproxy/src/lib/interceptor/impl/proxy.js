@@ -1,5 +1,6 @@
 const url = require('url')
 module.exports = {
+  name: 'proxy',
   requestIntercept (context, interceptOpt, req, res, ssl, next) {
     const { rOptions, log, RequestCounter } = context
 
@@ -44,7 +45,6 @@ module.exports = {
     // eslint-disable-next-line no-template-curly-in-string
     proxyTarget = proxyTarget.replace('${host}', rOptions.hostname)
 
-    log.info('拦截【proxy】： original：', rOptions.hostname, '，target：', proxyTarget)
     // const backup = interceptOpt.backup
     const proxy = proxyTarget.indexOf('http') === 0 ? proxyTarget : rOptions.protocol + '//' + proxyTarget
     // eslint-disable-next-line node/no-deprecated-api
@@ -64,8 +64,14 @@ module.exports = {
 
     if (interceptOpt.sni != null) {
       rOptions.servername = interceptOpt.sni
-      rOptions.agent.options.rejectUnauthorized = false
+      if (rOptions.agent && rOptions.agent.options) {
+        rOptions.agent.options.rejectUnauthorized = false
+      }
+      log.info('proxy intercept: hostname:', rOptions.hostname, ', target：', proxyTarget, ', sni replace servername:', rOptions.servername)
+    } else {
+      log.info('proxy intercept: hostname:', rOptions.hostname, ', target：', proxyTarget)
     }
+
     return true
   },
   is (interceptOpt) {
