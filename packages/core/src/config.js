@@ -30,7 +30,7 @@ function _getConfigPath () {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
   }
-  return dir + '/config.json'
+  return path.join(dir, 'config.json')
 }
 
 let timer
@@ -191,12 +191,16 @@ const configApi = {
     if (newConfig == null) {
       return configTarget
     }
-
+    return configApi.load(newConfig)
+  },
+  load (newConfig) {
     const merged = lodash.cloneDeep(defConfig)
     const remoteConfig = configApi.readRemoteConfig()
 
     mergeApi.doMerge(merged, remoteConfig)
-    mergeApi.doMerge(merged, newConfig)
+    if (newConfig != null) {
+      mergeApi.doMerge(merged, newConfig)
+    }
     mergeApi.deleteNullItems(merged)
     configTarget = merged
     log.info('加载及合并远程配置完成')
@@ -208,6 +212,28 @@ const configApi = {
   },
   addDefault (key, defValue) {
     lodash.set(defConfig, key, defValue)
+  },
+  async removeUserConfig () {
+    const configPath = _getConfigPath()
+    if (fs.existsSync(configPath)) {
+      // 读取 config.json 文件内容
+      const fileStr = fs.readFileSync(configPath).toString().replace(/\s/g, '')
+
+      // 删除用户自定义配置文件
+      fs.rmSync(configPath)
+
+      // 判断文件内容是否为空配置
+      if (fileStr === '' || fileStr === '{}') {
+        return false // config.json 内容为空，或为空json
+      }
+
+      // 重新加载配置
+      configApi.load(null)
+
+      return true // 删除并重新加载配置成功
+    } else {
+      return false // config.json 文件不存在或内容为配置
+    }
   },
   resetDefault (key) {
     if (key) {

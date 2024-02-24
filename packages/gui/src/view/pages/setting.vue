@@ -76,7 +76,8 @@
     </div>
     <template slot="footer">
       <div class="footer-bar">
-        <a-button class="md-mr-10" icon="sync" @click="resetDefault()">恢复默认</a-button>
+        <a-button :loading="removeUserConfigLoading" class="md-mr-10" icon="sync" @click="restoreFactorySettings()">删除个性化配置（恢复出厂设置）</a-button>
+        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">恢复默认</a-button>
         <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">应用</a-button>
       </div>
     </template>
@@ -92,6 +93,7 @@ export default {
   data () {
     return {
       key: 'app',
+      removeUserConfigLoading: false,
       reloadLoading: false
     }
   },
@@ -143,13 +145,34 @@ export default {
 
       if (remoteConfig.old === remoteConfig.new) {
         this.$message.info('远程配置没有变化，不做任何处理。')
-        this.$message.info('如果您确实修改了远程配置，请稍等片刻再重试！')
+        this.$message.warn('如果您确实修改了远程配置，请稍等片刻再重试！')
       } else {
-        this.$message.info('获取到了最新的远程配置，开始重启代理服务和系统代理')
+        this.$message.success('获取到了最新的远程配置，开始重启代理服务和系统代理')
         await this.reloadAndRestart()
       }
 
       this.reloadLoading = false
+    },
+    async restoreFactorySettings () {
+      this.$confirm({
+        title: '提示',
+        content: '确定要恢复出厂设置（即：删除个性化配置）吗？',
+        cancelText: '取消',
+        okText: '确定',
+        onOk: async () => {
+          this.removeUserConfigLoading = true
+          const result = await this.$api.config.removeUserConfig()
+          if (result) {
+            this.config = await this.$api.config.get()
+            this.$message.success('恢复出厂配置成功，开始重启代理服务和系统代理')
+            await this.reloadAndRestart()
+          } else {
+            this.$message.info('已是出厂配置，无需恢复')
+          }
+          this.removeUserConfigLoading = false
+        },
+        onCancel () {}
+      })
     }
   }
 }
