@@ -12,6 +12,7 @@ export default {
       status: {},
       labelCol: { span: 4 },
       wrapperCol: { span: 20 },
+      resetDefaultLoading: false,
       applyLoading: false,
       systemPlatform: ''
     }
@@ -42,9 +43,6 @@ export default {
       }
     },
     async apply () {
-      if (this.applyLoading === true) {
-        return
-      }
       this.applyLoading = true
       await this.applyBefore()
       await this.saveConfig()
@@ -65,11 +63,13 @@ export default {
         cancelText: '取消',
         okText: '确定',
         onOk: async () => {
+          this.resetDefaultLoading = true
           this.config = await this.$api.config.resetDefault(key)
           if (this.ready) {
             await this.ready(this.config)
           }
           await this.apply()
+          this.resetDefaultLoading = false
         },
         onCancel () {}
       })
