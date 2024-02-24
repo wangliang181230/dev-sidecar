@@ -1,6 +1,7 @@
 const url = require('url')
 module.exports = {
   name: 'proxy',
+  priority: 14,
   requestIntercept (context, interceptOpt, req, res, ssl, next) {
     const { rOptions, log, RequestCounter } = context
 

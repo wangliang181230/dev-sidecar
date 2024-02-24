@@ -1,16 +1,22 @@
-const success = require('./impl/success')
-const redirect = require('./impl/redirect')
-const abort = require('./impl/abort')
+// request interceptor impls
+const success = require('./impl/req/success')
+const redirect = require('./impl/req/redirect')
+const abort = require('./impl/req/abort')
 
-const proxy = require('./impl/proxy')
-const sni = require('./impl/sni')
+const proxy = require('./impl/req/proxy')
+const sni = require('./impl/req/sni')
 
-const script = require('./impl/script')
+// response interceptor impls
+const cache = require('./impl/res/cache')
+const script = require('./impl/res/script')
 
 const modules = [
+  // request interceptor impls
   success, redirect, abort,
   proxy, sni,
-  script
+
+  // response interceptor impls
+  cache, script
 ]
 
 module.exports = modules

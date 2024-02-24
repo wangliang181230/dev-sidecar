@@ -1,5 +1,6 @@
 module.exports = {
   name: 'sni',
+  priority: 15,
   requestIntercept (context, interceptOpt) {
     const { rOptions, log } = context
     if (interceptOpt.sni != null) {

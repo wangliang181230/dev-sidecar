@@ -1,5 +1,5 @@
 const contextPath = '/____ds_script____/'
-const monkey = require('../../monkey')
+const monkey = require('../../../monkey')
 const CryptoJs = require('crypto-js')
 function getScript (key, script) {
   const scriptUrl = contextPath + key
@@ -14,6 +14,7 @@ function getScript (key, script) {
 
 module.exports = {
   name: 'script',
+  priority: 22,
   responseIntercept (context, interceptOpt, req, res, proxyReq, proxyRes, ssl, next) {
     const { rOptions, log, setting } = context
     let keys = interceptOpt.script
@@ -30,11 +31,13 @@ module.exports = {
         const scriptTag = getScript(key, script.script)
         tags += '\r\n' + scriptTag
       }
+      res.setHeader('Dev-Sidecar-Script-Response-Interceptor', 'true')
       log.info('script response intercept: insert script', rOptions.hostname, rOptions.path, ', head:', tags)
       return {
         head: tags
       }
     } catch (err) {
+      res.setHeader('Dev-Sidecar-Script-Response-Interceptor', 'error')
       log.error('load monkey script error', err)
     }
   },

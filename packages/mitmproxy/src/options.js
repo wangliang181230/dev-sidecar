@@ -56,13 +56,14 @@ module.exports = (config) => {
     },
     createIntercepts: (context) => {
       const rOptions = context.rOptions
-      const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
+      // const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
       const interceptOpts = matchUtil.matchHostname(intercepts, rOptions.hostname)
       if (!interceptOpts) { // 该域名没有配置拦截器，直接过
         return
       }
 
       const matchIntercepts = []
+      const matchInterceptsOpts = {}
       for (const regexp in interceptOpts) { // 遍历拦截配置
         const interceptOpt = interceptOpts[regexp]
         interceptOpt.key = regexp
@@ -71,11 +72,23 @@ module.exports = (config) => {
             continue
           }
         }
-        log.info(`interceptor matched, regexp: '${regexp}' =>`, JSON.stringify(interceptOpt), ', url:', url)
+        // log.info(`interceptor matched, regexp: '${regexp}' =>`, JSON.stringify(interceptOpt), ', url:', url)
         for (const impl of interceptorImpls) {
           // 根据拦截配置挑选合适的拦截器来处理
           if (impl.is && impl.is(interceptOpt)) {
-            const interceptor = {}
+            let action = 'add'
+
+            // 拦截器的order越大，优先级越高
+            const matchedInterceptOpt = matchInterceptsOpts[impl.name]
+            if (matchedInterceptOpt) {
+              if (matchedInterceptOpt.order >= interceptOpt.order) {
+                // log.warn(`duplicate interceptor: ${impl.name}, hostname: ${rOptions.hostname}`)
+                continue
+              }
+              action = 'replace'
+            }
+
+            const interceptor = { name: impl.name, priority: impl.priority }
             if (impl.requestIntercept) {
               // req拦截器
               interceptor.requestIntercept = (context, req, res, ssl, next) => {
@@ -87,11 +100,26 @@ module.exports = (config) => {
                 return impl.responseIntercept(context, interceptOpt, req, res, proxyReq, proxyRes, ssl, next)
               }
             }
-            log.info(`add interceptor: ${impl.name}, hostname: ${rOptions.hostname}`)
-            matchIntercepts.push(interceptor)
+
+            // log.info(`${action} interceptor: ${impl.name}, hostname: ${rOptions.hostname}, regexp: ${regexp}`)
+            if (action === 'add') {
+              matchIntercepts.push(interceptor)
+            } else {
+              matchIntercepts[matchedInterceptOpt.index] = interceptor
+            }
+            matchInterceptsOpts[impl.name] = {
+              order: interceptOpt.order || 0,
+              index: matchIntercepts.length - 1
+            }
           }
         }
       }
+
+      matchIntercepts.sort((a, b) => { return a.priority - b.priority })
+      // for (const interceptor of matchIntercepts) {
+      //   log.info('interceptor:', interceptor.name, 'priority:', interceptor.priority)
+      // }
+
       return matchIntercepts
     }
   }

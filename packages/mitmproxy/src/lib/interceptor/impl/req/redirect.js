@@ -1,5 +1,6 @@
 module.exports = {
   name: 'redirect',
+  priority: 12,
   requestIntercept (context, interceptOpt, req, res, ssl, next) {
     const { rOptions, log } = context
 
