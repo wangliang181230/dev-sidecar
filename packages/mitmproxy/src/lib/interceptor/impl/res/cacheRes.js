@@ -1,6 +1,4 @@
-function getMaxAge (interceptOpt) {
-  return interceptOpt.cacheMaxAge || interceptOpt.cacheSeconds || interceptOpt.cache
-}
+const cacheReq = require('../req/cacheReq')
 
 module.exports = {
   name: 'cacheRes',
@@ -15,7 +13,7 @@ module.exports = {
     }
 
     // 获取maxAge配置
-    const maxAge = getMaxAge(interceptOpt)
+    const maxAge = cacheReq.getMaxAge(interceptOpt)
     const cacheControlType = interceptOpt.cacheControlType || 'public, '
 
     // 获取原响应头中的cache-control、last-modified、expires
@@ -97,7 +95,7 @@ module.exports = {
       `}, url: ${url}`)
   },
   is (interceptOpt) {
-    const maxAge = getMaxAge(interceptOpt)
+    const maxAge = cacheReq.getMaxAge(interceptOpt)
     return maxAge != null && maxAge > 0
   }
 }

@@ -1,5 +1,26 @@
 function getMaxAge (interceptOpt) {
-  return interceptOpt.cacheMaxAge || interceptOpt.cacheSeconds || interceptOpt.cache
+  // 秒
+  if (interceptOpt.cacheSeconds > 0 || interceptOpt.cacheMaxAge > 0 || interceptOpt.cache > 0) {
+    return interceptOpt.cacheSeconds || interceptOpt.cacheMaxAge || interceptOpt.cache
+  }
+  // 分钟
+  if (interceptOpt.cacheMinutes > 0) {
+    return interceptOpt.cacheMinutes * 60 // 60
+  }
+  // 小时
+  if (interceptOpt.cacheHours > 0) {
+    return interceptOpt.cacheHours * 3600 // 60 * 60
+  }
+  // 天
+  if (interceptOpt.cacheDays > 0) {
+    return interceptOpt.cacheDays * 86400 // 60 * 60 * 3600
+  }
+  // 年
+  if (interceptOpt.cacheYears > 0) {
+    return interceptOpt.cacheYears * 31536000 // 60 * 60 * 3600 * 365
+  }
+
+  return null
 }
 
 module.exports = {
@@ -56,5 +77,6 @@ module.exports = {
   is (interceptOpt) {
     const maxAge = getMaxAge(interceptOpt)
     return maxAge != null && maxAge > 0
-  }
+  },
+  getMaxAge
 }
