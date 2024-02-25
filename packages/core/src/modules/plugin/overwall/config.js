@@ -17,7 +17,6 @@ module.exports = {
     '*wikimedia.org': true,
     'v2ex.com': true,
     '*azureedge.net': true,
-    '*cloudfront.net': true,
     '*discourse-cdn.com': true,
     '*gravatar.com': true,
     '*docker.com': true,
