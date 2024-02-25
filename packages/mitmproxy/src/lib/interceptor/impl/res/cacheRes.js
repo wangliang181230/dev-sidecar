@@ -16,6 +16,7 @@ module.exports = {
 
     // 获取maxAge配置
     const maxAge = getMaxAge(interceptOpt)
+    const cacheControlType = interceptOpt.cacheControlType || 'public, '
 
     // 获取原响应头中的cache-control、last-modified、expires
     const originalHeaders = {
@@ -53,7 +54,7 @@ module.exports = {
 
     // 替换用的头信息
     const replaceHeaders = {
-      cacheControl: interceptOpt.cacheControl || `max-age=${maxAge + 1}`,
+      cacheControl: cacheControlType + `max-age=${maxAge + 1}, immutable`,
       lastModified: new Date().toUTCString(),
       expires: new Date(Date.now() + maxAge * 1000).toUTCString()
     }
