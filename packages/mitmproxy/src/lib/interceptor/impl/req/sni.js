@@ -1,6 +1,6 @@
 module.exports = {
   name: 'sni',
-  priority: 15,
+  priority: 32,
   requestIntercept (context, interceptOpt) {
     const { rOptions, log } = context
     if (interceptOpt.sni != null) {
@@ -9,6 +9,6 @@ module.exports = {
     }
   },
   is (interceptOpt) {
-    return !!interceptOpt.sni
+    return !!interceptOpt.sni && !interceptOpt.proxy // proxy生效时，sni不生效，因为proxy中也会覆盖sni
   }
 }
