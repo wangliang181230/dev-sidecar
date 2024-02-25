@@ -69,7 +69,6 @@ module.exports = {
         },
         '/.*': {
           proxy: 'github.com',
-          desc: '目前禁掉sni就可以直接访问，如果后续github.com的ip被封锁，只能再走proxy模式',
           sni: 'baidu.com'
         }
       },
