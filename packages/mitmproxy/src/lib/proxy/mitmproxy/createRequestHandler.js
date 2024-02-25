@@ -196,7 +196,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           proxyReq.on('error', (e) => {
             const end = new Date().getTime()
             const cost = end - start
-            log.error(`代理请求错误: ${url}, cost: ${cost} ms, error:`, JSON.stringify(e))
+            log.error(`代理请求错误: ${url}, cost: ${cost} ms, error:`, e)
             countSlow(isDnsIntercept, '代理请求错误: ' + e.message)
             reject(e)
           })
@@ -231,7 +231,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           req.on('error', function (e, req, res) {
             const end = new Date().getTime()
             const cost = end - start
-            log.error(`请求错误: ${url}, cost: ${cost} ms, error:`, JSON.stringify(e))
+            log.error(`请求错误: ${url}, cost: ${cost} ms, error:`, e)
             reject(e)
           })
           req.on('timeout', () => {
