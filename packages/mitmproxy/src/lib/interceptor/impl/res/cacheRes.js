@@ -45,9 +45,9 @@ module.exports = {
     // 判断原max-age是否大于新max-age
     if (originalHeaders.cacheControl) {
       const maxAgeMatch = originalHeaders.cacheControl.value.match(/max-age=(\d+)/)
-      if (maxAgeMatch && maxAgeMatch[1] >= maxAge) {
-        res.setHeader('Dev-Sidecar-Cache-Response-Interceptor', `skip: ${maxAgeMatch[1]} >= ${maxAge}`)
-        log.info(`cache response intercept: skip: ${maxAgeMatch[1]} >= ${maxAge}, url: ${url}`)
+      if (maxAgeMatch && maxAgeMatch[1] > maxAge) {
+        res.setHeader('Dev-Sidecar-Cache-Response-Interceptor', `skip: ${maxAgeMatch[1]} > ${maxAge}`)
+        log.info(`cache response intercept: skip: ${maxAgeMatch[1]} > ${maxAge}, url: ${url}`)
         return
       }
     }
