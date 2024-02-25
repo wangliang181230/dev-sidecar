@@ -37,13 +37,13 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
     const { hostname, port } = url.parse(`https://${req.url}`)
     if (isSslConnect(sslConnectInterceptors, req, cltSocket, head)) {
       fakeServerCenter.getServerPromise(hostname, port).then((serverObj) => {
-        log.info(` --- fakeServer connect: ${localIP}:${serverObj.port} ➜ ${hostname}:${port}`)
+        log.info(` --- fakeServer connect: ${localIP}:${serverObj.port} ➜ ${req.url}}`)
         connect(req, cltSocket, head, localIP, serverObj.port)
       }, (e) => {
         log.error(`--- fakeServer getServerPromise error: ${hostname}:${port}, exception:`, e)
       })
     } else {
-      log.info(`不拦截请求: ${req.url}，但会代理连接（Proxy connect），以完成请求`)
+      log.info(`未匹配到任何拦截器: ${req.url}`)
       connect(req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpMap */)
     }
   }
