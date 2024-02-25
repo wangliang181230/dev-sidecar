@@ -15,6 +15,14 @@ function getMaxAge (interceptOpt) {
   if (interceptOpt.cacheDays > 0) {
     return interceptOpt.cacheDays * 86400 // 60 * 60 * 3600
   }
+  // 星期
+  if (interceptOpt.cacheWeeks > 0) {
+    return interceptOpt.cacheWeeks * 604800 // 60 * 60 * 3600 * 7
+  }
+  // 月
+  if (interceptOpt.cacheMonths > 0) {
+    return interceptOpt.cacheMonths * 2592000 // 60 * 60 * 3600 * 30
+  }
   // 年
   if (interceptOpt.cacheYears > 0) {
     return interceptOpt.cacheYears * 31536000 // 60 * 60 * 3600 * 365
