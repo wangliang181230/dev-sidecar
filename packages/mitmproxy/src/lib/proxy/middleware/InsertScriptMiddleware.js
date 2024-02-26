@@ -71,7 +71,9 @@ module.exports = {
     const script = monkey.get(setting.script.defaultDir)[filename]
 
     log.info('ds_script, filename:', filename, ', `script != null` =', script != null)
-    res.writeHead(200)
+    res.writeHead(200, {
+      'Content-Type': 'application/javascript; charset=utf-8'
+    })
     res.write(script.script)
     res.end()
     return true
