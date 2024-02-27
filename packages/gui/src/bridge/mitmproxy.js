@@ -5,7 +5,7 @@ const configPath = process.argv[2]
 const fs = require('fs')
 const path = require('path')
 const configJson = fs.readFileSync(configPath)
-log.info('读取 running.json 成功:', configPath)
+log.info('读取 running.json by gui bridge 成功:', configPath)
 const config = JSON.parse(configJson.toString())
 // const scriptDir = '../extra/scripts/'
 // config.setting.script.defaultDir = path.join(__dirname, scriptDir)

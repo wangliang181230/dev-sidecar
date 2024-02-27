@@ -64,6 +64,11 @@ const serverApi = {
       }
     }
     serverConfig.plugin = allConfig.plugin
+
+    if (allConfig.proxy && allConfig.proxy.enabled) {
+      serverConfig.proxy = allConfig.proxy
+    }
+
     // fireStatus('ing') // 启动中
     const basePath = serverConfig.setting.userBasePath
     const runningConfigPath = path.join(basePath, '/running.json')
