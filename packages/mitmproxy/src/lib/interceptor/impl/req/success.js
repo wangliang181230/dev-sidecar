@@ -1,6 +1,6 @@
 module.exports = {
   name: 'success',
-  priority: 21,
+  priority: 101,
   requestIntercept (context, interceptOpt, req, res, ssl, next) {
     const { rOptions, log } = context
     const response = interceptOpt

@@ -14,7 +14,7 @@ function getScript (key, script) {
 
 module.exports = {
   name: 'script',
-  priority: 22,
+  priority: 202,
   responseIntercept (context, interceptOpt, req, res, proxyReq, proxyRes, ssl, next) {
     const { rOptions, log, setting } = context
     let keys = interceptOpt.script

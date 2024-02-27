@@ -2,12 +2,12 @@ const cacheReq = require('../req/cacheReq')
 
 module.exports = {
   name: 'cacheRes',
-  priority: 21,
+  priority: 201,
   responseIntercept (context, interceptOpt, req, res, proxyReq, proxyRes, ssl, next) {
     const { rOptions, log } = context
 
-    // 只有GET请求且响应码为2xx时才进行缓存
-    if (rOptions.method !== 'GET' || res.statusCode < 200 || res.statusCode >= 300) {
+    // 只有GET请求，且响应码为2xx时才进行缓存
+    if (rOptions.method !== 'GET' || proxyRes.statusCode < 200 || proxyRes.statusCode >= 300) {
       // res.setHeader('Dev-Sidecar-Cache-Response-Interceptor', `skip: 'method' or 'status' not match`)
       return
     }
@@ -23,7 +23,8 @@ module.exports = {
     const originalHeaders = {
       cacheControl: null,
       lastModified: null,
-      expires: null
+      expires: null,
+      etag: null
     }
     for (let i = 0; i < proxyRes.rawHeaders.length; i += 2) {
       // 尝试修改rawHeaders中的cache-control、last-modified、expires
@@ -33,15 +34,17 @@ module.exports = {
         originalHeaders.lastModified = { value: proxyRes.rawHeaders[i + 1], valueIndex: i + 1 }
       } else if (proxyRes.rawHeaders[i].toLowerCase() === 'expires') {
         originalHeaders.expires = { value: proxyRes.rawHeaders[i + 1], valueIndex: i + 1 }
+      } else if (proxyRes.rawHeaders[i].toLowerCase() === 'etag') {
+        originalHeaders.etag = { value: proxyRes.rawHeaders[i + 1], valueIndex: i + 1 }
       }
 
       // 如果已经设置了cache-control、last-modified、expires，则直接break
-      if (originalHeaders.cacheControl && originalHeaders.lastModified && originalHeaders.expires) {
+      if (originalHeaders.cacheControl && originalHeaders.lastModified && originalHeaders.expires && originalHeaders.etag) {
         break
       }
     }
 
-    const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${req.url}`
+    const url = cacheReq.generateUrl(rOptions)
 
     // 判断原max-age是否大于新max-age
     if (originalHeaders.cacheControl) {
@@ -54,10 +57,11 @@ module.exports = {
     }
 
     // 替换用的头信息
+    const now = new Date()
     const replaceHeaders = {
       cacheControl: `${cacheControlType}max-age=${maxAge + 1}${cacheImmutable}`,
-      lastModified: new Date().toUTCString(),
-      expires: new Date(Date.now() + maxAge * 1000).toUTCString()
+      lastModified: now.toUTCString(),
+      expires: new Date(now.getTime() + maxAge * 1000).toUTCString()
     }
     // 开始替换
     // 替换cache-control
@@ -77,6 +81,12 @@ module.exports = {
       proxyRes.rawHeaders[originalHeaders.expires.valueIndex] = replaceHeaders.expires
     } else {
       res.setHeader('Expires', replaceHeaders.expires)
+    }
+
+    // 如果有etag，则缓存etag的最近更新时间
+    if (originalHeaders.etag && originalHeaders.etag.value) {
+      const cacheKey = cacheReq.generateCacheKey(url, rOptions, interceptOpt)
+      cacheReq.setEtagLastModifiedTimeCache(cacheKey, originalHeaders.etag.value, now.getTime())
     }
 
     res.setHeader('Dev-Sidecar-Cache-Response-Interceptor', 'success,' + maxAge)
