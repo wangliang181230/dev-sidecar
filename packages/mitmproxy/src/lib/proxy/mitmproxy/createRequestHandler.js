@@ -356,7 +356,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
         }
         // endregion
 
-        log.error('Request error:', e.message)
+        log.error('Request error:', e)
       }
     })
   }
