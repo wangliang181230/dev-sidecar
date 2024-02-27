@@ -12,8 +12,8 @@ if (process.argv && process.argv.length > 3) {
 
 const fs = require('fs')
 const configJson = fs.readFileSync(configPath)
+log.info('读取 running.json 成功:', configPath)
 const config = JSON.parse(configJson.toString())
-log.info('读取 running.json 文件:', configPath)
 // const scriptDir = '../../gui/extra/scripts/'
 // config.setting.script.defaultDir = path.join(__dirname, scriptDir)
 // const pacFilePath = '../../gui/extra/pac/pac.txt'

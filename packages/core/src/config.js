@@ -44,7 +44,7 @@ const configApi = {
         await configApi.downloadRemoteConfig()
         configApi.reload()
       } catch (e) {
-        log.error(e)
+        log.error('定时下载远程配置并重载配置失败', e)
       }
     }
     await download()
@@ -65,19 +65,29 @@ const configApi = {
           return
         }
         if (response && response.statusCode === 200) {
+          log.info(`下载远程配置成功, url: ${remoteConfigUrl}, body: ${body}`)
+
+          if (body == null || body === '') {
+            log.warn('远程配置内容为空:', remoteConfigUrl)
+            resolve()
+            return
+          }
+
           // 尝试解析远程配置，如果解析失败，则不保存它
           let remoteConfig
           try {
             remoteConfig = JSON.parse(body)
           } catch (e) {
-            log.error('远程配置内容格式不正确:', body)
+            log.error(`远程配置内容格式不正确, url: ${remoteConfigUrl}, body: ${body}`)
             remoteConfig = null
           }
 
           if (remoteConfig != null) {
             const remoteSavePath = _getRemoteSavePath()
             fs.writeFileSync(remoteSavePath, body)
-            log.info('下载并保存远程配置成功:', remoteSavePath)
+            log.info(`下载并保存 remote_config.json 成功, url: ${remoteConfigUrl}, path: ${remoteSavePath}, body:`, body)
+          } else {
+            log.warn('远程配置对象为空:', remoteConfigUrl)
           }
 
           resolve()
@@ -99,17 +109,17 @@ const configApi = {
     if (get().app.remoteConfig.enabled !== true) {
       return {}
     }
+    const path = _getRemoteSavePath()
     try {
-      const path = _getRemoteSavePath()
       if (fs.existsSync(path)) {
-        log.info('读取远程配置文件:', path)
         const file = fs.readFileSync(path)
+        log.info('读取 remote_config.json 成功:', path)
         return JSON.parse(file.toString())
       } else {
-        log.warn('远程配置文件不存在:', path)
+        log.warn('remote_config.json 不存在:', path)
       }
     } catch (e) {
-      log.warn('远程配置读取失败:', e)
+      log.error('读取 remote_config.json 失败:', path, e)
     }
 
     return {}
@@ -175,8 +185,9 @@ const configApi = {
       log.info('config.json 文件不存在:', configPath)
     } else {
       const file = fs.readFileSync(configPath)
-      userConfig = JSON.parse(file.toString())
-      log.info('读取 config.json 文件:', configPath)
+      log.info('读取 config.json 成功:', configPath)
+      const fileStr = file.toString()
+      userConfig = fileStr && fileStr.length > 2 ? JSON.parse(file.toString()) : {}
     }
 
     const config = configApi.set(userConfig)

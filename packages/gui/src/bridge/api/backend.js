@@ -47,6 +47,7 @@ const localApi = {
       let setting = {}
       if (fs.existsSync(settingPath)) {
         const file = fs.readFileSync(settingPath)
+        log.info('读取 setting.json 成功:', settingPath)
         setting = JSON.parse(file.toString())
         if (setting == null) {
           setting = {}

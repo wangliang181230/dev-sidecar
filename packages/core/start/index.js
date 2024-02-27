@@ -1,5 +1,7 @@
 const DevSidecar = require('../index')
 const fs = require('fs')
+const log = require('../src/utils/util.log')
+
 // 启动服务
 const mitmproxyPath = './start/mitmproxy'
 async function startup () {
@@ -10,6 +12,7 @@ async function startup () {
   if (fs.existsSync(configPath)) {
     const file = fs.readFileSync(configPath)
     const userConfig = JSON.parse(file.toString())
+    log.info('读取 user_config.json 成功:', configPath)
     DevSidecar.api.config.set(userConfig)
   }
 
