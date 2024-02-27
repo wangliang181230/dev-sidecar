@@ -57,8 +57,9 @@ util.getOptionsFormRequest = (req, ssl, externalProxy = null) => {
 
   const options = {
     protocol: protocol,
-    hostname: req.headers.host.split(':')[0],
     method: req.method,
+    url: req.url,
+    hostname: req.headers.host.split(':')[0],
     port: req.headers.host.split(':')[1] || defaultPort,
     path: urlObject.path,
     headers: req.headers,
