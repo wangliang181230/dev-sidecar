@@ -35,12 +35,16 @@ function getMaxAge (interceptOpt) {
 
 const etagLastModifiedTimeCache = {}
 
-function generateUrl (rOptions) {
-  return `${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.url || rOptions.url}`
+function generateUrl (rOptions, log) {
+  if (rOptions.origional) {
+    log.debug('proxy或overwall的请求参数:', rOptions)
+  }
+  const options = rOptions.origional || rOptions
+  return `${options.protocol}//${options.hostname}:${options.port}${options.url}`
 }
 
 function generateCacheKey (url, rOptions, interceptOpt) {
-  let cacheKey = url || generateUrl(rOptions)
+  let cacheKey = url
 
   // 除了URL，还要根据缓存键生成策略，组装缓存键
   let generationStrategy = interceptOpt.etagCacheKeyGenerationStrategy
@@ -148,7 +152,7 @@ module.exports = {
     //   return // 禁用缓存，不拦截
     // }
 
-    const url = generateUrl(rOptions)
+    const url = generateUrl(rOptions, log)
 
     // 最近编辑时间
     let lastModifiedTimeFrom = ''

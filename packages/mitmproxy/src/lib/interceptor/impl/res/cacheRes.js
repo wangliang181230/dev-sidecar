@@ -44,7 +44,7 @@ module.exports = {
       }
     }
 
-    const url = cacheReq.generateUrl(rOptions)
+    const url = cacheReq.generateUrl(rOptions, log)
 
     // 判断原max-age是否大于新max-age
     if (originalHeaders.cacheControl) {

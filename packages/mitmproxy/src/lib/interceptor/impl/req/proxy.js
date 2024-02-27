@@ -1,4 +1,5 @@
 const url = require('url')
+const lodash = require('lodash')
 module.exports = {
   name: 'proxy',
   priority: 121,
@@ -50,6 +51,8 @@ module.exports = {
     const proxy = proxyTarget.indexOf('http') === 0 ? proxyTarget : rOptions.protocol + '//' + proxyTarget
     // eslint-disable-next-line node/no-deprecated-api
     const URL = url.parse(proxy)
+    rOptions.origional = lodash.cloneDeep(rOptions) // 备份原始请求参数
+    delete rOptions.origional.headers
     rOptions.protocol = URL.protocol
     rOptions.hostname = URL.host
     rOptions.host = URL.host
