@@ -36,9 +36,9 @@ function getMaxAge (interceptOpt) {
 const etagLastModifiedTimeCache = {}
 
 function generateUrl (rOptions, log) {
-  if (rOptions.origional) {
-    log.debug('proxy或overwall的请求参数:', rOptions)
-  }
+  // if (rOptions.origional) {
+  //   log.debug('proxy或overwall的请求参数:', rOptions)
+  // }
   const options = rOptions.origional || rOptions
   return `${options.protocol}//${options.hostname}:${options.port}${options.url}`
 }
