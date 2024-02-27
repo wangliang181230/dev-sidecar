@@ -52,6 +52,7 @@ module.exports = {
     // eslint-disable-next-line node/no-deprecated-api
     const URL = url.parse(proxy)
     rOptions.origional = lodash.cloneDeep(rOptions) // 备份原始请求参数
+    delete rOptions.origional.agent
     delete rOptions.origional.headers
     rOptions.protocol = URL.protocol
     rOptions.hostname = URL.host
