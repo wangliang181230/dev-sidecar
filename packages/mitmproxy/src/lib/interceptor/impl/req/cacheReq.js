@@ -40,7 +40,11 @@ function generateUrl (rOptions, log) {
   //   log.debug('proxy或overwall的请求参数:', rOptions)
   // }
   const options = rOptions.origional || rOptions
-  return `${options.protocol}//${options.hostname}:${options.port}${options.url}`
+  if (options.url.indexOf('http:') === 0 || options.url.indexOf('https:') === 0) {
+    return options.url
+  } else {
+    return `${options.protocol}//${options.hostname}:${options.port}${options.url}`
+  }
 }
 
 function generateCacheKey (url, rOptions, interceptOpt) {
