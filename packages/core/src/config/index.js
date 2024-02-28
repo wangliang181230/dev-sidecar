@@ -223,9 +223,9 @@ module.exports = {
       }
     },
     whiteList: {
-      '*.cn': true,
-      'cn.*': true,
-      '*china*': true,
+      // '*.cn': true,
+      // 'cn.*': true,
+      // '*china*': true,
       'dingtalk.com': true,
       '*.dingtalk.com': true,
       'apple.com': true,
