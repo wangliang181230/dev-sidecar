@@ -1,5 +1,6 @@
 const DevSidecar = require('../index')
 const fs = require('fs')
+const jsonApi = require('../src/json.js')
 const log = require('../src/utils/util.log')
 
 // 启动服务
@@ -11,7 +12,7 @@ async function startup () {
   const configPath = './start/user_config.json'
   if (fs.existsSync(configPath)) {
     const file = fs.readFileSync(configPath)
-    const userConfig = JSON.parse(file.toString())
+    const userConfig = jsonApi.parse(file.toString())
     log.info('读取 user_config.json 成功:', configPath)
     DevSidecar.api.config.set(userConfig)
   }

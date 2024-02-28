@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-unused-vars
+const jsonApi = require('../src/json.js')
 const log = require('../src/utils/util.log')
 const server = require('@docmirror/mitmproxy')
 const path = require('path')
@@ -13,7 +13,7 @@ if (process.argv && process.argv.length > 3) {
 const fs = require('fs')
 const configJson = fs.readFileSync(configPath)
 log.info('读取 running.json by core 成功:', configPath)
-const config = JSON.parse(configJson.toString())
+const config = jsonApi.parse(configJson.toString())
 // const scriptDir = '../../gui/extra/scripts/'
 // config.setting.script.defaultDir = path.join(__dirname, scriptDir)
 // const pacFilePath = '../../gui/extra/pac/pac.txt'

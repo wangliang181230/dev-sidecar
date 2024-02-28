@@ -7,6 +7,7 @@ const pk = require('../../../package.json')
 const mitmproxyPath = path.join(__dirname, 'mitmproxy.js')
 process.env.DS_EXTRA_PATH = path.join(__dirname, '../extra/')
 const log = require('../../utils/util.log')
+const jsonApi = require('@docmirror/dev-sidecar/src/json.js')
 const mergeApi = require('@docmirror/dev-sidecar/src/merge.js')
 const getDefaultConfigBasePath = function () {
   return DevSidecar.api.config.get().server.setting.userBasePath
@@ -48,7 +49,7 @@ const localApi = {
       if (fs.existsSync(settingPath)) {
         const file = fs.readFileSync(settingPath)
         log.info('读取 setting.json 成功:', settingPath)
-        setting = JSON.parse(file.toString())
+        setting = jsonApi.parse(file.toString())
         if (setting == null) {
           setting = {}
         }

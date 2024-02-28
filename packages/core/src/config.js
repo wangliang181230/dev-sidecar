@@ -1,4 +1,5 @@
 const fs = require('fs')
+const jsonApi = require('./json.js')
 const Shell = require('./shell')
 const lodash = require('lodash')
 const defConfig = require('./config/index.js')
@@ -76,7 +77,7 @@ const configApi = {
           // 尝试解析远程配置，如果解析失败，则不保存它
           let remoteConfig
           try {
-            remoteConfig = JSON.parse(body)
+            remoteConfig = jsonApi.parse(body)
           } catch (e) {
             log.error(`远程配置内容格式不正确, url: ${remoteConfigUrl}, body: ${body}`)
             remoteConfig = null
@@ -114,7 +115,7 @@ const configApi = {
       if (fs.existsSync(path)) {
         const file = fs.readFileSync(path)
         log.info('读取 remote_config.json 成功:', path)
-        return JSON.parse(file.toString())
+        return jsonApi.parse(file.toString())
       } else {
         log.warn('remote_config.json 不存在:', path)
       }
@@ -187,7 +188,7 @@ const configApi = {
       const file = fs.readFileSync(configPath)
       log.info('读取 config.json 成功:', configPath)
       const fileStr = file.toString()
-      userConfig = fileStr && fileStr.length > 2 ? JSON.parse(file.toString()) : {}
+      userConfig = fileStr && fileStr.length > 2 ? jsonApi.parse(file.toString()) : {}
     }
 
     const config = configApi.set(userConfig)
