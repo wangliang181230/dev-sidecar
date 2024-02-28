@@ -85,7 +85,7 @@ module.exports = {
 
     // 如果有etag，则缓存etag的最近更新时间
     if (originalHeaders.etag && originalHeaders.etag.value) {
-      const cacheKey = cacheReq.generateCacheKey(url, rOptions, interceptOpt)
+      const cacheKey = cacheReq.generateCacheKey(url, rOptions, interceptOpt, log)
       cacheReq.setEtagLastModifiedTimeCache(cacheKey, originalHeaders.etag.value, now.getTime())
     }
 

@@ -47,7 +47,7 @@ function generateUrl (rOptions, log) {
   }
 }
 
-function generateCacheKey (url, rOptions, interceptOpt) {
+function generateCacheKey (url, rOptions, interceptOpt, log) {
   let cacheKey = url
 
   // 除了URL，还要根据缓存键生成策略，组装缓存键
@@ -70,6 +70,8 @@ function generateCacheKey (url, rOptions, interceptOpt) {
       }
     }
   }
+
+  log.info('---------- cacheKey:', cacheKey)
 
   return cacheKey
 }
@@ -119,10 +121,10 @@ function getLastModifiedTimeFromIfModifiedSince (rOptions, log) {
   return null
 }
 
-function getLastModifiedTimeFromEtagCache (url, rOptions, interceptOpt) {
+function getLastModifiedTimeFromEtagCache (url, rOptions, interceptOpt, log) {
   const etag = rOptions.headers['if-none-match']
   if (etag != null && etag.length > 0) {
-    const cacheKey = generateCacheKey(url, rOptions, interceptOpt)
+    const cacheKey = generateCacheKey(url, rOptions, interceptOpt, log)
     const lastModifiedTime = getEtagLastModifiedTimeCache(cacheKey, etag)
     if (lastModifiedTime != null) {
       return lastModifiedTime
@@ -145,16 +147,16 @@ module.exports = {
       return
     }
 
-    // // 获取 Cache-Control 用于判断是否禁用缓存
-    // const cacheControl = rOptions.headers['cache-control']
-    // if (cacheControl && (cacheControl.indexOf('no-cache') >= 0 || cacheControl.indexOf('no-store') >= 0)) {
-    //   return // 禁用缓存，不拦截
-    // }
-    // // 获取 Pragma 用于判断是否禁用缓存
-    // const pragma = rOptions.headers.pragma
-    // if (pragma && (pragma.indexOf('no-cache') >= 0 || pragma.indexOf('no-store') >= 0)) {
-    //   return // 禁用缓存，不拦截
-    // }
+    // 获取 Cache-Control 用于判断是否禁用缓存
+    const cacheControl = rOptions.headers['cache-control']
+    if (cacheControl && (cacheControl.indexOf('no-cache') >= 0 || cacheControl.indexOf('no-store') >= 0)) {
+      return // 禁用缓存，不拦截
+    }
+    // 获取 Pragma 用于判断是否禁用缓存
+    const pragma = rOptions.headers.pragma
+    if (pragma && (pragma.indexOf('no-cache') >= 0 || pragma.indexOf('no-store') >= 0)) {
+      return // 禁用缓存，不拦截
+    }
 
     const url = generateUrl(rOptions, log)
 
@@ -164,7 +166,7 @@ module.exports = {
     let lastModifiedTime = getLastModifiedTimeFromIfModifiedSince(rOptions, log)
     if (lastModifiedTime == null) {
       // 从 etag缓存 中获取最近编辑时间
-      lastModifiedTime = getLastModifiedTimeFromEtagCache(url, rOptions, interceptOpt)
+      lastModifiedTime = getLastModifiedTimeFromEtagCache(url, rOptions, interceptOpt, log)
       if (lastModifiedTime > 0) {
         lastModifiedTimeFrom = ':etagCache'
       } else {
