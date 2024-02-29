@@ -1,5 +1,5 @@
 // request interceptor impls
-const options = require('./impl/req/options')
+const OPTIONS = require('./impl/req/OPTIONS.js')
 
 const success = require('./impl/req/success')
 const redirect = require('./impl/req/redirect')
@@ -16,7 +16,7 @@ const script = require('./impl/res/script')
 
 const modules = [
   // request interceptor impls
-  options,
+  OPTIONS,
   success, redirect, abort,
   cacheReq,
   proxy, sni,
