@@ -11,7 +11,7 @@ module.exports = {
         'Access-Control-Allow-Origin': rOptions.headers.origin || '*',
         'Access-Control-Allow-Headers': rOptions.headers['access-control-request-headers'] || '*',
         'Access-Control-Allow-Methods': '*',
-        'Access-Control-Max-Age': 2592000,
+        'Access-Control-Max-Age': 2592000, // 有效一个月
         Date: new Date().toUTCString(),
         'Dev-Sidecar-Interceptor': 'options'
       })

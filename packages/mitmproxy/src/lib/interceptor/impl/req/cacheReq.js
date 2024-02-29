@@ -5,27 +5,27 @@ function getMaxAge (interceptOpt) {
   }
   // 分钟
   if (interceptOpt.cacheMinutes > 0) {
-    return interceptOpt.cacheMinutes * 60 // 60
+    return interceptOpt.cacheMinutes * 60 // 60：1分钟
   }
   // 小时
   if (interceptOpt.cacheHours > 0) {
-    return interceptOpt.cacheHours * 3600 // 60 * 60
+    return interceptOpt.cacheHours * 3600 // 60 * 60 一小时
   }
   // 天
   if (interceptOpt.cacheDays > 0) {
-    return interceptOpt.cacheDays * 86400 // 60 * 60 * 3600
+    return interceptOpt.cacheDays * 86400 // 60 * 60 * 24 一天
   }
   // 星期
   if (interceptOpt.cacheWeeks > 0) {
-    return interceptOpt.cacheWeeks * 604800 // 60 * 60 * 3600 * 7
+    return interceptOpt.cacheWeeks * 604800 // 60 * 60 * 24 * 7 一周
   }
   // 月
   if (interceptOpt.cacheMonths > 0) {
-    return interceptOpt.cacheMonths * 2592000 // 60 * 60 * 3600 * 30
+    return interceptOpt.cacheMonths * 2592000 // 60 * 60 * 24 * 30 一个月
   }
   // 年
   if (interceptOpt.cacheYears > 0) {
-    return interceptOpt.cacheYears * 31536000 // 60 * 60 * 3600 * 365
+    return interceptOpt.cacheYears * 31536000 // 60 * 60 * 24 * 365 一年
   }
 
   return null
