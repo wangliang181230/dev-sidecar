@@ -71,8 +71,14 @@ module.exports = {
     const script = monkey.get(setting.script.defaultDir)[filename]
 
     log.info('ds_script, filename:', filename, ', `script != null` =', script != null)
+    const now = new Date()
     res.writeHead(200, {
-      'Content-Type': 'application/javascript; charset=utf-8'
+      'Dev-Sidecar-Middleware': 'ds_script',
+      'Content-Type': 'application/javascript; charset=utf-8',
+      'Cache-Control': 'public, max-age=31536001, immutable',
+      'Last-Modified': now.toUTCString(),
+      Expires: new Date(now.getTime() + 31536000000).toUTCString(),
+      Date: new Date().toUTCString()
     })
     res.write(script.script)
     res.end()
