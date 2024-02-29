@@ -40,6 +40,7 @@ function chunkByteReplace (_this, chunk, enc, callback, append) {
   _this.push(chunk)
   callback()
 }
+
 function injectScriptIntoHtml (tags, chunk, script) {
   for (const tag of tags) {
     const index = chunk.indexOf(tag)
@@ -69,6 +70,7 @@ module.exports = {
     const filename = urlPath.replace(contextPath, '')
 
     const script = monkey.get(setting.script.defaultDir)[filename]
+    // log.info(`urlPath: ${urlPath}, fileName: ${filename}, script: ${script}`)
 
     log.info('ds_script, filename:', filename, ', `script != null` =', script != null)
     const now = new Date()

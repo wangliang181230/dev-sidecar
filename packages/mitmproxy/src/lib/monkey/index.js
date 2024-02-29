@@ -65,7 +65,7 @@ function readFile (rootDir, script) {
 const api = {
   get (rootDir) {
     if (scripts == null) {
-      api.load(rootDir)
+      return api.load(rootDir)
     }
     return scripts
   },
