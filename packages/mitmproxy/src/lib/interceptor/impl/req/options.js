@@ -23,6 +23,6 @@ module.exports = {
     }
   },
   is (interceptOpt) {
-    return true
+    return !!interceptOpt.options
   }
 }
