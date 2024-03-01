@@ -68,7 +68,7 @@ function matchHostname (hostMap, hostname, action) {
     }
   }
 
-  log.warn(`matchHostname: ${action}: '${hostname}' not matched, map:`, JSON.stringify(hostMap))
+  // log.warn(`matchHostname: ${action}: '${hostname}' not matched, map:`, JSON.stringify(hostMap))
 }
 
 module.exports = {
