@@ -165,7 +165,7 @@ const configApi = {
     log.info('保存 config.json 成功:', configPath)
 
     // 重载配置
-    const allConfig = configApi.reload()
+    const allConfig = configApi.set(diffConfig)
 
     return {
       diffConfig,
