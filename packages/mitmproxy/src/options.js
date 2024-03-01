@@ -45,9 +45,9 @@ module.exports = (config) => {
       const inWhiteList = matchUtil.matchHostname(whiteList, hostname) != null
       if (inWhiteList) {
         log.info('不拦截白名单:', hostname,
-          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\treferer:', req.headers.referer || req.headers.Referer,
-          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\torigin:', req.headers.origin || req.headers.Origin,
-          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tuserAgent:', req.headers.origin['user-agent'] || req.headers.origin['User-Agent']
+          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\treferer:', req.headers.Referer || req.headers.referer,
+          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\torigin:', req.headers.Origin || req.headers.origin,
+          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tuserAgent:', req.headers['User-Agent'] || req.headers['user-agent']
         )
         return false // 所有都不拦截
       }
