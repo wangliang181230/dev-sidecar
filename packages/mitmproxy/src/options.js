@@ -56,7 +56,7 @@ module.exports = (config) => {
       if (matched === true) {
         return matched // 拦截
       }
-      return null // 由下一个拦截器判断
+      return null // 未匹配到任何拦截配置，由下一个拦截器判断
     },
     createIntercepts: (context) => {
       const rOptions = context.rOptions

@@ -27,19 +27,27 @@ function matchHostname (hostMap, hostname) {
   if (hostMap == null) {
     return null
   }
-  const value = hostMap[hostname]
+
+  // 域名快速匹配：直接匹配 或者 两种前缀通配符匹配
+  const value = hostMap[hostname] || hostMap['*' + hostname] || hostMap['*.' + hostname]
   if (value) {
-    return value
+    return value // 快速匹配成功
   }
-  if (!value) {
-    for (const target in hostMap) {
-      if (target.indexOf('*') < 0) {
-        continue
-      }
-      // 正则表达式匹配
-      if (hostname.match(target)) {
-        return hostMap[target]
-      }
+
+  // 通配符匹配 或 正则表达式匹配
+  for (let target in hostMap) {
+    if (target.indexOf('*') < 0 && target[0] !== '^') {
+      continue // 不是通配符匹配串，也不是正则表达式，跳过
+    }
+
+    // 如果是通配符匹配串，转换为正则表达式
+    if (target[0] !== '^') {
+      target = '^' + domainRegexply(target) + '$'
+    }
+
+    // 正则表达式匹配
+    if (hostname.match(target)) {
+      return hostMap[target]
     }
   }
 }
