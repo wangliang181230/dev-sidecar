@@ -44,7 +44,11 @@ module.exports = (config) => {
       const hostname = req.url.split(':')[0]
       const inWhiteList = matchUtil.matchHostname(whiteList, hostname) != null
       if (inWhiteList) {
-        log.info('白名单域名，不拦截:', hostname)
+        log.info('不拦截白名单:', hostname,
+          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\treferer:', req.headers.referer || req.headers.Referer,
+          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\torigin:', req.headers.origin || req.headers.Origin,
+          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tuserAgent:', req.headers.origin['user-agent'] || req.headers.origin['User-Agent']
+        )
         return false // 所有都不拦截
       }
       // 配置了拦截的域名，将会被代理
