@@ -6,7 +6,7 @@ function isMatched (url, regexp) {
 }
 
 function domainRegexply (target) {
-  return target.replace(/\./g, '\\.').replace(/\*/g, '.*')
+  return '^' + target.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$'
 }
 
 function domainMapRegexply (hostMap) {
@@ -27,6 +27,7 @@ function domainMapRegexply (hostMap) {
 
 function matchHostname (hostMap, hostname, action) {
   if (hostMap == null) {
+    log.warn(`matchHostname: ${action}: '${hostname}', hostMap is null`)
     return null
   }
 
@@ -56,7 +57,7 @@ function matchHostname (hostMap, hostname, action) {
     // 如果是通配符匹配串，转换为正则表达式
     let regexp = target
     if (target[0] !== '^') {
-      regexp = '^' + domainRegexply(target) + '$'
+      regexp = domainRegexply(regexp)
     }
 
     // 正则表达式匹配
@@ -67,7 +68,7 @@ function matchHostname (hostMap, hostname, action) {
     }
   }
 
-  log.warn(`matchHostname: ${action}: '${hostname}' not matched`)
+  log.warn(`matchHostname: ${action}: '${hostname}' not matched, map:`, JSON.stringify(hostMap))
 }
 
 module.exports = {
