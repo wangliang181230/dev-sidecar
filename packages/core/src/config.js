@@ -117,7 +117,7 @@ const configApi = {
         log.info('读取 remote_config.json 成功:', path)
         return jsonApi.parse(file.toString())
       } else {
-        log.warn('remote_config.json 不存在:', path)
+        log.warn('remote_config.json 文件不存在:', path)
       }
     } catch (e) {
       log.error('读取 remote_config.json 失败:', path, e)
@@ -183,7 +183,7 @@ const configApi = {
     let userConfig
     if (!fs.existsSync(configPath)) {
       userConfig = {}
-      log.info('config.json 文件不存在:', configPath)
+      log.warn('config.json 文件不存在:', configPath)
     } else {
       const file = fs.readFileSync(configPath)
       log.info('读取 config.json 成功:', configPath)
