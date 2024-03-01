@@ -23,11 +23,9 @@ module.exports = {
       return
     }
 
-    // 从配置中获取 Access-Control-Allow-Methods 的值，如果不存在，则使用默认值
-    const allowHeaders = readConfig(interceptOpt.optionsAllowHeaders, defaultAllowHeaders)
-
-    // 从配置中获取 Access-Control-Allow-Methods 的值，如果不存在，则使用默认值
-    const allowMethods = readConfig(interceptOpt.optionsAllowMethods, defaultAllowMethods)
+    // 从请求头中获取跨域相关信息；如果不存在，则从配置中获取的值；如果还不存在，则使用默认值
+    const allowHeaders = rOptions.headers['access-control-request-headers'] || readConfig(interceptOpt.optionsAllowHeaders, defaultAllowHeaders)
+    const allowMethods = rOptions.headers['access-control-request-method'] || readConfig(interceptOpt.optionsAllowMethods, defaultAllowMethods)
 
     const headers = {
       // 允许跨域
