@@ -13,10 +13,7 @@ function matched (hostname, regexpMap) {
     return false
   }
   const ret = pacClient.FindProxyForURL('https://' + hostname, hostname)
-  if (ret && ret.indexOf('PROXY ') === 0) {
-    return true
-  }
-  return false
+  return ret && ret.indexOf('PROXY ') === 0
 }
 
 module.exports = function createOverWallIntercept (overWallConfig) {
