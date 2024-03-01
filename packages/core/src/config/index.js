@@ -226,17 +226,11 @@ module.exports = {
       // '*.cn': true,
       // 'cn.*': true,
       // '*china*': true,
-      'dingtalk.com': true,
       '*.dingtalk.com': true,
-      'apple.com': true,
       '*.apple.com': true,
-      'microsoft.com': true,
       '*.microsoft.com': true,
-      'alipay.com': true,
       '*.alipay.com': true,
-      'qq.com': true,
       '*.qq.com': true,
-      'baidu.com': true,
       '*.baidu.com': true
     },
     sniList: {

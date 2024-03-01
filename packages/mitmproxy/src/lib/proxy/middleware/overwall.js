@@ -4,8 +4,8 @@ const pac = require('./source/pac')
 const matchUtil = require('../../../utils/util.match')
 let pacClient = null
 
-function matched (hostname, regexpMap) {
-  const ret1 = matchUtil.matchHostname(regexpMap, hostname)
+function matched (hostname, overWallTargetMap) {
+  const ret1 = matchUtil.matchHostname(overWallTargetMap, hostname)
   if (ret1) {
     return true
   }
@@ -34,11 +34,11 @@ module.exports = function createOverWallIntercept (overWallConfig) {
   if (keys.length === 0) {
     return null
   }
-  const regexpMap = matchUtil.domainMapRegexply(overWallConfig.targets)
+  const overWallTargetMap = matchUtil.domainMapRegexply(overWallConfig.targets)
   return {
     sslConnectInterceptor: (req, cltSocket, head) => {
       const hostname = req.url.split(':')[0]
-      return matched(hostname, regexpMap)
+      return matched(hostname, overWallTargetMap)
     },
     requestIntercept (context, req, res, ssl, next) {
       const { rOptions, log, RequestCounter } = context
@@ -46,7 +46,7 @@ module.exports = function createOverWallIntercept (overWallConfig) {
         return
       }
       const hostname = rOptions.hostname
-      if (!matched(hostname, regexpMap)) {
+      if (!matched(hostname, overWallTargetMap)) {
         return
       }
       const cacheKey = '__over_wall_proxy__'
