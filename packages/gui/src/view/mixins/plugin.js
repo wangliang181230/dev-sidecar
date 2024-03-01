@@ -31,12 +31,9 @@ export default {
     },
     async init () {
       this.status = this.$status
-
-      const config = await this.$api.config.reload()
-      this.setConfig(config)
+      await this.reloadConfig()
+      this.printConfig('Init, ')
       this.systemPlatform = await this.$api.info.getSystemPlatform()
-
-      this.printConfig()
 
       if (this.ready) {
         return this.ready(this.config)
@@ -78,7 +75,7 @@ export default {
       return this.$api.config.save(this.config).then((ret) => {
         this.$message.success('设置已保存')
         this.setConfig(ret.allConfig)
-        this.printConfig('after saveConfig(), ')
+        this.printConfig('After saveConfig(), ')
         return ret
       })
     },
@@ -101,6 +98,21 @@ export default {
         return {}
       }
       return value
+    },
+    async reloadConfig () {
+      const config = await this.$api.config.reload()
+      this.setConfig(config)
+    },
+    async reloadConfigAndRestart () {
+      await this.reloadConfig()
+      this.printConfig('After reloadConfigAndRestart(), ')
+      if (this.status.server.enabled || this.status.proxy.enabled) {
+        await this.$api.proxy.restart()
+        await this.$api.server.restart()
+        this.$message.success('代理服务和系统代理重启成功')
+      } else {
+        this.$message.info('代理服务和系统代理未启动，无需重启')
+      }
     },
     isWindows () {
       return this.systemPlatform === 'windows'

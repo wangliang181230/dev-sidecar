@@ -110,16 +110,6 @@ export default {
       this.$api.autoStart.enabled(this.config.app.autoStart.enabled)
       this.saveConfig()
     },
-    async reloadAndRestart () {
-      this.$api.config.reload()
-      if (this.status.server.enabled || this.status.proxy.enabled) {
-        await this.$api.proxy.restart()
-        await this.$api.server.restart()
-        this.$message.success('代理服务和系统代理重启成功')
-      } else {
-        this.$message.info('代理服务和系统代理未启动，无需重启')
-      }
-    },
     async onRemoteConfigEnabledChange () {
       await this.saveConfig()
       if (this.config.app.remoteConfig.enabled === true) {
@@ -127,11 +117,11 @@ export default {
         this.$message.info('开始下载远程配置')
         await this.$api.config.downloadRemoteConfig()
         this.$message.info('下载远程配置成功，开始重启代理服务和系统代理')
-        await this.reloadAndRestart()
+        await this.reloadConfigAndRestart()
         this.reloadLoading = false
       } else {
-        this.$message.info('开始重启代理服务和系统代理')
-        await this.reloadAndRestart()
+        this.$message.info('远程配置已关闭，开始重启代理服务和系统代理')
+        await this.reloadConfigAndRestart()
       }
     },
     async reloadRemoteConfig () {
@@ -148,7 +138,7 @@ export default {
         this.$message.warn('如果您确实修改了远程配置，请稍等片刻再重试！')
       } else {
         this.$message.success('获取到了最新的远程配置，开始重启代理服务和系统代理')
-        await this.reloadAndRestart()
+        await this.reloadConfigAndRestart()
       }
 
       this.reloadLoading = false
@@ -165,7 +155,7 @@ export default {
           if (result) {
             this.config = await this.$api.config.get()
             this.$message.success('恢复出厂配置成功，开始重启代理服务和系统代理')
-            await this.reloadAndRestart()
+            await this.reloadConfigAndRestart()
           } else {
             this.$message.info('已是出厂配置，无需恢复')
           }
