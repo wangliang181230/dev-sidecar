@@ -21,7 +21,7 @@ module.exports = {
     },
     remoteConfig: {
       enabled: true,
-      url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/remote_config/packages/core/src/config/remote_config.json'
+      url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/remote_config/packages/core/src/config/remote_config_myself.json'
     },
     dock: {
       hideWhenWinClose: false
