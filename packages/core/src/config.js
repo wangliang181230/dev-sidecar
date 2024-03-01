@@ -86,7 +86,7 @@ const configApi = {
           if (remoteConfig != null) {
             const remoteSavePath = _getRemoteSavePath()
             fs.writeFileSync(remoteSavePath, body)
-            log.info(`下载并保存 remote_config.json 成功, url: ${remoteConfigUrl}, path: ${remoteSavePath}, body:`, body)
+            log.info(`下载并保存 remote_config.json 成功, url: ${remoteConfigUrl}, path: ${remoteSavePath}`)
           } else {
             log.warn('远程配置对象为空:', remoteConfigUrl)
           }
