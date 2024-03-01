@@ -5,7 +5,7 @@ const matchUtil = require('../../../utils/util.match')
 let pacClient = null
 
 function matched (hostname, overWallTargetMap) {
-  const ret1 = matchUtil.matchHostname(overWallTargetMap, hostname)
+  const ret1 = matchUtil.matchHostname(overWallTargetMap, hostname, 'matched overwall')
   if (ret1) {
     return true
   }

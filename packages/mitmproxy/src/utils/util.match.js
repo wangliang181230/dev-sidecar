@@ -1,4 +1,6 @@
 const lodash = require('lodash')
+const log = require('./util.log')
+
 function isMatched (url, regexp) {
   return url.match(regexp)
 }
@@ -23,34 +25,49 @@ function domainMapRegexply (hostMap) {
   return regexpMap
 }
 
-function matchHostname (hostMap, hostname) {
+function matchHostname (hostMap, hostname, action) {
   if (hostMap == null) {
     return null
   }
 
   // 域名快速匹配：直接匹配 或者 两种前缀通配符匹配
-  const value = hostMap[hostname] || hostMap['*' + hostname] || hostMap['*.' + hostname]
+  let value = hostMap[hostname]
   if (value) {
+    log.info(`${action}: '${hostname}' matched '${hostname}': ${JSON.stringify(value)}`)
+    return value // 快速匹配成功
+  }
+  value = hostMap['*' + hostname]
+  if (value) {
+    log.info(`${action}: '${hostname}' matched '*${hostname}': ${JSON.stringify(value)}`)
+    return value // 快速匹配成功
+  }
+  value = hostMap['*.' + hostname]
+  if (value) {
+    log.info(`${action}: '${hostname}' matched '*.${hostname}': ${JSON.stringify(value)}`)
     return value // 快速匹配成功
   }
 
   // 通配符匹配 或 正则表达式匹配
-  for (let target in hostMap) {
+  for (const target in hostMap) {
     if (target.indexOf('*') < 0 && target[0] !== '^') {
       continue // 不是通配符匹配串，也不是正则表达式，跳过
     }
 
     // 如果是通配符匹配串，转换为正则表达式
+    let regexp = target
     if (target[0] !== '^') {
-      target = '^' + domainRegexply(target) + '$'
+      regexp = '^' + domainRegexply(target) + '$'
     }
 
     // 正则表达式匹配
-    if (hostname.match(target)) {
-      return hostMap[target]
+    if (hostname.match(regexp)) {
+      value = hostMap[target]
+      log.info(`${action}: '${hostname}' matched '${target}': ${JSON.stringify(value)}`)
+      return value
     }
   }
 }
+
 module.exports = {
   isMatched,
   domainRegexply,

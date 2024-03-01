@@ -42,7 +42,7 @@ module.exports = (config) => {
     middlewares,
     sslConnectInterceptor: (req, cltSocket, head) => {
       const hostname = req.url.split(':')[0]
-      const inWhiteList = matchUtil.matchHostname(whiteList, hostname) != null
+      const inWhiteList = matchUtil.matchHostname(whiteList, hostname, 'in whiteList') != null
       if (inWhiteList) {
         log.info('不拦截白名单:', hostname,
           '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\treferer:', req.headers.Referer || req.headers.referer,
@@ -52,7 +52,7 @@ module.exports = (config) => {
         return false // 所有都不拦截
       }
       // 配置了拦截的域名，将会被代理
-      const matched = !!matchUtil.matchHostname(intercepts, hostname)
+      const matched = !!matchUtil.matchHostname(intercepts, hostname, 'matched intercepts')
       if (matched === true) {
         return matched // 拦截
       }
@@ -61,7 +61,7 @@ module.exports = (config) => {
     createIntercepts: (context) => {
       const rOptions = context.rOptions
       // const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
-      const interceptOpts = matchUtil.matchHostname(intercepts, rOptions.hostname)
+      const interceptOpts = matchUtil.matchHostname(intercepts, rOptions.hostname, 'get interceptOpts')
       if (!interceptOpts) { // 该域名没有配置拦截器，直接过
         return
       }
