@@ -33,17 +33,17 @@ function matchHostname (hostMap, hostname, action) {
   // 域名快速匹配：直接匹配 或者 两种前缀通配符匹配
   let value = hostMap[hostname]
   if (value) {
-    log.info(`${action}: '${hostname}' matched '${hostname}': ${JSON.stringify(value)}`)
+    log.info(`matchHostname: ${action}: '${hostname}' -> '${hostname}': ${JSON.stringify(value)}`)
     return value // 快速匹配成功
   }
   value = hostMap['*' + hostname]
   if (value) {
-    log.info(`${action}: '${hostname}' matched '*${hostname}': ${JSON.stringify(value)}`)
+    log.info(`matchHostname: ${action}: '${hostname}' -> '*${hostname}': ${JSON.stringify(value)}`)
     return value // 快速匹配成功
   }
   value = hostMap['*.' + hostname]
   if (value) {
-    log.info(`${action}: '${hostname}' matched '*.${hostname}': ${JSON.stringify(value)}`)
+    log.info(`matchHostname: ${action}: '${hostname}' -> '*.${hostname}': ${JSON.stringify(value)}`)
     return value // 快速匹配成功
   }
 
@@ -62,12 +62,12 @@ function matchHostname (hostMap, hostname, action) {
     // 正则表达式匹配
     if (hostname.match(regexp)) {
       value = hostMap[target]
-      log.info(`${action}: '${hostname}' matched '${target}': ${JSON.stringify(value)}`)
+      log.info(`matchHostname: ${action}: '${hostname}' -> '${target}': ${JSON.stringify(value)}`)
       return value
     }
   }
 
-  log.warn(`${action}: '${hostname}' not matched`)
+  log.warn(`matchHostname: ${action}: '${hostname}' not matched`)
 }
 
 module.exports = {
