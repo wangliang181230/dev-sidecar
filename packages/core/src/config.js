@@ -66,12 +66,12 @@ const configApi = {
           return
         }
         if (response && response.statusCode === 200) {
-          log.info(`下载远程配置成功, url: ${remoteConfigUrl}, body: ${body}`)
-
           if (body == null || body === '') {
-            log.warn('远程配置内容为空:', remoteConfigUrl)
+            log.warn('下载远程配置成功，但远程配置内容为空:', remoteConfigUrl)
             resolve()
             return
+          } else {
+            log.info('下载远程配置成功:', remoteConfigUrl)
           }
 
           // 尝试解析远程配置，如果解析失败，则不保存它
