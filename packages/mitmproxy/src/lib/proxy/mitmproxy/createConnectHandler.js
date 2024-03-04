@@ -8,11 +8,8 @@ const speedTest = require('../../speed/index.js')
 function isSslConnect (sslConnectInterceptors, req, cltSocket, head) {
   for (const intercept of sslConnectInterceptors) {
     const ret = intercept(req, cltSocket, head)
-    if (ret === false) {
-      return false
-    }
-    if (ret === true) {
-      return true
+    if (ret === false || ret === true) {
+      return ret
     }
     // continue
   }
