@@ -28,7 +28,7 @@ function domainMapRegexply (hostMap) {
 }
 
 function matchHostname (hostMap, hostname, action) {
-  log.info('matchHostname:', action, hostMap)
+  // log.debug('matchHostname:', action, hostMap)
 
   if (hostMap == null) {
     log.warn(`matchHostname: ${action}: '${hostname}', hostMap is null`)
@@ -88,7 +88,7 @@ function merge (oldObj, newObj) {
 }
 
 function matchHostnameAll (hostMap, hostname, action) {
-  log.info('matchHostnameAll:', action, hostMap)
+  // log.debug('matchHostnameAll:', action, hostMap)
 
   if (hostMap == null) {
     log.warn(`matchHostnameAll: ${action}: '${hostname}', hostMap is null`)
