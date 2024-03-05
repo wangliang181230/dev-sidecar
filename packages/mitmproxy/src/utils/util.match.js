@@ -15,7 +15,7 @@ function domainMapRegexply (hostMap) {
     return regexpMap
   }
   lodash.each(hostMap, (value, domain) => {
-    if (domain.indexOf('*') >= 0) {
+    if (domain.indexOf('*') >= 0 && domain[0] !== '^') {
       const regDomain = domainRegexply(domain)
       regexpMap[regDomain] = value
     } else {
