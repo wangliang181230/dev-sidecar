@@ -24,11 +24,16 @@ module.exports = (config) => {
   if (!overwallConfig.pac.pacFileAbsolutePath) {
     overwallConfig.pac.pacFileAbsolutePath = path.join(setting.rootDir, overwallConfig.pac.pacFilePath)
   }
-  const overwallMiddleware = createOverwallMiddleware(overwallConfig)
+
+  // 插件列表
   const middlewares = []
+
+  // 梯子插件
+  const overwallMiddleware = createOverwallMiddleware(overwallConfig)
   if (overwallMiddleware) {
     middlewares.push(overwallMiddleware)
   }
+
   const options = {
     host: serverConfig.host,
     port: serverConfig.port,

@@ -2,6 +2,7 @@ const url = require('url')
 const lodash = require('lodash')
 const pac = require('./source/pac')
 const matchUtil = require('../../../utils/util.match')
+const log = require('../../../utils/util.log')
 let pacClient = null
 
 function matched (hostname, overWallTargetMap) {
@@ -13,7 +14,13 @@ function matched (hostname, overWallTargetMap) {
     return false
   }
   const ret = pacClient.FindProxyForURL('https://' + hostname, hostname)
-  return ret && ret.indexOf('PROXY ') === 0
+  if (ret && ret.indexOf('PROXY ') === 0) {
+    log.info(`matchHostname: matched overwall: '${hostname}' -> '${ret}' in pac.txt`)
+    return true
+  } else {
+    // log.debug(`matchHostname: matched overwall: Not-Matched '${hostname}' -> '${ret}' in pac.txt`)
+    return false
+  }
 }
 
 module.exports = function createOverWallIntercept (overWallConfig) {
