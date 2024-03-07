@@ -13,7 +13,7 @@ module.exports = {
     }
 
     // 获取maxAge配置
-    const maxAge = cacheReq.getMaxAge(interceptOpt)
+    let maxAge = cacheReq.getMaxAge(interceptOpt)
     // public 或 private
     const cacheControlType = (interceptOpt.cacheControlType || 'public') + ', '
     // immutable属性
@@ -46,13 +46,20 @@ module.exports = {
 
     const url = cacheReq.generateUrl(rOptions, log)
 
+    let action = 'success'
+
     // 判断原max-age是否大于新max-age
     if (originalHeaders.cacheControl) {
       const maxAgeMatch = originalHeaders.cacheControl.value.match(/max-age=(\d+)/)
       if (maxAgeMatch && maxAgeMatch[1] > maxAge) {
-        res.setHeader('Dev-Sidecar-Cache-Response-Interceptor', `skip: ${maxAgeMatch[1]} > ${maxAge}`)
-        log.info(`cache response intercept: skip: ${maxAgeMatch[1]} > ${maxAge}, url: ${url}`)
-        return
+        if (interceptOpt.cacheImmutable !== false && originalHeaders.cacheControl.value.indexOf('immutable') < 0) {
+          maxAge = maxAgeMatch[1]
+          action = 'success2'
+        } else {
+          res.setHeader('Dev-Sidecar-Cache-Response-Interceptor', `skip: ${maxAgeMatch[1]} > ${maxAge}`)
+          log.info(`cache response intercept: skip: ${maxAgeMatch[1]} > ${maxAge}, url: ${url}`)
+          return
+        }
       }
     }
 
@@ -89,7 +96,7 @@ module.exports = {
       cacheReq.setEtagLastModifiedTimeCache(cacheKey, originalHeaders.etag.value, now.getTime())
     }
 
-    res.setHeader('Dev-Sidecar-Cache-Response-Interceptor', 'success,' + maxAge)
+    res.setHeader('Dev-Sidecar-Cache-Response-Interceptor', action + ',' + maxAge)
 
     // 原值
     const originalCacheControl = originalHeaders.cacheControl ? originalHeaders.cacheControl.value : null
