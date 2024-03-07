@@ -6,7 +6,7 @@ module.exports = {
 
     let redirect
     if (typeof interceptOpt.redirect === 'string') {
-      if (redirect.indexOf('http:') === 0 || redirect.indexOf('https:') === 0) {
+      if (interceptOpt.redirect.indexOf('http:') === 0 || interceptOpt.redirect.indexOf('https:') === 0) {
         redirect = interceptOpt.redirect
       } else {
         redirect = rOptions.protocol + '//' + interceptOpt.redirect + req.url
