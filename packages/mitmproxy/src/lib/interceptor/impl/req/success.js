@@ -7,7 +7,7 @@ module.exports = {
 
     const status = response.status || 200
 
-    const body = response.html || response.json || response.text || response.body ||
+    const body = response.html || response.json || response.script || response.css || response.text || response.body ||
       `DevSidecar ${status}: Request success.\n\n` +
       '  This request is matched by success intercept.\n\n' +
       '  因配置success拦截器，本请求直接返回200成功。'
@@ -23,6 +23,10 @@ module.exports = {
           headers['Content-Type'] = 'text/html'
         } else if (response.json != null) {
           headers['Content-Type'] = 'application/json'
+        } else if (response.script != null) {
+          headers['Content-Type'] = 'application/javascript'
+        } else if (response.css != null) {
+          headers['Content-Type'] = 'text/css'
         } else {
           headers['Content-Type'] = 'text/plain'
         }
