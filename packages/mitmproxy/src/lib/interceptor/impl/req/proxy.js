@@ -37,7 +37,7 @@ module.exports = {
       const URL = url.parse(uri)
       uri = URL.path
     }
-    let proxyTarget = proxyConf.indexOf('http:') === 0 || proxyConf.indexOf('https:') === 0 ? proxyConf : proxyConf + uri
+    let proxyTarget = proxyConf + uri
     if (interceptOpt.replace) {
       const regexp = new RegExp(interceptOpt.replace)
       proxyTarget = req.url.replace(regexp, proxyConf)
