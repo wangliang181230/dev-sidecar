@@ -6,6 +6,8 @@ module.exports = {
   requestIntercept (context, interceptOpt, req, res, ssl, next) {
     const { rOptions, log, RequestCounter } = context
 
+    const originHostname = rOptions.hostname
+
     let proxyConf = interceptOpt.proxy
     if (RequestCounter && interceptOpt.backup && interceptOpt.backup.length > 0) {
       // 优选逻辑
@@ -75,9 +77,9 @@ module.exports = {
       if (rOptions.agent && rOptions.agent.options) {
         rOptions.agent.options.rejectUnauthorized = false
       }
-      log.info('proxy intercept: hostname:', rOptions.hostname, ', target：', proxyTarget, ', sni replace servername:', rOptions.servername)
+      log.info('proxy intercept: hostname:', originHostname, ', target：', proxyTarget, ', sni replace servername:', rOptions.servername)
     } else {
-      log.info('proxy intercept: hostname:', rOptions.hostname, ', target：', proxyTarget)
+      log.info('proxy intercept: hostname:', originHostname, ', target：', proxyTarget)
     }
 
     return true
