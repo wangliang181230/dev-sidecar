@@ -83,7 +83,7 @@ function matchHostname (hostMap, hostname, action) {
     }
   }
 
-  // log.debug(`matchHostname: ${action}: '${hostname}' Not-Matched, map:`, JSON.stringify(hostMap))
+  log.debug(`matchHostname: ${action}: '${hostname}' Not-Matched`)
 }
 
 function merge (oldObj, newObj) {
@@ -154,7 +154,7 @@ function matchHostnameAll (hostMap, hostname, action) {
     log.info(`*matchHostnameAll*: ${action}: '${hostname}':`, JSON.stringify(values))
     return values
   } else {
-    // log.debug(`matchHostnameAll: ${action}: '${hostname}' Not-Matched, map:`, JSON.stringify(hostMap))
+    log.debug(`*matchHostnameAll*: ${action}: '${hostname}' Not-Matched`)
   }
 }
 
