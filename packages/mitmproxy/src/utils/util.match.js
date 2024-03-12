@@ -11,14 +11,15 @@ function domainRegexply (target) {
 
 function domainMapRegexply (hostMap) {
   const regexpMap = {}
-  const origin = {}
+  const origin = {} // 用于快速匹配，见matchHostname、matchHostnameAll方法
   if (hostMap == null) {
     return regexpMap
   }
   lodash.each(hostMap, (value, domain) => {
-    if (domain.indexOf('*') >= 0) {
+    if (domain.indexOf('*') >= 0 || domain[0] === '^') {
       const regDomain = domain[0] !== '^' ? domainRegexply(domain) : domain
       regexpMap[regDomain] = value
+
       if (domain.indexOf('*') === 0 && domain.lastIndexOf('*') === 0) {
         origin[domain] = value
       }
@@ -99,6 +100,10 @@ function matchHostnameAll (hostMap, hostname, action) {
 
   if (hostMap == null) {
     log.warn(`matchHostnameAll: ${action}: '${hostname}', hostMap is null`)
+    return null
+  }
+  if (hostMap.origin == null) {
+    log.warn(`matchHostnameAll: ${action}: '${hostname}', hostMap.origin is null`)
     return null
   }
 
