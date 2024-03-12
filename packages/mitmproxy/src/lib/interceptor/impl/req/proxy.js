@@ -31,23 +31,26 @@ module.exports = {
       }
     }
 
-    let uri = req.url
-    if (uri.indexOf('http') === 0) {
-      // eslint-disable-next-line node/no-deprecated-api
-      const URL = url.parse(uri)
-      uri = URL.path
-    }
-    let proxyTarget = proxyConf.indexOf('http:') === 0 || proxyConf.indexOf('https:') === 0 ? proxyConf : proxyConf + uri
+    // 获取代理目标地址
+    let proxyTarget
     if (interceptOpt.replace) {
       const regexp = new RegExp(interceptOpt.replace)
       proxyTarget = req.url.replace(regexp, proxyConf)
+    } else if (proxyConf.indexOf('http:') === 0 || proxyConf.indexOf('https:') === 0) {
+      proxyTarget = proxyConf
+    } else {
+      let uri = req.url
+      if (uri.indexOf('http') === 0) {
+        // eslint-disable-next-line node/no-deprecated-api
+        const URL = url.parse(uri)
+        uri = URL.path
+      }
+      proxyTarget = proxyConf + uri
     }
-    // eslint-disable-next-line
-    // no-template-curly-in-string
+
     // eslint-disable-next-line no-template-curly-in-string
     proxyTarget = proxyTarget.replace('${host}', rOptions.hostname)
 
-    // const backup = interceptOpt.backup
     const proxy = proxyTarget.indexOf('http') === 0 ? proxyTarget : rOptions.protocol + '//' + proxyTarget
     // eslint-disable-next-line node/no-deprecated-api
     const URL = url.parse(proxy)
