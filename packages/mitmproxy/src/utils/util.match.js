@@ -19,6 +19,9 @@ function domainMapRegexply (hostMap) {
     if (domain.indexOf('*') >= 0) {
       const regDomain = domain[0] !== '^' ? domainRegexply(domain) : domain
       regexpMap[regDomain] = value
+      if (domain.indexOf('*') === 0 && domain.lastIndexOf('*') === 0) {
+        origin[domain] = value
+      }
     } else {
       origin[domain] = value
     }
@@ -31,7 +34,11 @@ function matchHostname (hostMap, hostname, action) {
   // log.debug('matchHostname:', action, hostMap)
 
   if (hostMap == null) {
-    log.warn(`matchHostname: ${action}: '${hostname}', hostMap is null`)
+    log.warn(`matchHostname: ${action}: '${hostname}' Not-Matched, hostMap is null`)
+    return null
+  }
+  if (hostMap.origin == null) {
+    log.warn(`matchHostname: ${action}: '${hostname}' Not-Matched, hostMap.origin is null`)
     return null
   }
 
