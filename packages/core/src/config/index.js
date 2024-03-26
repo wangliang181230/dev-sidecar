@@ -128,6 +128,12 @@ module.exports = {
           sni: 'baidu.com'
         }
       },
+      'login.docker.com': {
+        '/favicon.ico': {
+          proxy: 'hub.docker.com',
+          sni: 'baidu.com'
+        }
+      },
       'api.segment.io': {
         '.*': {
           sni: 'baidu.com'
@@ -252,7 +258,6 @@ module.exports = {
         '*.*github*.com': 'quad9',
         '*.github.io': 'quad9',
         '*.docker.com': 'quad9',
-        '*.docker*.com': 'quad9',
         '*.stackoverflow.com': 'quad9',
         '*.electronjs.org': 'quad9',
         '*.amazonaws.com': 'quad9',

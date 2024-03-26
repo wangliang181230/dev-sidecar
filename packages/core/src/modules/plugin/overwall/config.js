@@ -19,7 +19,6 @@ module.exports = {
     // '*.bing.com': true,
     '*.discourse-cdn.com': true,
     '*.gravatar.com': true,
-    '*.docker.com': true,
     '*.vueuse.org': true,
     '*.elastic.co': true,
     '*.optimizely.com': true,
