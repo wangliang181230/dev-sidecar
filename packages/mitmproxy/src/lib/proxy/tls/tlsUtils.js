@@ -1,5 +1,6 @@
 const forge = require('node-forge')
 const fs = require('fs')
+const log = require('../../../utils/util.log')
 const path = require('path')
 const config = require('../common/config')
 const _ = require('lodash')
@@ -230,7 +231,7 @@ utils.isMappingHostName = function (DNSName, hostname) {
   return (new RegExp(reg)).test(hostname)
 }
 
-utils.getMappingHostNamesFormCert = function (cert) {
+utils.getMappingHostNamesFromCert = function (cert) {
   let mappingHostNames = []
   mappingHostNames.push(cert.subject.getField('CN') ? cert.subject.getField('CN').value : '')
   const altNames = cert.getExtension('subjectAltName') ? cert.getExtension('subjectAltName').altNames : []
@@ -262,6 +263,7 @@ utils.initCA = function ({ caCertPath, caKeyPath }) {
     mkdirp.sync(path.dirname(caCertPath))
     fs.writeFileSync(caCertPath, certPem)
     fs.writeFileSync(caKeyPath, keyPem)
+    log.info('生成证书文件成功，共2个文件:', caCertPath, caKeyPath)
   }
   return {
     caCertPath,

@@ -19,7 +19,7 @@ let socketId = 0
 
 let httpsOverHttpAgent, httpOverHttpsAgent, httpsOverHttpsAgent
 
-util.getOptionsFormRequest = (req, ssl, externalProxy = null) => {
+util.getOptionsFromRequest = (req, ssl, externalProxy = null) => {
   // eslint-disable-next-line node/no-deprecated-api
   const urlObject = url.parse(req.url)
   const defaultPort = ssl ? 443 : 80
@@ -34,7 +34,7 @@ util.getOptionsFormRequest = (req, ssl, externalProxy = null) => {
       try {
         externalProxyUrl = externalProxy(req, ssl)
       } catch (e) {
-        log.error('externalProxy', e)
+        log.error('externalProxy error:', e)
       }
     }
   }
@@ -57,8 +57,9 @@ util.getOptionsFormRequest = (req, ssl, externalProxy = null) => {
 
   const options = {
     protocol: protocol,
-    hostname: req.headers.host.split(':')[0],
     method: req.method,
+    url: req.url,
+    hostname: req.headers.host.split(':')[0],
     port: req.headers.host.split(':')[1] || defaultPort,
     path: urlObject.path,
     headers: req.headers,
@@ -125,7 +126,7 @@ util.getTunnelAgent = (requestIsSSL, externalProxyUrl) => {
       //             host: hostname,
       //             port: port
       //         }
-      //     });
+      //     })
       // }
       return false
     } else {

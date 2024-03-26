@@ -1,85 +1,39 @@
 const fs = require('fs')
+const jsonApi = require('./json.js')
 const Shell = require('./shell')
 const lodash = require('lodash')
 const defConfig = require('./config/index.js')
-const JSON5 = require('json5').default
 const request = require('request')
 const path = require('path')
 const log = require('./utils/util.log')
 let configTarget = lodash.cloneDeep(defConfig)
 
+const mergeApi = require('./merge.js')
+
 function get () {
   return configTarget
 }
 
-function _deleteDisabledItem (target) {
-  lodash.forEach(target, (item, key) => {
-    if (item == null) {
-      delete target[key]
-    }
-    if (lodash.isObject(item)) {
-      _deleteDisabledItem(item)
-    }
-  })
-}
 const getDefaultConfigBasePath = function () {
   return get().server.setting.userBasePath
 }
+
 function _getRemoteSavePath () {
   const dir = getDefaultConfigBasePath()
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
   }
-  return path.join(dir, 'remote_config.json5')
+  return path.join(dir, 'remote_config.json')
 }
+
 function _getConfigPath () {
   const dir = getDefaultConfigBasePath()
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
   }
-  return dir + '/config.json5'
+  return path.join(dir, 'config.json')
 }
 
-function doMerge (defObj, newObj) {
-  if (newObj == null) {
-    return defObj
-  }
-  const defObj2 = { ...defObj }
-  const newObj2 = {}
-  for (const key in newObj) {
-    const newValue = newObj[key]
-    const defValue = defObj[key]
-    if (newValue != null && defValue == null) {
-      newObj2[key] = newValue
-      continue
-    }
-    if (lodash.isEqual(newValue, defValue)) {
-      delete defObj2[key]
-      continue
-    }
-
-    if (lodash.isArray(newValue)) {
-      delete defObj2[key]
-      newObj2[key] = newValue
-      continue
-    }
-    if (lodash.isObject(newValue)) {
-      newObj2[key] = doMerge(defValue, newValue)
-      delete defObj2[key]
-      continue
-    } else {
-      // 基础类型，直接覆盖
-      delete defObj2[key]
-      newObj2[key] = newValue
-      continue
-    }
-  }
-  // defObj 里面剩下的是被删掉的
-  lodash.forEach(defObj2, (defValue, key) => {
-    newObj2[key] = null
-  })
-  return newObj2
-}
 let timer
 const configApi = {
   async startAutoDownloadRemoteConfig () {
@@ -91,7 +45,7 @@ const configApi = {
         await configApi.downloadRemoteConfig()
         configApi.reload()
       } catch (e) {
-        log.error(e)
+        log.error('定时下载远程配置并重载配置失败', e)
       }
     }
     await download()
@@ -104,19 +58,49 @@ const configApi = {
     const remoteConfigUrl = get().app.remoteConfig.url
     // eslint-disable-next-line handle-callback-err
     return new Promise((resolve, reject) => {
-      log.info('下载远程配置：', remoteConfigUrl)
+      log.info('开始下载远程配置:', remoteConfigUrl)
       request(remoteConfigUrl, (error, response, body) => {
         if (error) {
-          log.error('下载远程配置失败', error)
+          log.error('下载远程配置失败, error:', error, ', response:', response, ', body:', body)
           reject(error)
           return
         }
         if (response && response.statusCode === 200) {
-          fs.writeFileSync(_getRemoteSavePath(), body)
+          if (body == null || body === '') {
+            log.warn('下载远程配置成功，但远程配置内容为空:', remoteConfigUrl)
+            resolve()
+            return
+          } else {
+            log.info('下载远程配置成功:', remoteConfigUrl)
+          }
+
+          // 尝试解析远程配置，如果解析失败，则不保存它
+          let remoteConfig
+          try {
+            remoteConfig = jsonApi.parse(body)
+          } catch (e) {
+            log.error(`远程配置内容格式不正确, url: ${remoteConfigUrl}, body: ${body}`)
+            remoteConfig = null
+          }
+
+          if (remoteConfig != null) {
+            const remoteSavePath = _getRemoteSavePath()
+            fs.writeFileSync(remoteSavePath, body)
+            log.info(`下载并保存 remote_config.json 成功, url: ${remoteConfigUrl}, path: ${remoteSavePath}`)
+          } else {
+            log.warn('远程配置对象为空:', remoteConfigUrl)
+          }
+
           resolve()
         } else {
-          const message = '下载远程配置失败:' + response.message + ',code:' + response.statusCode
-          log.error(message)
+          log.error('下载远程配置失败, response:', response, ', body:', body)
+
+          let message
+          if (response) {
+            message = '下载远程配置失败: ' + response.message + ', code: ' + response.statusCode
+          } else {
+            message = '下载远程配置失败: response: ' + response
+          }
           reject(new Error(message))
         }
       })
@@ -126,50 +110,88 @@ const configApi = {
     if (get().app.remoteConfig.enabled !== true) {
       return {}
     }
+    const path = _getRemoteSavePath()
     try {
-      const path = _getRemoteSavePath()
-      log.info('读取合并远程配置文件:', path)
       if (fs.existsSync(path)) {
         const file = fs.readFileSync(path)
-        return JSON5.parse(file.toString())
+        log.info('读取 remote_config.json 成功:', path)
+        return jsonApi.parse(file.toString())
+      } else {
+        log.warn('remote_config.json 文件不存在:', path)
       }
     } catch (e) {
-      log.info('远程配置读取有误', e)
+      log.error('读取 remote_config.json 失败:', path, e)
     }
 
     return {}
   },
+  readRemoteConfigStr () {
+    if (get().app.remoteConfig.enabled !== true) {
+      return '{}'
+    }
+    try {
+      const path = _getRemoteSavePath()
+      if (fs.existsSync(path)) {
+        log.info('读取远程配置文件内容:', path)
+        const file = fs.readFileSync(path)
+        return file.toString()
+      } else {
+        log.warn('远程配置文件不存在:', path)
+      }
+    } catch (e) {
+      log.warn('远程配置内容读取失败:', e)
+    }
+
+    return '{}'
+  },
   /**
    * 保存自定义的 config
    * @param newConfig
-   * @param remoteConfig //远程配置
    */
   save (newConfig) {
     // 对比默认config的异同
-    // configApi.set(newConfig)
-    const defConfig = configApi.getDefault()
+    let defConfig = configApi.getDefault()
+
+    // 如果开启了远程配置，则读取远程配置，合并到默认配置中
     if (get().app.remoteConfig.enabled === true) {
-      doMerge(defConfig, configApi.readRemoteConfig())
+      defConfig = mergeApi.doMerge(defConfig, configApi.readRemoteConfig())
     }
-    const saveConfig = doMerge(defConfig, newConfig)
-    fs.writeFileSync(_getConfigPath(), JSON5.stringify(saveConfig, null, 2))
-    configApi.reload()
-    return saveConfig
+
+    // 计算新配置与默认配置（启用远程配置时，含远程配置）的差异，并保存到 config.json 中
+    const diffConfig = mergeApi.doDiff(defConfig, newConfig)
+    const configPath = _getConfigPath()
+    const saveConfigJsonStr = mergeApi.toJson(diffConfig)
+    fs.writeFileSync(configPath, saveConfigJsonStr)
+    log.info('保存 config.json 成功:', configPath)
+
+    // 重载配置
+    const allConfig = configApi.set(diffConfig)
+
+    return {
+      diffConfig,
+      allConfig
+    }
   },
-  doMerge,
+  doMerge: mergeApi.doMerge,
+  doDiff: mergeApi.doDiff,
   /**
-   * 读取后合并配置
+   * 读取 config.json 后，合并配置
    * @returns {*}
    */
   reload () {
-    const path = _getConfigPath()
-    if (!fs.existsSync(path)) {
-      return configApi.get()
+    const configPath = _getConfigPath()
+    let userConfig
+    if (!fs.existsSync(configPath)) {
+      userConfig = {}
+      log.warn('config.json 文件不存在:', configPath)
+    } else {
+      const file = fs.readFileSync(configPath)
+      log.info('读取 config.json 成功:', configPath)
+      const fileStr = file.toString()
+      userConfig = fileStr && fileStr.length > 2 ? jsonApi.parse(file.toString()) : {}
     }
-    const file = fs.readFileSync(path)
-    const userConfig = JSON5.parse(file.toString())
-    configApi.set(userConfig)
-    const config = configApi.get()
+
+    const config = configApi.set(userConfig)
     return config || {}
   },
   update (partConfig) {
@@ -179,21 +201,23 @@ const configApi = {
   get,
   set (newConfig) {
     if (newConfig == null) {
-      return
+      log.warn('newConfig 为空，不做任何操作')
+      return configTarget
     }
-    const merged = lodash.cloneDeep(newConfig)
-    const clone = lodash.cloneDeep(defConfig)
-    function customizer (objValue, srcValue) {
-      if (lodash.isArray(objValue)) {
-        return srcValue
-      }
+    return configApi.load(newConfig)
+  },
+  load (newConfig) {
+    const merged = lodash.cloneDeep(defConfig)
+    const remoteConfig = configApi.readRemoteConfig()
+
+    mergeApi.doMerge(merged, remoteConfig)
+    if (newConfig != null) {
+      mergeApi.doMerge(merged, newConfig)
     }
-    lodash.mergeWith(merged, clone, customizer)
-    lodash.mergeWith(merged, configApi.readRemoteConfig(), customizer)
-    lodash.mergeWith(merged, newConfig, customizer)
-    _deleteDisabledItem(merged)
+    mergeApi.deleteNullItems(merged)
     configTarget = merged
-    log.info('加载配置完成')
+    log.info('加载及合并远程配置完成')
+
     return configTarget
   },
   getDefault () {
@@ -201,6 +225,29 @@ const configApi = {
   },
   addDefault (key, defValue) {
     lodash.set(defConfig, key, defValue)
+  },
+  async removeUserConfig () {
+    const configPath = _getConfigPath()
+    if (fs.existsSync(configPath)) {
+      // 读取 config.json 文件内容
+      const fileStr = fs.readFileSync(configPath).toString().replace(/\s/g, '')
+
+      // 判断文件内容是否为空或空配置
+      if (fileStr === '' || fileStr === '{}') {
+        fs.rmSync(configPath)
+        return false // config.json 内容为空，或为空json
+      }
+
+      // 备份用户自定义配置文件
+      fs.renameSync(configPath, configPath + '.bak' + new Date().getTime() + '.json')
+
+      // 重新加载配置
+      configApi.load(null)
+
+      return true // 删除并重新加载配置成功
+    } else {
+      return false // config.json 文件不存在或内容为配置
+    }
   },
   resetDefault (key) {
     if (key) {

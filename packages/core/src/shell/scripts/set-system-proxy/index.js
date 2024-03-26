@@ -6,46 +6,10 @@ const Registry = require('winreg')
 
 const execute = Shell.execute
 const execFile = Shell.execFile
-const refreshInternetPs = require('./refresh-internet')
-const PowerShell = require('node-powershell')
 const log = require('../../../utils/util.log')
-const path = require('path')
-const childProcess = require('child_process')
-const util = require('util')
-const fs = require('fs')
-const _exec = util.promisify(childProcess.exec)
 const extraPath = require('../extra-path/index')
-const _lanIP = [
-  'localhost',
-  '127.*',
-  '10.*',
-  '172.16.*',
-  '172.17.*',
-  '172.18.*',
-  '172.19.*',
-  '172.20.*',
-  '172.21.*',
-  '172.22.*',
-  '172.23.*',
-  '172.24.*',
-  '172.25.*',
-  '172.26.*',
-  '172.27.*',
-  '172.28.*',
-  '172.29.*',
-  '172.30.*',
-  '172.31.*',
-  '192.168.*',
-  '*.tencent.com',
-  '*.qq.com',
-  '*.alipay.com',
-  '*.taobao.com',
-  '*.tmall.com',
-  '*.alipayobjects.com',
-  '*.dingtalk.com',
-  'mvnrepository.com'
-]
-//   '<-loopback>'
+
+let config = null
 
 async function _winUnsetProxy (exec, setEnv) {
   // eslint-disable-next-line no-constant-condition
@@ -61,24 +25,34 @@ async function _winUnsetProxy (exec, setEnv) {
     regKey.get('HTTPS_PROXY', (err) => {
       if (!err) {
         regKey.remove('HTTPS_PROXY', async (err) => {
-          log.info('删除环境变量https_proxy', err)
+          log.warn('删除环境变量https_proxy失败:', err)
           await exec('setx DS_REFRESH "1"')
         })
       }
     })
   } catch (e) {
-    log.error(e)
+    log.error('启动系统代理失败:', e)
   }
 }
 
 async function _winSetProxy (exec, ip, port, setEnv) {
-  let lanIpStr = ''
-  for (const string of _lanIP) {
-    lanIpStr += string + ';'
+  // 延迟加载config
+  if (config == null) {
+    config = require('../../../config.js')
   }
-  // http=127.0.0.1:8888;https=127.0.0.1:8888 考虑这种方式
+
+  let excludeIpStr = ''
+  for (const ip in config.get().proxy.excludeIpList) {
+    if (config.get().proxy.excludeIpList[ip] === true) {
+      excludeIpStr += ip + ';'
+    }
+  }
+
   const proxyPath = extraPath.getProxyExePath()
-  await execFile(proxyPath, ['global', `http=http://${ip}:${port};https=http://${ip}:${port}`, lanIpStr])
+  const execFun = 'global'
+  const proxyAddr = `http=http://${ip}:${port};https=http://${ip}:${port}`
+  log.info(`执行“设置系统代理”的程序: ${proxyPath} ${execFun} ${proxyAddr} ......(省略排除IP列表)`)
+  await execFile(proxyPath, [execFun, proxyAddr, excludeIpStr])
 
   if (setEnv) {
     log.info('同时设置 https_proxy')
@@ -100,12 +74,11 @@ const executor = {
     const { ip, port, setEnv } = params
     if (ip == null) {
       // 清空代理
-      log.info('关闭代理')
+      log.info('关闭windows系统代理')
       return _winUnsetProxy(exec, setEnv)
     } else {
       // 设置代理
-
-      log.info('设置代理', ip, port, setEnv)
+      log.info('设置windows系统代理:', ip, port, setEnv)
       return _winSetProxy(exec, ip, port, setEnv)
     }
   },

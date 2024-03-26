@@ -69,7 +69,7 @@
         </a-tab-pane>
         <a-tab-pane tab="拦截设置" key="2">
           <vue-json-editor style="height:100%;" ref="editor" v-model="config.server.intercepts" mode="code"
-                           :show-btns="false" :expandedOnStart="true" @json-change="onJsonChange"></vue-json-editor>
+                           :show-btns="false" :expandedOnStart="true"></vue-json-editor>
         </a-tab-pane>
         <a-tab-pane tab="域名白名单" key="3">
             <a-row style="margin-top:10px">
@@ -82,10 +82,10 @@
             </a-row>
             <a-row :gutter="10" style="margin-top: 10px" v-for="(item,index) of whiteList" :key='index'>
               <a-col :span="19">
-                <a-input :disabled="item.value ===false" v-model="item.key"></a-input>
+                <a-input :disabled="item.value === false" v-model="item.key"></a-input>
               </a-col>
               <a-col :span="3">
-                <a-button v-if="item.value!==false" type="danger" icon="minus" @click="deleteWhiteList(item,index)"/>
+                <a-button v-if="item.value !== false" type="danger" icon="minus" @click="deleteWhiteList(item,index)"/>
               </a-col>
             </a-row>
         </a-tab-pane>
@@ -101,18 +101,18 @@
             </a-row>
             <a-row :gutter="10" style="margin-top: 10px" v-for="(item,index) of dnsMappings" :key='index'>
               <a-col :span="14">
-                <a-input :disabled="item.value ===false" v-model="item.key"></a-input>
+                <a-input :disabled="item.value === false" v-model="item.key"></a-input>
               </a-col>
               <a-col :span="5">
-                <a-select :disabled="item.value ===false" v-model="item.value" style="width: 100%">
+                <a-select :disabled="item.value === false" v-model="item.value" style="width: 100%">
                   <a-select-option v-for="(item) of speedDnsOptions" :key="item.value" :value="item.value">
                     {{ item.value }}
                   </a-select-option>
                 </a-select>
               </a-col>
               <a-col :span="3">
-                <a-button v-if="item.value!==false" type="danger" icon="minus" @click="deleteDnsMapping(item,index)"/>
-                <a-button v-if="item.value===false" type="primary" icon="checked"
+                <a-button v-if="item.value !== false" type="danger" icon="minus" @click="deleteDnsMapping(item,index)"/>
+                <a-button v-if="item.value === false" type="primary" icon="checked"
                           @click="restoreDefDnsMapping(item,index)"></a-button>
               </a-col>
             </a-row>
@@ -208,7 +208,7 @@
     </div>
     <template slot="footer">
       <div class="footer-bar">
-        <a-button class="md-mr-10" icon="sync" @click="resetDefault()">恢复默认</a-button>
+        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">恢复默认</a-button>
         <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">应用</a-button>
       </div>
     </template>
@@ -217,7 +217,7 @@
 </template>
 
 <script>
-import vueJsonEditor from 'vue-json-editor'
+import vueJsonEditor from 'vue-json-editor-fix-cn'
 import Plugin from '../mixins/plugin'
 import _ from 'lodash'
 
@@ -230,8 +230,6 @@ export default {
   data () {
     return {
       key: 'server',
-      labelCol: { span: 4 },
-      wrapperCol: { span: 20 },
       dnsMappings: [],
       speedTestList: [],
       whiteList: [],
@@ -270,8 +268,6 @@ export default {
       if (value != null && value.length > 0) {
         this.config.server.setting.rootCaFile.keyPath = value[0]
       }
-    },
-    onJsonChange (json) {
     },
     ready () {
       this.initDnsMapping()

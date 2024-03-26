@@ -2,12 +2,13 @@ import lodash from 'lodash'
 import DevSidecar from '@docmirror/dev-sidecar'
 import { ipcMain } from 'electron'
 import fs from 'fs'
-import JSON5 from 'json5'
 import path from 'path'
 const pk = require('../../../package.json')
 const mitmproxyPath = path.join(__dirname, 'mitmproxy.js')
 process.env.DS_EXTRA_PATH = path.join(__dirname, '../extra/')
 const log = require('../../utils/util.log')
+const jsonApi = require('@docmirror/dev-sidecar/src/json.js')
+const mergeApi = require('@docmirror/dev-sidecar/src/merge.js')
 const getDefaultConfigBasePath = function () {
   return DevSidecar.api.config.get().server.setting.userBasePath
 }
@@ -47,24 +48,46 @@ const localApi = {
       let setting = {}
       if (fs.existsSync(settingPath)) {
         const file = fs.readFileSync(settingPath)
-        setting = JSON5.parse(file.toString())
+        log.info('读取 setting.json 成功:', settingPath)
+        setting = jsonApi.parse(file.toString())
         if (setting == null) {
           setting = {}
         }
       }
       if (setting.overwall == null) {
-        setting.overwall = false
+        setting.overwall = true
       }
 
       if (setting.installTime == null) {
-        setting.installTime = new Date().getTime()
+        // 初始化安装时间
+        const date = new Date() // 创建一个表示当前日期和时间的 Date 对象
+        const year = date.getFullYear() // 获取年份
+        const month = String(date.getMonth() + 1).padStart(2, '0') // 获取月份（注意月份从 0 开始计数）
+        const day = String(date.getDate()).padStart(2, '0') // 获取天数
+        const hours = String(date.getHours()).padStart(2, '0') // 获取小时
+        const minutes = String(date.getMinutes()).padStart(2, '0') // 获取分钟
+        const seconds = String(date.getSeconds()).padStart(2, '0') // 获取秒数
+        const milliseconds = String(date.getMilliseconds()).padStart(3, '0') // 获取毫秒
+        setting.installTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`
+
+        // 初始化 rootCa.setuped
+        if (setting.rootCa == null) {
+          setting.rootCa = {
+            setuped: false,
+            desc: '根证书未安装'
+          }
+        }
+
+        // 保存 setting.json
         localApi.setting.save(setting)
       }
+
       return setting
     },
     save (setting = {}) {
       const settingPath = _getSettingsPath()
-      fs.writeFileSync(settingPath, JSON5.stringify(setting, null, 2))
+      fs.writeFileSync(settingPath, mergeApi.toJson(setting))
+      log.info('保存 setting.json 成功:', settingPath)
     }
   },
   /**
@@ -108,7 +131,7 @@ function _getSettingsPath () {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
   }
-  return dir + '/setting.json5'
+  return dir + '/setting.json'
 }
 
 function invoke (api, param) {
@@ -144,11 +167,11 @@ export default {
     })
     // 注册从core里来的事件，并转发给view
     DevSidecar.api.event.register('status', (event) => {
-      log.info('bridge on status', event)
+      log.info('bridge on status, event:', event)
       win.webContents.send('status', { ...event })
     })
     DevSidecar.api.event.register('error', (event) => {
-      log.error('bridge on error', event)
+      log.error('bridge on error, event:', event)
       win.webContents.send('error.core', event)
     })
     DevSidecar.api.event.register('speed', (event) => {

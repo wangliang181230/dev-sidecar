@@ -1,4 +1,4 @@
-const config = require('../../config')
+const config = require('../../config.js')
 const event = require('../../event')
 const status = require('../../status')
 const lodash = require('lodash')
@@ -6,10 +6,7 @@ const fork = require('child_process').fork
 const log = require('../../utils/util.log')
 const fs = require('fs')
 const path = require('path')
-let JSON5 = require('json5')
-if (JSON5.default) {
-  JSON5 = JSON5.default
-}
+const mergeApi = require('../../merge.js')
 
 let server = null
 function fireStatus (status) {
@@ -67,11 +64,18 @@ const serverApi = {
       }
     }
     serverConfig.plugin = allConfig.plugin
+
+    if (allConfig.proxy && allConfig.proxy.enabled) {
+      serverConfig.proxy = allConfig.proxy
+    }
+
     // fireStatus('ing') // 启动中
     const basePath = serverConfig.setting.userBasePath
-    const runningConfig = path.join(basePath, '/running.json')
-    fs.writeFileSync(runningConfig, JSON5.stringify(serverConfig, null, 2))
-    const serverProcess = fork(mitmproxyPath, [runningConfig])
+    const runningConfigPath = path.join(basePath, '/running.json')
+    const serverConfigJsonStr = mergeApi.toJson(serverConfig)
+    fs.writeFileSync(runningConfigPath, serverConfigJsonStr)
+    log.info('保存 running.json 成功:', runningConfigPath)
+    const serverProcess = fork(mitmproxyPath, [runningConfigPath])
     server = {
       id: serverProcess.pid,
       process: serverProcess,
@@ -80,19 +84,19 @@ const serverApi = {
       }
     }
     serverProcess.on('beforeExit', (code) => {
-      log.warn('server process beforeExit', code)
+      log.warn('server process beforeExit, code:', code)
     })
     serverProcess.on('SIGPIPE', (code, signal) => {
-      log.warn('server process SIGPIPE', code, signal)
+      log.warn(`server process SIGPIPE, code: ${code}, signal:`, signal)
     })
     serverProcess.on('exit', (code, signal) => {
-      log.warn('server process exit', code, signal)
+      log.warn(`server process exit, code: ${code}, signal:`, signal)
     })
     serverProcess.on('uncaughtException', (err, origin) => {
-      log.error('server process uncaughtException', err)
+      log.error('server process uncaughtException:', err)
     })
     serverProcess.on('message', function (msg) {
-      log.info('收到子进程消息', msg.type, msg.event.key, msg.message)
+      log.info('收到子进程消息:', JSON.stringify(msg))
       if (msg.type === 'status') {
         fireStatus(msg.event)
       } else if (msg.type === 'error') {
@@ -106,7 +110,7 @@ const serverApi = {
         event.fire('speed', msg.event)
       }
     })
-    return { port: runningConfig.port }
+    return { port: serverConfig.port }
   },
   async kill () {
     if (server) {
@@ -124,13 +128,13 @@ const serverApi = {
         // fireStatus('ing')// 关闭中
         server.close((err) => {
           if (err) {
-            log.info('close error', err, ',', err.code, ',', err.message, ',', err.errno)
+            log.warn('close error:', err)
             if (err.code === 'ERR_SERVER_NOT_RUNNING') {
               log.info('代理服务关闭成功')
               resolve()
               return
             }
-            log.info('代理服务关闭失败', err)
+            log.warn('代理服务关闭失败:', err)
             reject(err)
           } else {
             log.info('代理服务关闭成功')

@@ -3,7 +3,7 @@ const DevSidecar = require('@docmirror/dev-sidecar')
 const getDefaultConfigBasePath = function () {
   return DevSidecar.api.config.get().server.setting.userBasePath
 }
-const level = process.env.NODE_ENV === 'development' ? 'debug' : 'info'
+const level = 'debug' // process.env.NODE_ENV === 'development' ? 'debug' : 'info'
 const path = require('path')
 const filename = path.join(getDefaultConfigBasePath(), '/logs/gui.log')
 log4js.configure({

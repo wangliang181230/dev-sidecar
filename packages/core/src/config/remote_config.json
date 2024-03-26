@@ -1,0 +1,24 @@
+{
+	"server": {
+		"intercepts": {
+		},
+		"whiteList": {
+		},
+		"dns": {
+			"mapping": {
+			},
+			"speedTest": {
+			}
+		}
+	},
+	"proxy": {
+		"excludeIpList": {
+		}
+	},
+	"plugin": {
+		"overwall": {
+			"targets": {
+			}
+		}
+	}
+}

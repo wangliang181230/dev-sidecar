@@ -3,18 +3,9 @@
     <template slot="header">
       给开发者的辅助工具
       <span>
-
           <a-button style="margin-right:10px" @click="openSetupCa">
-            <a-badge :count="_rootCaSetuped?0:1" dot>安装根证书 </a-badge>
+            <a-badge :count="_rootCaSetuped?0:1" dot>安装根证书</a-badge>
           </a-button>
-
-          <a-button style="margin-right:10px" @click="doCheckUpdate(true)" :loading="update.downloading"
-                    :title="'当前版本:'+info.version">
-            <a-badge :count="update.newVersion?1:0" dot>
-              <span v-if="update.downloading">{{ update.progress }}%</span>{{ update.downloading ? '新版本下载中' : '检查更新' }}
-            </a-badge>
-          </a-button>
-
       </span>
     </template>
 
@@ -86,27 +77,6 @@
         </div>
         <div class="right"></div>
       </div>
-      <div class="star" >
-        <div class="donate" @click="donateModal=true">
-          <a-icon type="like" theme="outlined"/>
-          捐赠
-        </div>
-        <div class="right">
-          <div>如果它解决了你的问题，请不要吝啬你的star哟！点这里
-            <a-icon style="margin-right:10px;" type="arrow-right" theme="outlined"/>
-          </div>
-          <a @click="openExternal('https://github.com/docmirror/dev-sidecar')"><img alt="GitHub stars"
-                                                                                    src="https://img.shields.io/github/stars/docmirror/dev-sidecar?logo=github"></a>
-        </div>
-      </div>
-
-      <a-modal title="捐赠" v-model="donateModal" width="550px" cancelText="不了" okText="果断支持" @ok="goDonate">
-        <div>* 本应用完全免费，如果觉得好用，可以给予捐赠。</div>
-        <div>* 开源项目持续发展离不开您的支持，感谢</div>
-        <div class="payQrcode">
-          <img height="200px" src="/pay.jpg"/>
-        </div>
-      </a-modal>
     </div>
 
   </ds-container>
@@ -134,7 +104,6 @@ export default {
   },
   data () {
     return {
-      donateModal: false,
       status: undefined,
       startup: {
         loading: false,
@@ -173,10 +142,6 @@ export default {
     this.$set(this, 'status', this.$status)
     this.switchBtns = this.createSwitchBtns()
     this.$set(this, 'update', this.$global.update)
-    if (!this.update.autoChecked) {
-      this.update.autoChecked = true
-      this.doCheckUpdate(false)
-    }
     this.$api.info.get().then(ret => {
       this.info = ret
     })
@@ -205,7 +170,7 @@ export default {
         this.config.plugin.overwall.enabled = true
       }
       this.$api.config.save(this.config).then(() => {
-        this.$message.info('设置已保存')
+        this.$message.success('设置已保存')
       })
       if (this.status.server.enabled) {
         return this.$api.server.restart()
@@ -231,7 +196,7 @@ export default {
       this.$confirm({
         title: '第一次使用，请先安装CA根证书',
         content: '本应用正常使用，必须安装和信任CA根证书',
-        cancelText: '下次',
+        cancelText: '下次安装',
         okText: '去安装',
         onOk: () => {
           this.openSetupCa()
@@ -252,7 +217,24 @@ export default {
       await this.$api.shell.setupCa({ certPath: this.config.server.setting.rootCaFile.certPath })
       this.setting.rootCa = this.setting.rootCa || {}
       const rootCa = this.setting.rootCa
+
+      // 根证书已安装
       rootCa.setuped = true
+      // 保存安装时间
+      const date = new Date() // 创建一个表示当前日期和时间的 Date 对象
+      const year = date.getFullYear() // 获取年份
+      const month = String(date.getMonth() + 1).padStart(2, '0') // 获取月份（注意月份从 0 开始计数）
+      const day = String(date.getDate()).padStart(2, '0') // 获取天数
+      const hours = String(date.getHours()).padStart(2, '0') // 获取小时
+      const minutes = String(date.getMinutes()).padStart(2, '0') // 获取分钟
+      const seconds = String(date.getSeconds()).padStart(2, '0') // 获取秒数
+      const milliseconds = String(date.getMilliseconds()).padStart(3, '0') // 获取毫秒
+      rootCa.setupTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`
+      // 保存安装描述
+      rootCa.desc = '根证书已安装'
+      // 删除noTip数据
+      delete rootCa.noTip
+
       this.$set(this, 'setting', this.setting)
       this.$api.setting.save(this.setting)
     },
@@ -326,15 +308,6 @@ export default {
           return this.$api.server.restart()
         }
       })
-    },
-    goDonate () {
-      this.$message.info('感谢支持')
-    },
-    doCheckUpdate (fromUser = true) {
-      this.$api.update.checkForUpdate(fromUser)
-    },
-    openExternal (url) {
-      this.$api.ipc.openExternal(url)
     },
     onShutdownTipClose (e) {
       this.$confirm({

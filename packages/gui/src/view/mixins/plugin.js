@@ -7,10 +7,12 @@ export default {
   },
   data () {
     return {
+      key: undefined,
       config: undefined,
       status: {},
       labelCol: { span: 4 },
       wrapperCol: { span: 20 },
+      resetDefaultLoading: false,
       applyLoading: false,
       systemPlatform: ''
     }
@@ -29,12 +31,9 @@ export default {
     },
     async init () {
       this.status = this.$status
-
-      const config = await this.$api.config.reload()
-      this.$set(this, 'config', config)
+      await this.reloadConfig()
+      this.printConfig('Init, ')
       this.systemPlatform = await this.$api.info.getSystemPlatform()
-      console.log('config', this.config, this.systemPlatform)
-      // eslint-disable-next-line no-debugger
 
       if (this.ready) {
         return this.ready(this.config)
@@ -57,22 +56,27 @@ export default {
       const key = this.getKey()
       this.$confirm({
         title: '提示',
-        content: '确定要恢复默认设置吗？',
+        content: `确定要恢复当前页面（${this.key}）为默认设置吗？`,
         cancelText: '取消',
         okText: '确定',
         onOk: async () => {
+          this.resetDefaultLoading = true
           this.config = await this.$api.config.resetDefault(key)
           if (this.ready) {
             await this.ready(this.config)
           }
           await this.apply()
+          this.resetDefaultLoading = false
         },
         onCancel () {}
       })
     },
     saveConfig () {
-      return this.$api.config.save(this.config).then(() => {
-        this.$message.info('设置已保存')
+      return this.$api.config.save(this.config).then((ret) => {
+        this.$message.success('设置已保存')
+        this.setConfig(ret.allConfig)
+        this.printConfig('After saveConfig(), ')
+        return ret
       })
     },
     getConfig (key) {
@@ -82,12 +86,33 @@ export default {
       }
       return value
     },
+    setConfig (newConfig) {
+      this.$set(this, 'config', newConfig)
+    },
+    printConfig (prefix = '') {
+      console.log(`${prefix}${this.key} page config:`, this.config, this.systemPlatform)
+    },
     getStatus (key) {
       const value = lodash.get(this.status, key)
       if (value == null) {
         return {}
       }
       return value
+    },
+    async reloadConfig () {
+      const config = await this.$api.config.reload()
+      this.setConfig(config)
+    },
+    async reloadConfigAndRestart () {
+      await this.reloadConfig()
+      this.printConfig('After reloadConfigAndRestart(), ')
+      if (this.status.server.enabled || this.status.proxy.enabled) {
+        await this.$api.proxy.restart()
+        await this.$api.server.restart()
+        this.$message.success('代理服务和系统代理重启成功')
+      } else {
+        this.$message.info('代理服务和系统代理未启动，无需重启')
+      }
     },
     isWindows () {
       return this.systemPlatform === 'windows'

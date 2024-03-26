@@ -1,4 +1,5 @@
 const nodeConfig = require('./config')
+const jsonApi = require('../../../json.js')
 const NodePlugin = function (context) {
   const { config, shell, event, log } = context
   const nodeApi = {
@@ -6,7 +7,7 @@ const NodePlugin = function (context) {
       try {
         await nodeApi.setVariables()
       } catch (err) {
-        log.warn('set variables error', err)
+        log.warn('set variables error:', err)
       }
 
       const ip = '127.0.0.1'
@@ -31,7 +32,7 @@ const NodePlugin = function (context) {
       const ret = await shell.exec(['npm config list --json'], { type: 'cmd' })
       if (ret != null) {
         const json = ret.substring(ret.indexOf('{'))
-        return JSON.parse(json)
+        return jsonApi.parse(json)
       }
       return {}
     },
@@ -60,7 +61,7 @@ const NodePlugin = function (context) {
 
     async setYarnEnv (list) {
       const cmds = []
-      log.debug('yarn set:', JSON.stringify(list))
+      log.debug('yarn set:', jsonApi.stringify(list))
       for (const item of list) {
         if (item.value != null) {
           cmds.push(`yarn config set ${item.key}  ${item.value}`)

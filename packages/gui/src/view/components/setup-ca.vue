@@ -33,7 +33,7 @@
         2、然后按如下图步骤将根证书添加到<b style="color:red">信任的根证书颁发机构</b><br/>
       </template>
     </div>
-    <img width="100%" :src="setupImage" />
+    <img width="100%" :src="setupImage"/>
   </a-drawer>
 </template>
 
@@ -73,8 +73,8 @@ export default {
     }
   },
   methods: {
-    openExternal (url) {
-      this.$api.ipc.openExternal(url)
+    async openExternal (url) {
+      await this.$api.ipc.openExternal(url)
     },
     afterVisibleChange (val) {
     },
