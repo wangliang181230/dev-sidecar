@@ -313,7 +313,7 @@ export default {
 
     },
     addDnsMapping () {
-      this.dnsMappings.unshift({ key: '', value: 'usa' })
+      this.dnsMappings.unshift({ key: '', value: 'quad9' })
     },
 
     // whiteList
