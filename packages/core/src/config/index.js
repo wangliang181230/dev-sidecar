@@ -96,20 +96,15 @@ module.exports = {
           sni: 'baidu.com'
         }
       },
-      'raw.githubusercontent.com': {
-        '.*': {
-          sni: 'baidu.com'
-        }
-      },
       'user-images.githubusercontent.com': {
         '.*': {
           sni: 'baidu.com'
         }
       },
-      'backup.avatars.githubusercontent.com': {
-        desc: '注释：avatars.githubusercontent.com域名直连比较慢，暂时备份掉，如需再拦截，请将上面的 `backup.` 去掉。',
-        '.*': {
-          sni: 'baidu.com'
+      'avatars.githubusercontent.com': {
+        '^/u/\\d+.*$': {
+          cacheDays: 365,
+          desc: '用户头像，缓存1年'
         }
       },
       'api.github.com': {
