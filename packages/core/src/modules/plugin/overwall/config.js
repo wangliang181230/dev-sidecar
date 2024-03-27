@@ -11,7 +11,7 @@ module.exports = {
   },
   targets: {
     '*.github.com': true,
-    '*.*github*.com': true,
+    '*github*.com': true,
     '*.wikimedia.org': true,
     '*.v2ex.com': true,
     '*.azureedge.net': true,

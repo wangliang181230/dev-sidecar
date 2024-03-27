@@ -255,7 +255,7 @@ module.exports = {
       },
       mapping: {
         '*.github.com': 'quad9',
-        '*.*github*.com': 'quad9',
+        '*github*.com': 'quad9',
         '*.github.io': 'quad9',
         '*.docker.com': 'quad9',
         '*.stackoverflow.com': 'quad9',
