@@ -17,7 +17,7 @@ module.exports = {
 
     res.writeHead(302, {
       Location: redirect,
-      'Dev-Sidecar-Interceptor': 'redirect'
+      'DS-Interceptor': 'redirect'
     })
     res.end()
 

@@ -75,7 +75,7 @@ module.exports = {
     log.info('ds_script, filename:', filename, ', `script != null` =', script != null)
     const now = new Date()
     res.writeHead(200, {
-      'Dev-Sidecar-Middleware': 'ds_script',
+      'DS-Middleware': 'ds_script',
       'Content-Type': 'application/javascript; charset=utf-8',
       'Cache-Control': 'public, max-age=31536001, immutable',
       'Last-Modified': now.toUTCString(),

@@ -77,8 +77,10 @@ module.exports = {
       if (rOptions.agent && rOptions.agent.options) {
         rOptions.agent.options.rejectUnauthorized = false
       }
+      res.setHeader('DS-Interceptor', `proxy: ${proxyTarget}, sni: ${interceptOpt.sni}`)
       log.info('proxy intercept: hostname:', originHostname, ', target：', proxyTarget, ', sni replace servername:', rOptions.servername)
     } else {
+      res.setHeader('DS-Interceptor', `proxy: ${proxyTarget}`)
       log.info('proxy intercept: hostname:', originHostname, ', target：', proxyTarget)
     }
 

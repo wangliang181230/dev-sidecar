@@ -14,7 +14,7 @@ module.exports = {
 
     // headers
     const headers = response.headers || {}
-    headers['Dev-Sidecar-Interceptor'] = 'success'
+    headers['DS-Interceptor'] = 'success'
     // headers.Content-Type
     if (status !== 204) {
       // （1）如果没有Content-Type，根据response的内容自动设置

@@ -185,7 +185,7 @@ module.exports = {
 
     // 缓存未过期，直接拦截请求并响应304
     res.writeHead(304, {
-      'Dev-Sidecar-Interceptor': 'cacheReq' + lastModifiedTimeFrom
+      'DS-Interceptor': 'cache: ' + lastModifiedTimeFrom
     })
     res.end()
 
