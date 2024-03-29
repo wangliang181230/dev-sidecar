@@ -34,8 +34,7 @@ module.exports = {
     '*.intlify.dev': true,
     '*.segment.io': true,
     '*.openai.com': true,
-    '*.chatgpt.com': true,
-    '*.oaistatic.com': true
+    '*.chatgpt.com': true
     // '*.mktoresp.com': true,
     // '*.shields.io': true,
     // '*.jsdelivr.net': true,
