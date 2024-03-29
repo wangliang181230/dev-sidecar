@@ -28,7 +28,7 @@ module.exports = (config) => {
   // 插件列表
   const middlewares = []
 
-  // 梯子插件
+  // 梯子插件：如果启用了，则添加到插件列表中
   const overwallMiddleware = createOverwallMiddleware(overwallConfig)
   if (overwallMiddleware) {
     middlewares.push(overwallMiddleware)
@@ -75,7 +75,7 @@ module.exports = (config) => {
       const matchInterceptsOpts = {}
       for (const regexp in interceptOpts) { // 遍历拦截配置
         const interceptOpt = interceptOpts[regexp]
-        interceptOpt.key = regexp
+        // interceptOpt.key = regexp
         if (regexp !== true && regexp !== 'true') {
           if (!matchUtil.isMatched(rOptions.path, regexp)) {
             continue
@@ -87,7 +87,7 @@ module.exports = (config) => {
           if (impl.is && impl.is(interceptOpt)) {
             let action = 'add'
 
-            // 拦截器的order越大，优先级越高
+            // 如果存在同名拦截器，则order值越大，优先级越高
             const matchedInterceptOpt = matchInterceptsOpts[impl.name]
             if (matchedInterceptOpt) {
               if (matchedInterceptOpt.order >= interceptOpt.order) {

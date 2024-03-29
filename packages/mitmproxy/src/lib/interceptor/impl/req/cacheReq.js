@@ -144,18 +144,18 @@ module.exports = {
     const { rOptions, log } = context
 
     if (rOptions.method !== 'GET') {
-      return
+      return // 非GET请求，不拦截
     }
 
     // 获取 Cache-Control 用于判断是否禁用缓存
     const cacheControl = rOptions.headers['cache-control']
     if (cacheControl && (cacheControl.indexOf('no-cache') >= 0 || cacheControl.indexOf('no-store') >= 0)) {
-      return // 禁用缓存，不拦截
+      return // 当前请求指定要禁用缓存，跳过当前拦截器
     }
     // 获取 Pragma 用于判断是否禁用缓存
     const pragma = rOptions.headers.pragma
     if (pragma && (pragma.indexOf('no-cache') >= 0 || pragma.indexOf('no-store') >= 0)) {
-      return // 禁用缓存，不拦截
+      return // 当前请求指定要禁用缓存，跳过当前拦截器
     }
 
     const url = generateUrl(rOptions, log)
@@ -176,8 +176,7 @@ module.exports = {
 
     // 获取maxAge配置
     const maxAge = getMaxAge(interceptOpt)
-
-    // 判断缓存是否过期
+    // 判断缓存是否已过期
     const passTime = Date.now() - lastModifiedTime
     if (passTime > maxAge * 1000) {
       return // 缓存已过期，不拦截

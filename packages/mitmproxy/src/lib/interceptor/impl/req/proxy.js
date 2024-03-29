@@ -21,7 +21,7 @@ module.exports = {
         count.doRank()
       }
       if (count.value == null) {
-        log.error('`count.value` is null, count:', count)
+        log.error('`count.value` is null, the count:', count)
       } else {
         // count.doCount(count.value)
         proxyConf = count.value
@@ -50,6 +50,8 @@ module.exports = {
       proxyTarget = proxyConf + uri
     }
 
+    // eslint-disable-next-line
+    // no-template-curly-in-string
     // eslint-disable-next-line no-template-curly-in-string
     proxyTarget = proxyTarget.replace('${host}', rOptions.hostname)
 

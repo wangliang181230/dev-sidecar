@@ -77,7 +77,7 @@ module.exports = {
     } else {
       res.setHeader('Cache-Control', replaceHeaders.cacheControl)
     }
-    // 替换last-modified、expires
+    // 替换last-modified
     if (originalHeaders.lastModified) {
       proxyRes.rawHeaders[originalHeaders.lastModified.valueIndex] = replaceHeaders.lastModified
     } else {

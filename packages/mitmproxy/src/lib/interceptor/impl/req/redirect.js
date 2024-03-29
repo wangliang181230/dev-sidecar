@@ -15,6 +15,11 @@ module.exports = {
       redirect = interceptOpt.redirect(req.url)
     }
 
+    // eslint-disable-next-line
+    // no-template-curly-in-string
+    // eslint-disable-next-line no-template-curly-in-string
+    redirect = redirect.replace('${host}', rOptions.hostname)
+
     res.writeHead(302, {
       Location: redirect,
       'DS-Interceptor': 'redirect'

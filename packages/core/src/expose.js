@@ -89,7 +89,7 @@ async function shutdown () {
             await plugin[key].close()
             log.info(`插件【${key}】已关闭`)
           } catch (err) {
-            log.info(`插件【${key}】关闭失败:`, err)
+            log.error(`插件【${key}】关闭失败:`, err)
           }
         }
         plugins.push(close())
