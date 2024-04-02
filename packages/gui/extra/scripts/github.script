@@ -177,12 +177,14 @@
 					if (target.tagName === 'DIV' && target.parentElement.id === '__primerPortalRoot__') {
 						addDownloadZIP(target);
 						addGitClone(target);
-						addGitCloneSSH(target);
+						if (addGitCloneSSH(target)) return;
 					} else if (target.tagName === 'DIV' && target.className.indexOf('Box-sc-') != -1) {
 						if (target.querySelector('input[value^="https:"]')) {
-							addGitCloneClear('.XIU2-GCS'); addGitClone(target);
+							addGitCloneClear('.XIU2-GCS');
+							if (addGitClone(target)) return;
 						} else if (target.querySelector('input[value^="git@"]')) {
-							addGitCloneClear('.XIU2-GC'); addGitCloneSSH(target);
+							addGitCloneClear('.XIU2-GC');
+							if (addGitCloneSSH(target)) return;
 						} else if (target.querySelector('input[value^="gh "]')) {
 							addGitCloneClear('.XIU2-GC, .XIU2-GCS');
 						}
@@ -270,6 +272,7 @@
 	function addGitClone(target) {
 		let html = target.querySelector('input[value^="https:"]');
 		if (!html) return;
+		if (!html.nextElementSibling) return true;
 		let href_split = html.value.split(location.host)[1],
 			html_parent = '<div style="margin-top: 4px;" class="XIU2-GC ' + html.parentElement.className + '">',
 			url = '', _html = '', _gitClone = '';
@@ -295,6 +298,7 @@
 	function addGitCloneSSH(target) {
 		let html = target.querySelector('input[value^="git@"]');
 		if (!html) return;
+		if (!html.nextElementSibling) return true;
 		let href_split = html.value.split(':')[1],
 			html_parent = '<div style="margin-top: 4px;" class="XIU2-GCS ' + html.parentElement.className + '">',
 			url = '', _html = '', _gitClone = '';
