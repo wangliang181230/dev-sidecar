@@ -9,9 +9,11 @@ process.env.DS_EXTRA_PATH = path.join(__dirname, '../extra/')
 const log = require('../../utils/util.log')
 const jsonApi = require('@docmirror/dev-sidecar/src/json.js')
 const mergeApi = require('@docmirror/dev-sidecar/src/merge.js')
+
 const getDefaultConfigBasePath = function () {
   return DevSidecar.api.config.get().server.setting.userBasePath
 }
+
 const localApi = {
   /**
    * 返回所有api列表，供vue来ipc调用
@@ -81,7 +83,6 @@ const localApi = {
         // 保存 setting.json
         localApi.setting.save(setting)
       }
-
       return setting
     },
     save (setting = {}) {

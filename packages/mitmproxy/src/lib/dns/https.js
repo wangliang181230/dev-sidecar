@@ -20,7 +20,7 @@ module.exports = class DNSOverHTTPS extends BaseDNS {
       }
       const ret = result.answers.filter(item => { return item.type === 'A' }).map(item => { return item.data })
       if (ret.length === 0) {
-        log.info('该域名没有ipv4地址解析:', hostname)
+        log.info('该域名没有IPv4地址解析:', hostname)
       } else {
         log.info('获取到域名地址：', hostname, JSON.stringify(ret))
       }

@@ -102,19 +102,19 @@
 		return ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'][num]
 	}
 
-	addRelease(); //					 Release 加速
+	addRelease();					  // Release 加速
 	setTimeout(addDownloadZIP, 2000); // Download ZIP 加速
-	setTimeout(addGitClone, 2000); //	Git Clone 加速
+	setTimeout(addGitClone, 2000);	  // Git Clone 加速
 	setTimeout(addGitCloneSSH, 2000); // Git Clone SSH 加速
-	addRawFile(); //					 Raw 加速
+	addRawFile();					  // Raw 加速
 	setTimeout(addRawDownLink, 2000); // 添加 Raw 下载链接（☁），延迟 2 秒执行，避免被 pjax 刷掉
 
 	document.addEventListener('pjax:success',function(){ // pjax 事件发生后
-		addRelease(); //					 Release 加速
+		addRelease();					  // Release 加速
 		setTimeout(addDownloadZIP, 2000); // Download ZIP 加速
-		setTimeout(addGitClone, 2000); //	Git Clone 加速
+		setTimeout(addGitClone, 2000);	  // Git Clone 加速
 		setTimeout(addGitCloneSSH, 2000); // Git Clone SSH 加速
-		addRawFile(); //					 Raw 加速
+		addRawFile();					  // Raw 加速
 		setTimeout(addRawDownLink, 2000); // 添加 Raw 下载链接（☁），延迟 2 秒执行，避免被 pjax 刷掉
 	});
 

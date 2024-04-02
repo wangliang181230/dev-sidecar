@@ -30,7 +30,7 @@
                 <span>PAC没有拦截到的域名，可以在此处定义</span>
               </a-col>
               <a-col :span="2">
-                <a-button  type="primary" icon="plus" @click="addTarget()"/>
+                <a-button type="primary" icon="plus" @click="addTarget()"/>
               </a-col>
             </a-row>
             <a-row :gutter="10"  v-for="(item,index) of targets" :key = 'index'>
@@ -38,7 +38,7 @@
                 <a-input  v-model="item.key"></a-input>
               </a-col>
               <a-col :span="2">
-                <a-button  type="danger" icon="minus" @click="deleteTarget(item,index)"/>
+                <a-button type="danger" icon="minus" @click="deleteTarget(item,index)"/>
               </a-col>
             </a-row>
           </div>
@@ -50,7 +50,7 @@
                 <span>Nginx二层代理服务端配置</span>
               </a-col>
               <a-col :span="2">
-                <a-button  type="primary" icon="plus" @click="addServer()"/>
+                <a-button type="primary" icon="plus" @click="addServer()"/>
               </a-col>
             </a-row>
             <a-row :gutter="10"  v-for="(item,index) of servers" :key = 'index'>
@@ -67,7 +67,7 @@
                 <a-input addon-before="密码" type="password" placeholder="password" v-model="item.value.password"/>
               </a-col>
               <a-col :span="2">
-                <a-button  type="danger" icon="minus" @click="deleteServer(item,index)"/>
+                <a-button type="danger" icon="minus" @click="deleteServer(item,index)"/>
               </a-col>
             </a-row>
             <div class="form-help">您可以在此处配置你自己的服务器地址</div>

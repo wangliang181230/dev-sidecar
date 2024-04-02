@@ -1,6 +1,6 @@
+const jsonApi = require('../src/json.js')
 const DevSidecar = require('../index')
 const fs = require('fs')
-const jsonApi = require('../src/json.js')
 const log = require('../src/utils/util.log')
 
 // 启动服务

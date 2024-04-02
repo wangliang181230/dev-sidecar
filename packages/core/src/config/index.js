@@ -169,14 +169,10 @@ module.exports = {
         }
       },
       'www.google.com': {
-        '/recaptcha/.*': {
-          proxy: 'www.recaptcha.net'
-        }
+        '/recaptcha/.*': { proxy: 'www.recaptcha.net' }
       },
       'www.gstatic.com': {
-        '/recaptcha/.*': {
-          proxy: 'www.recaptcha.net'
-        }
+        '/recaptcha/.*': { proxy: 'www.recaptcha.net' }
       },
       'ajax.googleapis.com': {
         '.*': {

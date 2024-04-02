@@ -24,7 +24,7 @@
           <div>某些域名有时候需要通过其他DNS服务器获取到的IP才可以访问</div>
           <a-row style="margin-top:10px">
             <a-col>
-              <a-button  type="primary" icon="plus" @click="addDnsMapping()"/>
+              <a-button type="primary" icon="plus" @click="addDnsMapping()"/>
             </a-col>
           </a-row>
           <a-row :gutter="10" style="margin-top: 10px" v-for="(item,index) of dnsMappings" :key = 'index'>
@@ -42,7 +42,6 @@
               <a-button v-if="item.value === false" style="margin-left:10px" type="primary" icon="checked" @click="restoreDefDnsMapping(item,index)" ></a-button>
             </a-col>
           </a-row>
-
         </div>
       </a-tab-pane>
       <a-tab-pane tab="环境变量" key="3">
@@ -198,7 +197,7 @@ export default {
 
     },
     addDnsMapping () {
-      this.dnsMappings.unshift({ key: '', value: 'usa' })
+      this.dnsMappings.unshift({ key: '', value: 'quad9' })
     },
     doSetNpmVariablesNow () {
       this.syncTargetConfig()

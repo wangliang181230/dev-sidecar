@@ -77,9 +77,9 @@ module.exports = {
     res.writeHead(200, {
       'DS-Middleware': 'ds_script',
       'Content-Type': 'application/javascript; charset=utf-8',
-      'Cache-Control': 'public, max-age=31536001, immutable',
+      'Cache-Control': 'public, max-age=86401, immutable', // 缓存1天
       'Last-Modified': now.toUTCString(),
-      Expires: new Date(now.getTime() + 31536000000).toUTCString(),
+      Expires: new Date(now.getTime() + 86400000).toUTCString(), // 缓存1天
       Date: new Date().toUTCString()
     })
     res.write(script.script)

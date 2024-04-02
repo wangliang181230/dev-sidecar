@@ -40,6 +40,9 @@ export default {
       }
     },
     async apply () {
+      if (this.applyLoading === true) {
+        return // 防重复提交
+      }
       this.applyLoading = true
       await this.applyBefore()
       await this.saveConfig()

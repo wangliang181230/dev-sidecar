@@ -1,8 +1,9 @@
-const jsonApi = require('../src/json.js')
-const log = require('../src/utils/util.log')
 const server = require('@docmirror/mitmproxy')
+const jsonApi = require('../src/json.js')
 const path = require('path')
 const home = process.env.USER_HOME || process.env.HOME || 'C:/Users/Administrator/'
+const log = require('../src/utils/util.log')
+
 let configPath
 if (process.argv && process.argv.length > 3) {
   configPath = process.argv[2]
