@@ -21,7 +21,7 @@ module.exports = {
         count.doRank()
       }
       if (count.value == null) {
-        log.error('`count.value` is null, count:', count)
+        log.error('`count.value` is null, the count:', count)
       } else {
         // count.doCount(count.value)
         proxyConf = count.value
@@ -50,6 +50,8 @@ module.exports = {
       proxyTarget = proxyConf + uri
     }
 
+    // eslint-disable-next-line
+    // no-template-curly-in-string
     // eslint-disable-next-line no-template-curly-in-string
     proxyTarget = proxyTarget.replace('${host}', rOptions.hostname)
 
@@ -77,8 +79,10 @@ module.exports = {
       if (rOptions.agent && rOptions.agent.options) {
         rOptions.agent.options.rejectUnauthorized = false
       }
+      res.setHeader('DS-Interceptor', `proxy: ${proxyTarget}, sni: ${interceptOpt.sni}`)
       log.info('proxy intercept: hostname:', originHostname, ', target：', proxyTarget, ', sni replace servername:', rOptions.servername)
     } else {
+      res.setHeader('DS-Interceptor', `proxy: ${proxyTarget}`)
       log.info('proxy intercept: hostname:', originHostname, ', target：', proxyTarget)
     }
 

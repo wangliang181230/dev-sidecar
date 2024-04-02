@@ -1,14 +1,14 @@
 const fs = require('fs')
-const jsonApi = require('./json.js')
 const Shell = require('./shell')
 const lodash = require('lodash')
 const defConfig = require('./config/index.js')
+const jsonApi = require('./json.js')
 const request = require('request')
 const path = require('path')
 const log = require('./utils/util.log')
-let configTarget = lodash.cloneDeep(defConfig)
-
 const mergeApi = require('./merge.js')
+
+let configTarget = lodash.cloneDeep(defConfig)
 
 function get () {
   return configTarget
@@ -18,12 +18,12 @@ const getDefaultConfigBasePath = function () {
   return get().server.setting.userBasePath
 }
 
-function _getRemoteSavePath () {
+function _getRemoteSavePath (prefix = '') {
   const dir = getDefaultConfigBasePath()
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
   }
-  return path.join(dir, 'remote_config.json')
+  return path.join(dir, prefix + 'remote_config.json')
 }
 
 function _getConfigPath () {

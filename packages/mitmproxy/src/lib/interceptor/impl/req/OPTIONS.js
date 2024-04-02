@@ -29,7 +29,7 @@ module.exports = {
 
     const headers = {
       // 允许跨域
-      'Dev-Sidecar-Interceptor': 'options',
+      'DS-Interceptor': 'options',
       'Access-Control-Allow-Origin': rOptions.headers.origin,
       'Access-Control-Allow-Headers': allowHeaders,
       'Access-Control-Allow-Methods': allowMethods,

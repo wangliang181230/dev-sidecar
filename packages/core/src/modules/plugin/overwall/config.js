@@ -11,7 +11,7 @@ module.exports = {
   },
   targets: {
     '*.github.com': true,
-    '*.*github*.com': true,
+    '*github*.com': true,
     '*.wikimedia.org': true,
     '*.v2ex.com': true,
     '*.azureedge.net': true,
@@ -19,7 +19,6 @@ module.exports = {
     // '*.bing.com': true,
     '*.discourse-cdn.com': true,
     '*.gravatar.com': true,
-    '*.docker.com': true,
     '*.vueuse.org': true,
     '*.elastic.co': true,
     '*.optimizely.com': true,
@@ -35,8 +34,7 @@ module.exports = {
     '*.intlify.dev': true,
     '*.segment.io': true,
     '*.openai.com': true,
-    '*.chatgpt.com': true,
-    '*.oaistatic.com': true
+    '*.chatgpt.com': true
     // '*.mktoresp.com': true,
     // '*.shields.io': true,
     // '*.jsdelivr.net': true,

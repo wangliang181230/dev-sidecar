@@ -1,7 +1,7 @@
 <template>
   <ds-container>
     <template slot="header">
-      系统代理设置
+      加速服务设置
       <span>
       </span>
     </template>
@@ -138,7 +138,6 @@
 <!--              <a-button  type="danger" icon="minus" @click="deleteSniList(item,index)"/>-->
 <!--            </a-col>-->
 <!--          </a-row>-->
-
 <!--        </a-tab-pane>-->
         <a-tab-pane tab="IP测速" key="6">
           <div>
@@ -201,7 +200,6 @@
                 </a-card>
               </a-col>
             </a-row>
-
           </div>
         </a-tab-pane>
       </a-tabs>
@@ -213,7 +211,6 @@
       </div>
     </template>
   </ds-container>
-
 </template>
 
 <script>
@@ -313,7 +310,7 @@ export default {
 
     },
     addDnsMapping () {
-      this.dnsMappings.unshift({ key: '', value: 'usa' })
+      this.dnsMappings.unshift({ key: '', value: 'quad9' })
     },
 
     // whiteList

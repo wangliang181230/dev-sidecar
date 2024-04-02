@@ -68,142 +68,138 @@ module.exports = {
           desc: 'clone加速复制链接脚本'
         },
         '/.*': {
-          proxy: 'github.com',
+          desc: '目前禁掉sni就可以直接访问，如果后续github.com的ip被封锁，只能再走proxy模式',
           sni: 'baidu.com'
+        },
+        '/fluidicon.png': {
+          cacheDays: 365,
+          desc: 'Github那只猫的图片，缓存1年'
+        },
+        '^(/[^/]+){2}/pull/\\d+/open_with_menu.*$': {
+          cacheDays: 7,
+          desc: 'PR详情页：标题右边那个Code按钮的HTML代理请求地址，感觉上应该可以缓存。暂时先设置为缓存7天'
         }
       },
       'github-releases.githubusercontent.com': {
         '.*': {
-          proxy: 'github-releases.githubusercontent.com',
           sni: 'baidu.com'
         }
       },
       'github.githubassets.com': {
         '.*': {
-          proxy: 'github.githubassets.com',
           sni: 'baidu.com'
         }
       },
       'camo.githubusercontent.com': {
         '.*': {
-          proxy: 'camo.githubusercontent.com',
           sni: 'baidu.com'
+        },
+        '^[a-zA-Z0-9/]+(\\?.*)?$': {
+          cacheDays: 365,
+          desc: '图片，缓存1年'
         }
       },
       'collector.github.com': {
         '.*': {
-          proxy: 'collector.github.com',
           sni: 'baidu.com'
         }
       },
       'customer-stories-feed.github.com': {
         '.*': {
-          proxy: 'customer-stories-feed.github.com',
           sni: 'baidu.com'
         }
       },
       'raw.githubusercontent.com': {
         '.*': {
-          proxy: 'raw.githubusercontent.com',
           sni: 'baidu.com'
         }
       },
       'user-images.githubusercontent.com': {
         '.*': {
-          proxy: 'user-images.githubusercontent.com',
           sni: 'baidu.com'
+        },
+        '^/.*\\.png(\\?.*)?$': {
+          cacheDays: 365,
+          desc: '用户在PR或issue等内容中上传的图片，缓存1年。注：每张图片都有唯一的ID，不会重复，可以安心缓存'
         }
       },
-      'backup.avatars.githubusercontent.com': {
-        desc: '注释：avatars.githubusercontent.com域名直连比较慢，暂时备份掉，如需再拦截，请将上面的 `backup.` 去掉。',
+      'private-user-images.githubusercontent.com': {
         '.*': {
-          proxy: 'avatars.githubusercontent.com',
           sni: 'baidu.com'
+        },
+        '^/.*\\.png(\\?.*)?$': {
+          cacheHours: 1,
+          desc: '用户在PR或issue等内容中上传的图片，缓存1小时就够了，因为每次刷新页面都是不一样的链接。'
+        }
+      },
+      'avatars.githubusercontent.com': {
+        '.*': {
+          sni: 'baidu.com'
+        },
+        '^/u/\\d+(\\?.*)?$': {
+          cacheDays: 365,
+          desc: '用户头像，缓存1年'
         }
       },
       'api.github.com': {
-        '/_private/browser/stats': {
+        '^/_private/browser/stats$': {
           success: true,
           desc: 'github的访问速度分析上传，没有必要，直接返回成功'
         }
       },
       'hub.docker.com': {
         '.*': {
-          proxy: 'hub.docker.com',
           sni: 'baidu.com'
         }
       },
       'api.dso.docker.com': {
         '.*': {
-          proxy: 'api.dso.docker.com',
+          sni: 'baidu.com'
+        }
+      },
+      'login.docker.com': {
+        '/favicon.ico': {
+          proxy: 'hub.docker.com',
           sni: 'baidu.com'
         }
       },
       'api.segment.io': {
         '.*': {
-          proxy: 'api.segment.io',
           sni: 'baidu.com'
         }
       },
       'www.google.com': {
-        '/recaptcha/.*': {
-          proxy: 'www.recaptcha.net'
-        }
+        '/recaptcha/.*': { proxy: 'www.recaptcha.net' }
       },
       'www.gstatic.com': {
-        '/recaptcha/.*': {
-          proxy: 'www.recaptcha.net'
-        }
+        '/recaptcha/.*': { proxy: 'www.recaptcha.net' }
       },
       'ajax.googleapis.com': {
         '.*': {
           proxy: 'ajax.lug.ustc.edu.cn',
-          backup: [
-            'gapis.geekzu.org'
-          ],
+          backup: ['gapis.geekzu.org'],
           test: 'ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js'
         }
       },
       'fonts.googleapis.com': {
         '.*': {
           proxy: 'fonts.geekzu.org',
-          backup: [
-            'fonts.loli.net'
-          ],
+          backup: ['fonts.loli.net'],
           test: 'https://fonts.googleapis.com/css?family=Oswald'
         }
       },
       'themes.googleapis.com': {
         '.*': {
           proxy: 'themes.loli.net',
-          backup: [
-            'themes.proxy.ustclug.org'
-          ]
+          backup: ['themes.proxy.ustclug.org']
         }
       },
       'themes.googleusercontent.com': {
-        '.*': {
-          proxy: 'google-themes.proxy.ustclug.org'
-        }
+        '.*': { proxy: 'google-themes.proxy.ustclug.org' }
       },
-      'clients*.google.com': {
-        '.*': {
-          abort: false,
-          desc: '设置abort：true可以快速失败，节省时间'
-        }
-      },
-      'www.googleapis.com': {
-        '.*': {
-          abort: false,
-          desc: '设置abort：true可以快速失败，节省时间'
-        }
-      },
-      'lh*.googleusercontent.com': {
-        '.*': {
-          abort: false,
-          desc: '设置abort：true可以快速失败，节省时间'
-        }
-      },
+      'clients*.google.com': { '.*': { abort: false, desc: '设置abort：true可以快速失败，节省时间' } },
+      'www.googleapis.com': { '.*': { abort: false, desc: '设置abort：true可以快速失败，节省时间' } },
+      'lh*.googleusercontent.com': { '.*': { abort: false, desc: '设置abort：true可以快速失败，节省时间' } },
       '*.s3.1amazonaws1.com': {
         '/sqlite3/.*': {
           redirect: 'npm.taobao.org/mirrors'
@@ -261,10 +257,9 @@ module.exports = {
       },
       mapping: {
         '*.github.com': 'quad9',
-        '*.*github*.com': 'quad9',
+        '*github*.com': 'quad9',
         '*.github.io': 'quad9',
         '*.docker.com': 'quad9',
-        '*.docker*.com': 'quad9',
         '*.stackoverflow.com': 'quad9',
         '*.electronjs.org': 'quad9',
         '*.amazonaws.com': 'quad9',

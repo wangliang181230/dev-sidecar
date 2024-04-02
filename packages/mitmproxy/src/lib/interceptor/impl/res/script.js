@@ -32,13 +32,13 @@ module.exports = {
         const scriptTag = getScript(key, script.script)
         tags += '\r\n' + scriptTag
       }
-      res.setHeader('Dev-Sidecar-Script-Response-Interceptor', 'true')
+      res.setHeader('DS-Script-Interceptor', 'true')
       log.info('script response intercept: insert script', rOptions.hostname, rOptions.path, ', head:', tags)
       return {
         head: tags
       }
     } catch (err) {
-      res.setHeader('Dev-Sidecar-Script-Response-Interceptor', 'error')
+      res.setHeader('DS-Script-Interceptor', 'error')
       log.error('load monkey script error', err)
     }
   },

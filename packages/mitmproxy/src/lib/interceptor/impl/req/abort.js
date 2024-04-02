@@ -8,7 +8,7 @@ module.exports = {
 
     res.writeHead(status, {
       'Content-Type': 'text/plain; charset=utf-8',
-      'Dev-Sidecar-Interceptor': 'abort'
+      'DS-Interceptor': 'abort'
     })
     res.write(
       `DevSidecar ${status}: Request abort.\n\n` +

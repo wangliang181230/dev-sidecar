@@ -32,7 +32,7 @@ function domainMapRegexply (hostMap) {
 }
 
 function matchHostname (hostMap, hostname, action) {
-  // log.debug('matchHostname:', action, hostMap)
+  // log.error('matchHostname:', action, hostMap)
 
   if (hostMap == null) {
     log.warn(`matchHostname: ${action}: '${hostname}' Not-Matched, hostMap is null`)
@@ -94,43 +94,33 @@ function merge (oldObj, newObj) {
     }
   })
 }
+function deleteNullItems (target) {
+  lodash.forEach(target, (item, key) => {
+    if (item == null || item === '[delete]') {
+      delete target[key]
+    }
+    if (lodash.isObject(item)) {
+      deleteNullItems(item)
+    }
+  })
+}
 
 function matchHostnameAll (hostMap, hostname, action) {
-  // log.debug('matchHostnameAll:', action, hostMap)
+  // log.debug('matchHostname-all:', action, hostMap)
 
   if (hostMap == null) {
-    log.warn(`matchHostnameAll: ${action}: '${hostname}', hostMap is null`)
+    log.warn(`matchHostname-all: ${action}: '${hostname}', hostMap is null`)
     return null
   }
   if (hostMap.origin == null) {
-    log.warn(`matchHostnameAll: ${action}: '${hostname}', hostMap.origin is null`)
+    log.warn(`matchHostname-all: ${action}: '${hostname}', hostMap.origin is null`)
     return null
   }
 
   let values = {}
-  let hasValue = false
+  let value
 
-  // 域名快速匹配：直接匹配 或者 两种前缀通配符匹配
-  let value = hostMap.origin[hostname]
-  if (value) {
-    log.info(`matchHostnameAll: ${action}: '${hostname}' -> '${hostname}': ${JSON.stringify(value)}`)
-    values = merge(values, value)
-    hasValue = true
-  }
-  value = hostMap.origin['*' + hostname]
-  if (value) {
-    log.info(`matchHostnameAll: ${action}: '${hostname}' -> '*${hostname}': ${JSON.stringify(value)}`)
-    values = merge(values, value)
-    hasValue = true
-  }
-  value = hostMap.origin['*.' + hostname]
-  if (value) {
-    log.info(`matchHostnameAll: ${action}: '${hostname}' -> '*.${hostname}': ${JSON.stringify(value)}`)
-    values = merge(values, value)
-    hasValue = true
-  }
-
-  // 通配符匹配 或 正则表达式匹配
+  // 通配符匹配 或 正则表达式匹配（优先级：1，最低）
   for (const target in hostMap) {
     if (target === 'origin') {
       continue
@@ -149,17 +139,37 @@ function matchHostnameAll (hostMap, hostname, action) {
     // 正则表达式匹配
     if (hostname.match(regexp)) {
       value = hostMap[target]
-      // log.info(`matchHostname: ${action}: '${hostname}' -> '${target}': ${JSON.stringify(value)}`)
+      log.info(`matchHostname-one: ${action}: '${hostname}' -> '${target}': ${JSON.stringify(value)}`)
       values = merge(values, value)
-      hasValue = true
     }
   }
 
-  if (hasValue) {
-    log.info(`*matchHostnameAll*: ${action}: '${hostname}':`, JSON.stringify(values))
+  // 域名快速匹配：直接匹配 或者 两种前缀通配符匹配
+  // 优先级：2
+  value = hostMap.origin['*' + hostname]
+  if (value) {
+    log.info(`matchHostname-one: ${action}: '${hostname}' -> '*${hostname}': ${JSON.stringify(value)}`)
+    values = merge(values, value)
+  }
+  // 优先级：3
+  value = hostMap.origin['*.' + hostname]
+  if (value) {
+    log.info(`matchHostname-one: ${action}: '${hostname}' -> '*.${hostname}': ${JSON.stringify(value)}`)
+    values = merge(values, value)
+  }
+  // 优先级：4，最高（注：优先级高的配置，可以覆盖优先级低的配置，甚至有空配置时，可以移除已有配置）
+  value = hostMap.origin[hostname]
+  if (value) {
+    log.info(`matchHostname-one: ${action}: '${hostname}' -> '${hostname}': ${JSON.stringify(value)}`)
+    values = merge(values, value)
+  }
+
+  if (!lodash.isEmpty(values)) {
+    deleteNullItems(values)
+    log.info(`matchHostname-all: ${action}: '${hostname}':`, JSON.stringify(values))
     return values
   } else {
-    log.debug(`*matchHostnameAll*: ${action}: '${hostname}' Not-Matched`)
+    log.debug(`matchHostname-all: ${action}: '${hostname}' Not-Matched`)
   }
 }
 
