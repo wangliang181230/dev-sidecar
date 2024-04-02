@@ -232,7 +232,7 @@
 	// Download ZIP
 	function addDownloadZIP(target) {
 		let html = target.querySelector('ul[class^=List__ListBox-sc-] ul[class^=List__ListBox-sc-]>li:last-child');
-		if (!html) return
+		if (!html) return;
 		let href_script = document.querySelector('react-partial[partial-name=repos-overview]>script[data-target="react-partial.embeddedData"]'),
 			href_slice = href_script.textContent.slice(href_script.textContent.indexOf('"zipballUrl":"')+14),
 			href = href_slice.slice(0, href_slice.indexOf('"')),
@@ -278,7 +278,6 @@
 		// 克隆原 Git Clone 元素
 		let html_clone = html.cloneNode(true);
 		for (let i=0;i<clone_url.length;i++) {
-			console.info(i);
 			if (clone_url[i][0] === 'https://gitclone.com') {
 				url = _gitClone + clone_url[i][0] + '/github.com' + href_split
 			} else {
