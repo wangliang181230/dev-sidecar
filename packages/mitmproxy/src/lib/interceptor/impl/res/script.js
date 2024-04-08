@@ -38,7 +38,7 @@ module.exports = {
         const scriptTag = getScript(key, script.script)
         tags += '\r\n' + scriptTag
       }
-      res.setHeader('DS-Script-Interceptor', tags)
+      res.setHeader('DS-Script-Interceptor', 'true')
       log.info('script response intercept: insert script', rOptions.hostname, rOptions.path, ', head:', tags)
       return {
         head: tags
