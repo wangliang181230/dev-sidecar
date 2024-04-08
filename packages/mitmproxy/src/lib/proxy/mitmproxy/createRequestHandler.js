@@ -123,17 +123,25 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           }
 
           let isDnsIntercept
-          if (dnsConfig) {
-            const dns = DnsUtil.hasDnsLookup(dnsConfig, rOptions.hostname)
+          if (dnsConfig && dnsConfig.providers) {
+            let dns = DnsUtil.hasDnsLookup(dnsConfig, rOptions.hostname)
+            if (!dns && rOptions.servername) {
+              dns = dnsConfig.providers.quad9
+              if (dns) {
+                log.info(`域名 ${rOptions.hostname} 在dns中未配置，但使用了 sni: ${rOptions.servername}, 必须使用dns，现默认使用 'quad9' DNS.`)
+              }
+            }
             if (dns) {
               rOptions.lookup = (hostname, options, callback) => {
-                const tester = speedTest.getSpeedTester(hostname)
-                if (tester) {
-                  const ip = tester.pickFastAliveIp()
-                  if (ip) {
-                    log.info(`----- hostname: ${hostname}, use alive ip: ${ip} -----`)
-                    callback(null, ip, 4)
-                    return
+                if (hostname !== 'github.com') {
+                  const tester = speedTest.getSpeedTester(hostname)
+                  if (tester) {
+                    const ip = tester.pickFastAliveIp()
+                    if (ip) {
+                      log.info(`----- hostname: ${hostname}, use alive ip: ${ip} -----`)
+                      callback(null, ip, 4)
+                      return
+                    }
                   }
                 }
                 dns.lookup(hostname).then(ip => {
