@@ -17,6 +17,12 @@ module.exports = {
   priority: 202,
   responseIntercept (context, interceptOpt, req, res, proxyReq, proxyRes, ssl, next) {
     const { rOptions, log, setting } = context
+
+    // github特殊处理
+    if (rOptions.hostname === 'github.com' && rOptions.headers['Turbo-Frame'] === 'repo-content-turbo-frame') {
+      return
+    }
+
     let keys = interceptOpt.script
     if (typeof keys === 'string') {
       keys = [keys]

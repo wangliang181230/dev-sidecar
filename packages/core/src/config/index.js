@@ -61,13 +61,13 @@ module.exports = {
         '/.*/.*/blame/': {
           redirect: 'gh.api.99988866.xyz/https://github.com'
         },
-        '^/[^/]+/[^/]+(/releases(/.*)?)?$': {
+        '^(/[^/]+){2}([/?].*)?$': {
           script: [
             'github'
           ],
           desc: 'clone加速复制链接脚本'
         },
-        '/.*': {
+        '.*': {
           desc: '目前禁掉sni就可以直接访问，如果后续github.com的ip被封锁，只能再走proxy模式',
           sni: 'baidu.com'
         },
@@ -78,6 +78,12 @@ module.exports = {
         '^(/[^/]+){2}/pull/\\d+/open_with_menu.*$': {
           cacheDays: 7,
           desc: 'PR详情页：标题右边那个Code按钮的HTML代理请求地址，感觉上应该可以缓存。暂时先设置为缓存7天'
+        },
+        '^((/[^/]+){2,})/raw((/[^/]+)+\\.(jpg|jpeg|png|gif))(\\?.*)?$': {
+          // eslint-disable-next-line no-template-curly-in-string
+          proxy: 'https://raw.githubusercontent.com${m[1]}${m[3]}',
+          cacheDays: 7,
+          desc: '仓库内图片，重定向改为代理，并缓存7天。'
         }
       },
       'github-releases.githubusercontent.com': {

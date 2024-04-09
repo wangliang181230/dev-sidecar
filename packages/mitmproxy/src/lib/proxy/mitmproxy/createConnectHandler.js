@@ -65,13 +65,15 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
       const dns = DnsUtil.hasDnsLookup(dnsConfig, hostname)
       if (dns) {
         options.lookup = (hostname, options, callback) => {
-          const tester = speedTest.getSpeedTester(hostname)
-          if (tester) {
-            const ip = tester.pickFastAliveIp()
-            if (ip) {
-              log.info(`-----${hostname} use alive ip:${ip}-----`)
-              callback(null, ip, 4)
-              return
+          if (hostname !== 'github.com') {
+            const tester = speedTest.getSpeedTester(hostname)
+            if (tester) {
+              const ip = tester.pickFastAliveIp()
+              if (ip) {
+                log.info(`-----${hostname} use alive ip:${ip}-----`)
+                callback(null, ip, 4)
+                return
+              }
             }
           }
           dns.lookup(hostname).then(ip => {
