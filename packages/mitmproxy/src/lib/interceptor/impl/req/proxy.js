@@ -24,7 +24,7 @@ function doProxy (proxyConf, rOptions, req, interceptOpt) {
   // eslint-disable-next-line no-template-curly-in-string
   proxyTarget = proxyTarget.replace('${host}', rOptions.hostname)
 
-  const proxy = proxyTarget.indexOf('http') === 0 ? proxyTarget : rOptions.protocol + '//' + proxyTarget
+  const proxy = proxyTarget.indexOf('http:') === 0 || proxyTarget.indexOf('https:') === 0 ? proxyTarget : rOptions.protocol + '//' + proxyTarget
   // eslint-disable-next-line node/no-deprecated-api
   const URL = url.parse(proxy)
   rOptions.origional = lodash.cloneDeep(rOptions) // 备份原始请求参数
@@ -76,7 +76,7 @@ module.exports = {
       }
     }
 
-    // 执行代理，替换地址
+    // 替换 rOptions 中的地址，并返回代理目标地址
     const proxyTarget = doProxy(proxyConf, rOptions, req, interceptOpt)
 
     if (context.requestCount) {
