@@ -37,8 +37,10 @@ module.exports = {
       }
     }
     // headers.Access-Control-Allow-*：避免跨域问题
-    headers['Access-Control-Allow-Credentials'] = 'true'
-    headers['Access-Control-Allow-Origin'] = '*'
+    if (rOptions.headers.origin) {
+      headers['Access-Control-Allow-Credentials'] = 'true'
+      headers['Access-Control-Allow-Origin'] = rOptions.headers.origin
+    }
 
     res.writeHead(status, headers)
     if (status !== 204) {
