@@ -12,9 +12,9 @@ function buildScript (sc, content, scriptName) {
   return 'window.addEventListener("load", ()=> {\r\n' +
     grantStr +
     content +
-    scriptName ? `\r\nconsole.log("ds_${scriptName} completed"))` : '' +
+    (scriptName ? `\r\nconsole.log("ds_${scriptName} completed"))` : '') +
     '\r\n})' +
-    scriptName ? `\r\nconsole.log("ds_${scriptName} loaded"))` : ''
+    (scriptName ? `\r\nconsole.log("ds_${scriptName} loaded"))` : '')
 }
 
 function loadScript (content, scriptName) {
