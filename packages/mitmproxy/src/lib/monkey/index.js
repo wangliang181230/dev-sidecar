@@ -6,11 +6,14 @@ let scripts
 function buildScript (sc, content, scriptName) {
   let grantStr = ''
   for (const item of sc.grant) {
-    grantStr += (item.indexOf('.') > 0 ? '' : 'const ') + item + ' = window.__ds_global__[\'' + item + '\'];\r\n'
+    if (grantStr.length > 0) {
+      grantStr += '\r\n'
+    }
+    grantStr += (item.indexOf('.') > 0 ? '' : 'const ') + item + ' = window.__ds_global__[\'' + item + '\']'
   }
 
   return 'window.addEventListener("load", ()=> {\r\n' +
-    grantStr +
+    grantStr + ';\r\n' +
     content +
     (scriptName ? `\r\nconsole.log("ds_${scriptName} completed")` : '') +
     '\r\n})' +
