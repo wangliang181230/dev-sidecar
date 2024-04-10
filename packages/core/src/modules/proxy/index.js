@@ -120,6 +120,10 @@ module.exports = {
       // Maven Repository
       '*.mvnrepository.com': true,
 
+      // 苹果
+      '*.apple.com': true,
+      '*.icloud.com': true,
+
       // 微软
       '*.microsoft.com': true,
       '*.windows.com': true,
