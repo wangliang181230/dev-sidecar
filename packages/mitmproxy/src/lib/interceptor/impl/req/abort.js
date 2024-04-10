@@ -4,14 +4,12 @@ module.exports = {
   requestIntercept (context, interceptOpt, req, res, ssl, next) {
     const { rOptions, log } = context
 
-    const status = interceptOpt.status || 403
-
-    res.writeHead(status, {
+    res.writeHead(403, {
       'Content-Type': 'text/plain; charset=utf-8',
       'DS-Interceptor': 'abort'
     })
     res.write(
-      `DevSidecar ${status}: Request abort.\n\n` +
+      'DevSidecar 403: Request abort.\r\n\r\n' +
       '  This request is matched by abort intercept.\r\n' +
       '  因配置abort拦截器，本请求直接返回403禁止访问。'
     )

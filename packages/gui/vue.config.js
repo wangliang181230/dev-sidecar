@@ -18,7 +18,7 @@ module.exports = {
       module: {
         rules: [
           {
-            test: /\.json$/i,
+            test: /\.json5$/i,
             loader: 'json5-loader',
             options: {
               esModule: false

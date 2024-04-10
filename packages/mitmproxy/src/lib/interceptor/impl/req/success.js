@@ -8,8 +8,8 @@ module.exports = {
     const status = response.status || 200
 
     const body = response.html || response.json || response.script || response.css || response.text || response.body ||
-      `DevSidecar ${status}: Request success.\n\n` +
-      '  This request is matched by success intercept.\n\n' +
+      `DevSidecar ${status}: Request success.\r\n\r\n` +
+      '  This request is matched by success intercept.\r\n' +
       '  因配置success拦截器，本请求直接返回200成功。'
 
     // headers

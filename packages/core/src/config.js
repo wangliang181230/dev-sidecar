@@ -161,7 +161,7 @@ const configApi = {
     const diffConfig = mergeApi.doDiff(defConfig, newConfig)
     const configPath = _getConfigPath()
     fs.writeFileSync(configPath, jsonApi.stringify(diffConfig))
-    log.info('保存 config.json 成功:', configPath)
+    log.info('保存 config.json 自定义配置文件成功:', configPath)
 
     // 重载配置
     const allConfig = configApi.set(diffConfig)

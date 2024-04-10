@@ -6,8 +6,8 @@ import path from 'path'
 const pk = require('../../../package.json')
 const mitmproxyPath = path.join(__dirname, 'mitmproxy.js')
 process.env.DS_EXTRA_PATH = path.join(__dirname, '../extra/')
-const log = require('../../utils/util.log')
 const jsonApi = require('@docmirror/dev-sidecar/src/json.js')
+const log = require('../../utils/util.log')
 
 const getDefaultConfigBasePath = function () {
   return DevSidecar.api.config.get().server.setting.userBasePath
@@ -49,8 +49,12 @@ const localApi = {
       let setting = {}
       if (fs.existsSync(settingPath)) {
         const file = fs.readFileSync(settingPath)
-        log.info('读取 setting.json 成功:', settingPath)
-        setting = jsonApi.parse(file.toString())
+        try {
+          setting = jsonApi.parse(file.toString())
+          log.info('读取 setting.json 成功:', settingPath)
+        } catch (e) {
+          log.error('读取 setting.json 失败:', settingPath, ', error:', e)
+        }
         if (setting == null) {
           setting = {}
         }
@@ -60,7 +64,7 @@ const localApi = {
       }
 
       if (setting.installTime == null) {
-        // 初始化安装时间
+        // 设置安装时间
         const date = new Date() // 创建一个表示当前日期和时间的 Date 对象
         const year = date.getFullYear() // 获取年份
         const month = String(date.getMonth() + 1).padStart(2, '0') // 获取月份（注意月份从 0 开始计数）
@@ -87,7 +91,7 @@ const localApi = {
     save (setting = {}) {
       const settingPath = _getSettingsPath()
       fs.writeFileSync(settingPath, jsonApi.stringify(setting))
-      log.info('保存 setting.json 成功:', settingPath)
+      log.info('保存 setting.json 配置文件成功:', settingPath)
     }
   },
   /**
