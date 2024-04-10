@@ -6,7 +6,7 @@ let scripts
 function buildScript (sc, content, scriptName) {
   let grantStr = ''
   for (const item of sc.grant) {
-    grantStr += (item.indexOf('.') > 0 ? '' : 'const ') + item + ' = window.__ds_global__[\'' + item + '\']\r\n'
+    grantStr += (item.indexOf('.') > 0 ? '' : 'const ') + item + ' = window.__ds_global__[\'' + item + '\'];\r\n'
   }
 
   return 'window.addEventListener("load", ()=> {\r\n' +
