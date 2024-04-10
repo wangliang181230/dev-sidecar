@@ -5,8 +5,6 @@ const log = require('../../../../utils/util.log')
 function createPacClient (pacFilePath) {
   const __PROXY__ = 'PROXY 127.0.0.1:1080;'
 
-  // const __USERRULES__ = []
-
   function readFile (location) {
     try {
       log.info('pac root dir:', path.resolve('./'))
@@ -45,7 +43,6 @@ function createPacClient (pacFilePath) {
 // 2019-02-08: Updated to support shadowsocks-windows user rules.
 
   const proxy = __PROXY__
-  // const userrules = []
   const rules = []
 
 // convert to abp grammar
@@ -54,12 +51,6 @@ function createPacClient (pacFilePath) {
     if (s.substring(0, 2) === "||") s += "^"
     rules.push(s)
   }
-
-  // for (let i = 0; i < __USERRULES__.length; i++) {
-  //     let s = __USERRULES__[i]
-  //     if (s.substring(0, 2) == "||") s += "^"
-  //     userrules.push(s)
-  // }
 
   /*
   * This file is part of Adblock Plus <http://adblockplus.org/>,
@@ -91,18 +82,18 @@ function createPacClient (pacFilePath) {
     return null
   }
 
-  function extend (subclass, superclass, definition) {
+  function extend (subClass, superClass, definition) {
     if (Object.__proto__) {
-      definition.__proto__ = superclass.prototype
-      subclass.prototype = definition
+      definition.__proto__ = superClass.prototype
+      subClass.prototype = definition
     } else {
-      const tmpclass = function () {}
-      tmpclass.prototype = superclass.prototype
-      subclass.prototype = new tmpclass()
-      subclass.prototype.constructor = superclass
-      for (const def in definition) {
-        if (definition.hasOwnProperty(def)) {
-          subclass.prototype[def] = definition[def]
+      const tmpClass = function () {}
+      tmpClass.prototype = superClass.prototype
+      subClass.prototype = new tmpClass()
+      subClass.prototype.constructor = superClass
+      for (const key in definition) {
+        if (definition.hasOwnProperty(key)) {
+          subClass.prototype[key] = definition[key]
         }
       }
     }
@@ -110,7 +101,7 @@ function createPacClient (pacFilePath) {
 
   function Filter (text) {
     this.text = text
-    // this.subscriptions = []
+    this.subscriptions = []
   }
 
   Filter.prototype = {
@@ -121,7 +112,7 @@ function createPacClient (pacFilePath) {
     }
   }
   Filter.knownFilters = createDict()
-  Filter.elemhideRegExp = /^([^\/*|@"!]*?)#(@)?(?:([\w\-]+|\*)((?:\([\w\-]+(?:[$^*]?=[^()"]*)?\))*)|#([^{}]+))$/
+  Filter.elemhideRegExp = /^([^\/\*\|\@"!]*?)#(\@)?(?:([\w\-]+|\*)((?:\([\w\-]+(?:[$^*]?=[^\(\)"]*)?\))*)|#([^{}]+))$/
   Filter.regexpRegExp = /^(@@)?\/.*\/(?:\$~?[\w\-]+(?:=[^,\s]+)?(?:,~?[\w\-]+(?:=[^,\s]+)?)*)?$/
   Filter.optionsRegExp = /\$(~?[\w\-]+(?:=[^,\s]+)?(?:,~?[\w\-]+(?:=[^,\s]+)?)*)$/
   Filter.fromText = function (text) {
@@ -211,9 +202,9 @@ function createPacClient (pacFilePath) {
       }
       return this.domains
     },
-    sitekeys: null,
-    isActiveOnDomain: function (docDomain, sitekey) {
-      if (this.getSitekeys() && (!sitekey || this.getSitekeys().indexOf(sitekey.toUpperCase()) < 0)) {
+    siteKeys: null,
+    isActiveOnDomain: function (docDomain, siteKey) {
+      if (this.getSiteKeys() && (!siteKey || this.getSiteKeys().indexOf(siteKey.toUpperCase()) < 0)) {
         return false
       }
       if (!this.getDomains()) {
@@ -238,25 +229,25 @@ function createPacClient (pacFilePath) {
       }
       return this.domains[""]
     }/*,
-        isActiveOnlyOnDomain: function (docDomain) {
-            if (!docDomain || !this.getDomains() || this.getDomains()[""]) {
-                return false
-            }
-            if (this.ignoreTrailingDot) {
-                docDomain = docDomain.replace(/\.+$/, "")
-            }
-            docDomain = docDomain.toUpperCase()
-            for (const domain in this.getDomains()) {
-                if (this.domains[domain] && domain !== docDomain && (domain.length <= docDomain.length || domain.indexOf("." + docDomain) !== domain.length - docDomain.length - 1)) {
-                    return false
-                }
-            }
-            return true
-        }*/
+    isActiveOnlyOnDomain: function (docDomain) {
+      if (!docDomain || !this.getDomains() || this.getDomains()[""]) {
+        return false
+      }
+      if (this.ignoreTrailingDot) {
+        docDomain = docDomain.replace(/\.+$/, "")
+      }
+      docDomain = docDomain.toUpperCase()
+      for (const domain in this.getDomains()) {
+        if (this.domains[domain] && domain != docDomain && (domain.length <= docDomain.length || domain.indexOf("." + docDomain) != domain.length - docDomain.length - 1)) {
+          return false
+        }
+      }
+      return true
+    }*/
   })
 
-  function RegExpFilter (text, regexpSource, contentType, matchCase, domains, thirdParty, sitekeys) {
-    ActiveFilter.call(this, text, domains, sitekeys)
+  function RegExpFilter (text, regexpSource, contentType, matchCase, domains, thirdParty, siteKeys) {
+    ActiveFilter.call(this, text, domains, siteKeys)
     if (contentType != null) {
       this.contentType = contentType
     }
@@ -266,8 +257,8 @@ function createPacClient (pacFilePath) {
     if (thirdParty != null) {
       this.thirdParty = thirdParty
     }
-    if (sitekeys != null) {
-      this.sitekeySource = sitekeys
+    if (siteKeys != null) {
+      this.siteKeySource = siteKeys
     }
     if (regexpSource.length >= 2 && regexpSource.charAt(0) === "/" && regexpSource.charAt(regexpSource.length - 1) === "/") {
       this.regexp = new RegExp(regexpSource.substr(1, regexpSource.length - 2), this.matchCase ? "" : "i")
@@ -294,23 +285,22 @@ function createPacClient (pacFilePath) {
     contentType: 2147483647,
     matchCase: false,
     thirdParty: null,
-    sitekeySource: null,
-    getSitekeys: function () {
-      const prop = getOwnPropertyDescriptor(this, "sitekeys")
+    siteKeySource: null,
+    getSiteKeys: function () {
+      const prop = getOwnPropertyDescriptor(this, "siteKeys")
       if (prop) {
         return prop
       }
-      let sitekeys = null
-      if (this.sitekeySource) {
-        sitekeys = this.sitekeySource.split("|")
-        this.sitekeySource = null
+      let siteKeys = null
+      if (this.siteKeySource) {
+        siteKeys = this.siteKeySource.split("|")
+        this.siteKeySource = null
       }
-      this.sitekeys = sitekeys
-      return this.sitekeys
+      this.siteKeys = siteKeys
+      return this.siteKeys
     },
-    matches: function (location, contentType, docDomain, thirdParty, sitekey) {
-      return !!(this.getRegexp().test(location) && this.isActiveOnDomain(docDomain, sitekey))
-
+    matches: function (location, contentType, docDomain, thirdParty, siteKey) {
+      return !!(this.getRegexp().test(location) && this.isActiveOnDomain(docDomain, siteKey))
     }
   })
   RegExpFilter.prototype["0"] = "#this"
@@ -324,7 +314,7 @@ function createPacClient (pacFilePath) {
     let contentType = null
     let matchCase = null
     let domains = null
-    let sitekeys = null
+    let siteKeys = null
     let thirdParty = null
     let collapse = null
     let options
@@ -366,15 +356,11 @@ function createPacClient (pacFilePath) {
         } else if (option === "~COLLAPSE") {
           collapse = false
         } else if (option === "SITEKEY" && typeof value != "undefined") {
-          sitekeys = value
+          siteKeys = value
         } else {
           return new InvalidFilter(origText, "Unknown option " + option.toLowerCase())
         }
       }
-    }
-    if (contentType != null) {
-      log.error('contentType & RegExpFilter.typeMap.DOCUMENT =', contentType & RegExpFilter.typeMap.DOCUMENT)
-      log.error('contentType && RegExpFilter.typeMap.DOCUMENT =', contentType && RegExpFilter.typeMap.DOCUMENT)
     }
     if (!blocking && (contentType == null || contentType & RegExpFilter.typeMap.DOCUMENT) && (!options || options.indexOf("DOCUMENT") < 0) && !/^\|?[\w\-]+:/.test(text)) {
       if (contentType == null) {
@@ -384,9 +370,9 @@ function createPacClient (pacFilePath) {
     }
     try {
       if (blocking) {
-        return new BlockingFilter(origText, text, contentType, matchCase, domains, thirdParty, sitekeys, collapse)
+        return new BlockingFilter(origText, text, contentType, matchCase, domains, thirdParty, siteKeys, collapse)
       } else {
-        return new WhitelistFilter(origText, text, contentType, matchCase, domains, thirdParty, sitekeys)
+        return new WhitelistFilter(origText, text, contentType, matchCase, domains, thirdParty, siteKeys)
       }
     } catch (e) {
       return new InvalidFilter(origText, e)
@@ -413,8 +399,8 @@ function createPacClient (pacFilePath) {
   }
   RegExpFilter.prototype.contentType &= ~(RegExpFilter.typeMap.ELEMHIDE | RegExpFilter.typeMap.POPUP)
 
-  function BlockingFilter (text, regexpSource, contentType, matchCase, domains, thirdParty, sitekeys, collapse) {
-    RegExpFilter.call(this, text, regexpSource, contentType, matchCase, domains, thirdParty, sitekeys)
+  function BlockingFilter (text, regexpSource, contentType, matchCase, domains, thirdParty, siteKeys, collapse) {
+    RegExpFilter.call(this, text, regexpSource, contentType, matchCase, domains, thirdParty, siteKeys)
     this.collapse = collapse
   }
 
@@ -422,8 +408,8 @@ function createPacClient (pacFilePath) {
     collapse: null
   })
 
-  function WhitelistFilter (text, regexpSource, contentType, matchCase, domains, thirdParty, sitekeys) {
-    RegExpFilter.call(this, text, regexpSource, contentType, matchCase, domains, thirdParty, sitekeys)
+  function WhitelistFilter (text, regexpSource, contentType, matchCase, domains, thirdParty, siteKeys) {
+    RegExpFilter.call(this, text, regexpSource, contentType, matchCase, domains, thirdParty, siteKeys)
   }
 
   extend(WhitelistFilter, RegExpFilter, {})
@@ -514,36 +500,36 @@ function createPacClient (pacFilePath) {
         return null
       }
     },
-    _checkEntryMatch: function (keyword, location, contentType, docDomain, thirdParty, sitekey) {
+    _checkEntryMatch: function (keyword, location, contentType, docDomain, thirdParty, siteKey) {
       const list = this.filterByKeyword[keyword]
       for (let i = 0; i < list.length; i++) {
         let filter = list[i]
         if (filter === "#this") {
           filter = list
         }
-        if (filter.matches(location, contentType, docDomain, thirdParty, sitekey)) {
+        if (filter.matches(location, contentType, docDomain, thirdParty, siteKey)) {
           return filter
         }
       }
       return null
     }/*,
-        matchesAny: function (location, contentType, docDomain, thirdParty, sitekey) {
-            let candidates = location.toLowerCase().match(/[a-z0-9%]{3,}/g)
-            if (candidates === null) {
-                candidates = []
-            }
-            candidates.push("")
-            for (let i = 0, l = candidates.length; i < l; i++) {
-                const substr = candidates[i]
-                if (substr in this.filterByKeyword) {
-                    const result = this._checkEntryMatch(substr, location, contentType, docDomain, thirdParty, sitekey)
-                    if (result) {
-                        return result
-                    }
-                }
-            }
-            return null
-        }*/
+    matchesAny: function (location, contentType, docDomain, thirdParty, siteKey) {
+      let candidates = location.toLowerCase().match(/[a-z0-9%]{3,}/g)
+      if (candidates === null) {
+        candidates = []
+      }
+      candidates.push("")
+      for (let i = 0, l = candidates.length; i < l; i++) {
+        const substr = candidates[i]
+        if (substr in this.filterByKeyword) {
+          const result = this._checkEntryMatch(substr, location, contentType, docDomain, thirdParty, siteKey)
+          if (result) {
+            return result
+          }
+        }
+      }
+      return null
+    }*/
   }
 
   function CombinedMatcher () {
@@ -607,15 +593,15 @@ function createPacClient (pacFilePath) {
         return this.blacklist.getKeywordForFilter(filter)
       }
     },
-    // isSlowFilter: function (filter) {
-    //     const matcher = filter instanceof WhitelistFilter ? this.whitelist : this.blacklist
-    //     if (matcher.hasFilter(filter)) {
-    //         return !matcher.getKeywordForFilter(filter)
-    //     } else {
-    //         return !matcher.findKeyword(filter)
-    //     }
-    // },
-    matchesAnyInternal: function (location, contentType, docDomain, thirdParty, sitekey) {
+    /*isSlowFilter: function (filter) {
+      const matcher = filter instanceof WhitelistFilter ? this.whitelist : this.blacklist
+      if (matcher.hasFilter(filter)) {
+        return !matcher.getKeywordForFilter(filter)
+      } else {
+        return !matcher.findKeyword(filter)
+      }
+    },*/
+    matchesAnyInternal: function (location, contentType, docDomain, thirdParty, siteKey) {
       let candidates = location.toLowerCase().match(/[a-z0-9%]{3,}/g)
       if (candidates === null) {
         candidates = []
@@ -625,13 +611,13 @@ function createPacClient (pacFilePath) {
       for (let i = 0, l = candidates.length; i < l; i++) {
         const substr = candidates[i]
         if (substr in this.whitelist.filterByKeyword) {
-          const result = this.whitelist._checkEntryMatch(substr, location, contentType, docDomain, thirdParty, sitekey)
+          const result = this.whitelist._checkEntryMatch(substr, location, contentType, docDomain, thirdParty, siteKey)
           if (result) {
             return result
           }
         }
         if (substr in this.blacklist.filterByKeyword && blacklistHit === null) {
-          blacklistHit = this.blacklist._checkEntryMatch(substr, location, contentType, docDomain, thirdParty, sitekey)
+          blacklistHit = this.blacklist._checkEntryMatch(substr, location, contentType, docDomain, thirdParty, siteKey)
         }
       }
       return blacklistHit
@@ -656,10 +642,6 @@ function createPacClient (pacFilePath) {
   const defaultMatcher = new CombinedMatcher()
 
   const direct = 'DIRECT;'
-
-  // for (let i = 0; i < userrules.length; i++) {
-  //     userrulesMatcher.add(Filter.fromText(userrules[i]))
-  // }
 
   for (let i = 0; i < rules.length; i++) {
     defaultMatcher.add(Filter.fromText(rules[i]))
