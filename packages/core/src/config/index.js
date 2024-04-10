@@ -111,9 +111,7 @@ module.exports = {
         }
       },
       'customer-stories-feed.github.com': {
-        '.*': {
-          sni: 'baidu.com'
-        }
+        '.*': { proxy: 'customer-stories-feed.fastgit.org' }
       },
       'raw.githubusercontent.com': {
         '.*': {
@@ -166,16 +164,22 @@ module.exports = {
       'login.docker.com': {
         '/favicon.ico': {
           proxy: 'hub.docker.com',
-          sni: 'baidu.com'
+          sni: 'baidu.com',
+          desc: '登录页面的ico，采用hub.docker.com的'
         }
       },
-      'api.segment.io': {
-        '.*': {
-          sni: 'baidu.com'
-        }
-      },
+      // '*.v2ex.com': {
+      //   '.*': {
+      //     sni: 'baidu.com'
+      //   }
+      // },
+      // google cdn
       'www.google.com': {
         '/recaptcha/.*': { proxy: 'www.recaptcha.net' }
+        // '.*': {
+        //   proxy: 'gg.docmirror.top/_yxorp',
+        //   desc: '呀，被你发现了，偷偷的用，别声张'
+        // }
       },
       'www.gstatic.com': {
         '/recaptcha/.*': { proxy: 'www.recaptcha.net' }
@@ -203,14 +207,27 @@ module.exports = {
       'themes.googleusercontent.com': {
         '.*': { proxy: 'google-themes.proxy.ustclug.org' }
       },
+      // 'fonts.gstatic.com': {
+      //   '.*': {
+      //     proxy: 'gstatic.loli.net',
+      //     backup: ['fonts-gstatic.proxy.ustclug.org']
+      //   }
+      // },
       'clients*.google.com': { '.*': { abort: false, desc: '设置abort：true可以快速失败，节省时间' } },
       'www.googleapis.com': { '.*': { abort: false, desc: '设置abort：true可以快速失败，节省时间' } },
       'lh*.googleusercontent.com': { '.*': { abort: false, desc: '设置abort：true可以快速失败，节省时间' } },
+      // mapbox-node-binary.s3.amazonaws.com/sqlite3/v5.0.0/napi-v3-win32-x64.tar.gz
       '*.s3.1amazonaws1.com': {
         '/sqlite3/.*': {
           redirect: 'npm.taobao.org/mirrors'
         }
       },
+      // 'packages.elastic.co': { '.*': { proxy: 'elastic.proxy.ustclug.org' } },
+      // 'ppa.launchpad.net': { '.*': { proxy: 'launchpad.proxy.ustclug.org' } },
+      // 'archive.cloudera.com': { '.*': { regexp: '/cdh5/.*', proxy: 'cloudera.proxy.ustclug.org' } },
+      // 'downloads.lede-project.org': { '.*': { proxy: 'lede.proxy.ustclug.org' } },
+      // 'downloads.openwrt.org': { '.*': { proxy: 'openwrt.proxy.ustclug.org' } },
+      // 'secure.gravatar.com': { '.*': { proxy: 'gravatar.proxy.ustclug.org' } },
       '*.carbonads.com': {
         '/carbon.*': {
           abort: true,
@@ -225,9 +242,9 @@ module.exports = {
       }
     },
     whiteList: {
-      // '*.cn': true,
-      // 'cn.*': true,
-      // '*china*': true,
+      '*.cn': true,
+      'cn.*': true,
+      '*china*': true,
       '*.dingtalk.com': true,
       '*.apple.com': true,
       '*.microsoft.com': true,
@@ -272,6 +289,7 @@ module.exports = {
         '*.yarnpkg.com': 'quad9',
         '*.cloudfront.net': 'quad9',
         '*.cloudflare.com': 'quad9',
+        'img.shields.io': 'quad9',
         '*.vuepress.vuejs.org': 'quad9',
         '*.gh.docmirror.top': 'quad9',
         '*.v2ex.com': 'quad9',
@@ -282,8 +300,8 @@ module.exports = {
       speedTest: {
         enabled: true,
         interval: 300000,
-        hostnameList: ['github.com', 'hub.docker.com', 'login.docker.com', 'api.dso.docker.com'],
-        dnsProviders: ['usa', 'quad9']
+        hostnameList: ['github.com'],
+        dnsProviders: ['usa', 'quad9', 'rubyfish']
       }
     }
   },

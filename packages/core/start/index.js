@@ -9,11 +9,11 @@ async function startup () {
   const banner = fs.readFileSync('./start/banner.txt')
   console.log(banner.toString())
 
-  const configPath = './start/user_config.json'
+  const configPath = './start/user_config.json5'
   if (fs.existsSync(configPath)) {
     const file = fs.readFileSync(configPath)
     const userConfig = jsonApi.parse(file.toString())
-    log.info('读取 user_config.json 成功:', configPath)
+    log.info('读取 user_config.json5 成功:', configPath)
     DevSidecar.api.config.set(userConfig)
   }
 

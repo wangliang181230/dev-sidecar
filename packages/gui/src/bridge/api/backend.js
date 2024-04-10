@@ -8,7 +8,6 @@ const mitmproxyPath = path.join(__dirname, 'mitmproxy.js')
 process.env.DS_EXTRA_PATH = path.join(__dirname, '../extra/')
 const log = require('../../utils/util.log')
 const jsonApi = require('@docmirror/dev-sidecar/src/json.js')
-const mergeApi = require('@docmirror/dev-sidecar/src/merge.js')
 
 const getDefaultConfigBasePath = function () {
   return DevSidecar.api.config.get().server.setting.userBasePath
@@ -87,7 +86,7 @@ const localApi = {
     },
     save (setting = {}) {
       const settingPath = _getSettingsPath()
-      fs.writeFileSync(settingPath, mergeApi.toJson(setting))
+      fs.writeFileSync(settingPath, jsonApi.stringify(setting))
       log.info('保存 setting.json 成功:', settingPath)
     }
   },

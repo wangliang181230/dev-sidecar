@@ -83,8 +83,5 @@ module.exports = {
     })
   },
   doDiff,
-  toJson: function (obj) {
-    return JSON.stringify(obj, null, '\t')
-  },
   deleteNullItems
 }

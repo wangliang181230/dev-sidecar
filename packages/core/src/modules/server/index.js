@@ -1,4 +1,4 @@
-const config = require('../../config.js')
+const config = require('../../config')
 const event = require('../../event')
 const status = require('../../status')
 const lodash = require('lodash')
@@ -6,7 +6,7 @@ const fork = require('child_process').fork
 const log = require('../../utils/util.log')
 const fs = require('fs')
 const path = require('path')
-const mergeApi = require('../../merge.js')
+const jsonApi = require('../../json')
 
 let server = null
 function fireStatus (status) {
@@ -72,8 +72,7 @@ const serverApi = {
     // fireStatus('ing') // 启动中
     const basePath = serverConfig.setting.userBasePath
     const runningConfigPath = path.join(basePath, '/running.json')
-    const serverConfigJsonStr = mergeApi.toJson(serverConfig)
-    fs.writeFileSync(runningConfigPath, serverConfigJsonStr)
+    fs.writeFileSync(runningConfigPath, jsonApi.stringify(serverConfig))
     log.info('保存 running.json 成功:', runningConfigPath)
     const serverProcess = fork(mitmproxyPath, [runningConfigPath])
     server = {
