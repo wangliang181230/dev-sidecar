@@ -65,7 +65,6 @@ module.exports = (config) => {
     },
     createIntercepts: (context) => {
       const rOptions = context.rOptions
-      // const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
       const interceptOpts = matchUtil.matchHostnameAll(intercepts, rOptions.hostname, 'get interceptOpts')
       if (!interceptOpts) { // 该域名没有配置拦截器，直接过
         return
