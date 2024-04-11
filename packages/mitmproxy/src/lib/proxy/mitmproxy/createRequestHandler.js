@@ -133,15 +133,13 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             }
             if (dns) {
               rOptions.lookup = (hostname, options, callback) => {
-                if (hostname !== 'github.com') {
-                  const tester = speedTest.getSpeedTester(hostname)
-                  if (tester) {
-                    const ip = tester.pickFastAliveIp()
-                    if (ip) {
-                      log.info(`----- hostname: ${hostname}, use alive ip: ${ip} -----`)
-                      callback(null, ip, 4)
-                      return
-                    }
+                const tester = speedTest.getSpeedTester(hostname)
+                if (tester) {
+                  const ip = tester.pickFastAliveIp()
+                  if (ip) {
+                    log.info(`----- hostname: ${hostname}, use alive ip: ${ip} -----`)
+                    callback(null, ip, 4)
+                    return
                   }
                 }
                 dns.lookup(hostname).then(ip => {
