@@ -3,7 +3,7 @@ const config = require('../config/index')
 function getDefaultConfigBasePath () {
   return config.server.setting.userBasePath
 }
-const level = 'debug' // process.env.NODE_ENV === 'development' ? 'debug' : 'info'
+const level = process.env.NODE_ENV === 'development' ? 'debug' : 'info'
 const path = require('path')
 const filename = path.join(getDefaultConfigBasePath(), '/logs/core.log')
 log4js.configure({

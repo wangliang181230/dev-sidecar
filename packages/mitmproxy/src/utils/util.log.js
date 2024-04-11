@@ -1,6 +1,6 @@
 const log4js = require('log4js')
 const proxyConfig = require('../lib/proxy/common/config')
-const level = 'debug' // process.env.NODE_ENV === 'development' ? 'debug' : 'info'
+const level = process.env.NODE_ENV === 'development' ? 'debug' : 'info'
 const path = require('path')
 const filename = path.join(proxyConfig.getDefaultCABasePath(), '/logs/server.log')
 log4js.configure({
