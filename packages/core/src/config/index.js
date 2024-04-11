@@ -23,7 +23,7 @@ module.exports = {
       enabled: true,
       url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/remote_config/packages/core/src/config/remote_config_myself.json'
     },
-    theme: 'light', // 主题：light=亮色/白色, dark=暗色/黑色
+    theme: 'light', // 主题：light=亮色, dark=暗色
     dock: {
       hideWhenWinClose: false
     },
