@@ -19,7 +19,7 @@ module.exports = {
     const { rOptions, log, setting } = context
 
     // github特殊处理
-    if (rOptions.hostname === 'github.com' && rOptions.headers['Turbo-Frame'] === 'repo-content-turbo-frame') {
+    if (rOptions.hostname === 'github.com' && rOptions.headers['turbo-frame'] === 'repo-content-turbo-frame') {
       return
     }
 
