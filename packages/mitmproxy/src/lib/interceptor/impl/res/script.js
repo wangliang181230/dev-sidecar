@@ -7,8 +7,8 @@ function getScript (key, script) {
   const hash = CryptoJs.SHA256(script).toString(CryptoJs.enc.Base64)
   return `<script crossorigin="anonymous" defer="defer" type="application/javascript" src="${scriptUrl}" integrity="sha256-${hash}"></script>`
 }
-function getScriptByAbsoluteUrl (absoluteScriptUrl) {
-  return `<script crossorigin="anonymous" defer="defer" type="application/javascript" src="${absoluteScriptUrl}"></script>`
+function getScriptByUrlOrPath (scriptUrlOrPath) {
+  return `<script crossorigin="anonymous" defer="defer" type="application/javascript" src="${scriptUrlOrPath}"></script>`
 }
 
 module.exports = {
@@ -33,13 +33,14 @@ module.exports = {
         let scriptTag
 
         if (key.indexOf('http:') === 0 || key.indexOf('https:') === 0) {
-          scriptTag = getScriptByAbsoluteUrl(key)
+          scriptTag = getScriptByUrlOrPath(key) // 1.绝对地址（注意：当目标站点限制跨域脚本资源的情况下，可以使用相对地址，再结合proxy.js进行代理，可规避掉跨域限制问题。）
         } else {
           const script = scripts[key]
           if (script == null) {
-            continue
+            scriptTag = getScriptByUrlOrPath(key) // 2.相对地址
+          } else {
+            scriptTag = getScript(key, script.script) // 3.DS内置脚本
           }
-          scriptTag = getScript(key, script.script)
         }
 
         tags += '\r\n\t' + scriptTag
