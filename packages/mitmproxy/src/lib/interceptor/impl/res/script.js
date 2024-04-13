@@ -30,10 +30,14 @@ module.exports = {
       const scripts = monkey.get(setting.script.dirAbsolutePath)
       let tags = '\r\n\t' + getScript('global', scripts.global.script)
       for (const key of keys) {
+        if (key === 'global') {
+          continue
+        }
+
         let scriptTag
 
         if (key.indexOf('/') >= 0) {
-          scriptTag = getScriptByUrlOrPath(key) // 1.绝对地址或相对地址（注意：当目标站点限制跨域脚本资源的情况下，可以使用相对地址，再结合proxy.js进行代理，可规避掉跨域限制问题。）
+          scriptTag = getScriptByUrlOrPath(key) // 1.绝对地址或相对地址（注意：当目标站点限制跨域脚本时，可使用相对地址，再结合proxy拦截器进行代理，可规避掉限制跨域脚本问题。）
         } else {
           const script = scripts[key]
           if (script == null) {
