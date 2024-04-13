@@ -5,14 +5,10 @@ function getScript (key, script) {
   const scriptUrl = contextPath + key
 
   const hash = CryptoJs.SHA256(script).toString(CryptoJs.enc.Base64)
-  return `
-      <script src="${scriptUrl}" type="application/javascript" crossorigin="anonymous" defer integrity="sha256-${hash}"></script>
-`
+  return `<script crossorigin="anonymous" defer="defer" type="application/javascript" src="${scriptUrl}" integrity="sha256-${hash}"></script>`
 }
-function getScriptByAbsoluteUrl (scriptUrl) {
-  return `
-      <script src="${scriptUrl}" type="application/javascript" crossorigin="anonymous" defer></script>
-`
+function getScriptByAbsoluteUrl (absoluteScriptUrl) {
+  return `<script crossorigin="anonymous" defer="defer" type="application/javascript" src="${absoluteScriptUrl}"></script>`
 }
 
 module.exports = {
@@ -32,7 +28,7 @@ module.exports = {
     }
     try {
       const scripts = monkey.get(setting.script.dirAbsolutePath)
-      let tags = getScript('global', scripts.global.script)
+      let tags = '\r\n\t' + getScript('global', scripts.global.script)
       for (const key of keys) {
         let scriptTag
 
@@ -46,12 +42,12 @@ module.exports = {
           scriptTag = getScript(key, script.script)
         }
 
-        tags += '\r\n' + scriptTag
+        tags += '\r\n\t' + scriptTag
       }
       res.setHeader('DS-Script-Interceptor', 'true')
       log.info('script response intercept: insert script', rOptions.hostname, rOptions.path, ', head:', tags)
       return {
-        head: tags
+        head: tags + '\r\n'
       }
     } catch (err) {
       res.setHeader('DS-Script-Interceptor', 'error')
