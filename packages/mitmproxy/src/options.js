@@ -3,10 +3,56 @@ const dnsUtil = require('./lib/dns')
 const log = require('./utils/util.log')
 const matchUtil = require('./utils/util.match')
 const path = require('path')
+const lodash = require('lodash')
+
 const createOverwallMiddleware = require('./lib/proxy/middleware/overwall')
 
+function buildIntercepts (intercepts) {
+  // 为了简化 script 拦截器配置脚本绝对地址，这里特殊处理一下
+  for (const hostnamePattern in intercepts) {
+    const hostnameConfig = intercepts[hostnamePattern]
+
+    const scriptProxy = {}
+    for (const pathPattern in hostnameConfig) {
+      const pathConfig = hostnameConfig[pathPattern]
+      if (typeof pathConfig.script === 'object' && pathConfig.script.length > 0) {
+        for (let i = 0; i < pathConfig.script.length; i++) {
+          const script = pathConfig.script[i]
+          if (script.indexOf('https:') === 0 || script.indexOf('http:') === 0) {
+            const scriptKey = '/____ds_script_proxy____/' + script.replace(/\W/g, '') + '.js' // 伪脚本地址：移除 script 中可能存在的特殊字符，并转为相对地址
+            scriptProxy[scriptKey] = script
+            log.info(`替换配置：'${pathConfig.script[i]}' -> '${scriptKey}'`)
+            pathConfig.script[i] = scriptKey
+          }
+        }
+      }
+    }
+
+    // 自动创建脚本
+    if (!lodash.isEmpty(scriptProxy)) {
+      for (const scriptKey in scriptProxy) {
+        const scriptUrl = scriptProxy[scriptKey]
+
+        const pathPattern = `^${scriptKey.replace(/\./g, '\\.')}$`
+        hostnameConfig[pathPattern] = {
+          proxy: scriptUrl,
+          response: { headers: { 'content-type': 'application/javascript; charset=utf-8' } },
+          cacheDays: 7,
+          desc: "伪脚本地址代理配置，并设置响应头 `content-type: 'application/javascript; charset=utf-8'`，同时缓存7天。"
+        }
+
+        const obj = {}
+        obj[pathPattern] = hostnameConfig[pathPattern]
+        log.info(`域名 '${hostnamePattern}' 拦截配置中，新增伪脚本地址的代理配置:`, obj)
+      }
+    }
+  }
+
+  return intercepts
+}
+
 module.exports = (config) => {
-  const intercepts = matchUtil.domainMapRegexply(config.intercepts)
+  const intercepts = matchUtil.domainMapRegexply(buildIntercepts(config.intercepts))
   const whiteList = matchUtil.domainMapRegexply(config.whiteList)
 
   const dnsMapping = config.dns.mapping
