@@ -184,5 +184,16 @@ $dark-input: #777; //输入框：背景色
     .ace_marker-layer .ace_active-line{
       background: #838774;
     }
+    /* 选中行高亮样式 */
+    .ace-jsoneditor {
+      .ace_marker-layer .ace_selection {
+        background: #888;
+      }
+
+      /* 光标颜色 */
+      .ace_cursor {
+        border-left-color: #ddd;
+      }
+    }
   }
 }
