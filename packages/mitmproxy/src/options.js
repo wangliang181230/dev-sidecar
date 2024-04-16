@@ -36,7 +36,7 @@ function buildIntercepts (intercepts) {
         const pathPattern = `^${scriptKey.replace(/\./g, '\\.')}$`
         hostnameConfig[pathPattern] = {
           proxy: scriptUrl,
-          response: { headers: { 'content-type': 'application/javascript; charset=utf-8' } },
+          responseReplace: { headers: { 'content-type': 'application/javascript; charset=utf-8' } },
           cacheDays: 7,
           desc: "伪脚本地址代理配置，并设置响应头 `content-type: 'application/javascript; charset=utf-8'`，同时缓存7天。"
         }

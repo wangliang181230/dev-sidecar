@@ -1,6 +1,7 @@
 const lodash = require('lodash')
 
-function replaceHeaders (newHeaders, res, proxyRes) {
+// 替换响应头
+function replaceResponseHeaders (newHeaders, res, proxyRes) {
   if (newHeaders && !lodash.isEmpty(newHeaders)) {
     // 响应头Key统一转小写
     for (const headerKey in newHeaders) {
@@ -44,7 +45,7 @@ function replaceHeaders (newHeaders, res, proxyRes) {
 module.exports = {
   name: 'responseReplace',
   priority: 203,
-  replaceHeaders,
+  replaceResponseHeaders: replaceResponseHeaders,
   responseIntercept (context, interceptOpt, req, res, proxyReq, proxyRes, ssl, next) {
     const { log } = context
 
@@ -52,12 +53,12 @@ module.exports = {
       return
     }
 
-    const responseConfig = interceptOpt.response
+    const responseConfig = interceptOpt.responseReplace
 
     let actions = ''
 
     // 替换响应头
-    if (replaceHeaders(responseConfig.headers, res, proxyRes)) {
+    if (replaceResponseHeaders(responseConfig.headers, res, proxyRes)) {
       actions += 'headers'
     }
 
@@ -67,6 +68,6 @@ module.exports = {
     }
   },
   is (interceptOpt) {
-    return !!interceptOpt.response
+    return !!interceptOpt.responseReplace
   }
 }
