@@ -9,6 +9,7 @@ const REMOVE = '[remove]'
 
 const createOverwallMiddleware = require('./lib/proxy/middleware/overwall')
 
+// 处理拦截配置：目前，只自动生成了script拦截器所需的辅助配置，降低script拦截器配置绝对地址和相对地址的门槛
 function buildIntercepts (intercepts) {
   // 为了简化 script 拦截器配置脚本绝对地址，这里特殊处理一下
   for (const hostnamePattern in intercepts) {

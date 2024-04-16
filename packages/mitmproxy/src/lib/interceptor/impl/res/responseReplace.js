@@ -55,7 +55,7 @@ function replaceResponseHeaders (newHeaders, res, proxyRes) {
 module.exports = {
   name: 'responseReplace',
   priority: 201,
-  replaceResponseHeaders: replaceResponseHeaders,
+  replaceResponseHeaders,
   responseIntercept (context, interceptOpt, req, res, proxyReq, proxyRes, ssl, next) {
     const { log } = context
 
