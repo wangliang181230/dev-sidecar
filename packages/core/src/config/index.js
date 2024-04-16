@@ -67,7 +67,7 @@ module.exports = {
           script: [
             'github'
           ],
-          desc: 'clone加速复制链接脚本'
+          desc: '油猴脚本：高速下载 Git Clone/SSH、Release、Raw、Code(ZIP) 等文件 (公益加速)、项目列表单文件快捷下载、添加 git clone 命令'
         },
         '.*': {
           desc: '目前禁掉sni就可以直接访问，如果后续github.com的ip被封锁，只能再走proxy模式',
