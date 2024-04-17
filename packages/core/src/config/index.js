@@ -65,7 +65,7 @@ module.exports = {
         // },
         '^(/[\\w-.]{1,30}){2,}(\\?.*)?$': {
           script: [
-            'github'
+            'https://raw.githubusercontent.com/docmirror/dev-sidecar/scripts/github/monkey.js'
           ],
           desc: '油猴脚本：高速下载 Git Clone/SSH、Release、Raw、Code(ZIP) 等文件 (公益加速)、项目列表单文件快捷下载、添加 git clone 命令'
         },
