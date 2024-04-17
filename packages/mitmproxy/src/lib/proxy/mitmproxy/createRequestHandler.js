@@ -193,7 +193,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             const end = new Date().getTime()
             const cost = end - start
             const errorMsg = `代理请求超时: ${url}, cost: ${cost} ms`
-            log.error(errorMsg)
+            log.error(errorMsg, ', rOptions:', JSON.stringify(rOptions))
             countSlow(isDnsIntercept, `代理请求超时, cost: ${cost} ms`)
             proxyReq.end()
             proxyReq.destroy()
@@ -204,7 +204,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           proxyReq.on('error', (e) => {
             const end = new Date().getTime()
             const cost = end - start
-            log.error(`代理请求错误: ${url}, cost: ${cost} ms, error:`, e)
+            log.error(`代理请求错误: ${url}, cost: ${cost} ms, error:`, e, ', rOptions:', JSON.stringify(rOptions))
             countSlow(isDnsIntercept, '代理请求错误: ' + e.message)
             reject(e)
           })
@@ -212,7 +212,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             const end = new Date().getTime()
             const cost = end - start
             const errorMsg = `代理请求被取消: ${url}, cost: ${cost} ms`
-            log.error(errorMsg)
+            log.error(errorMsg, ', rOptions:', JSON.stringify(rOptions))
 
             if (cost > MAX_SLOW_TIME) {
               countSlow(isDnsIntercept, `代理请求被取消，且请求太慢, cost: ${cost} ms > ${MAX_SLOW_TIME} ms`)
@@ -246,7 +246,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             const end = new Date().getTime()
             const cost = end - start
             const errorMsg = `请求超时: ${url}, cost: ${cost} ms`
-            log.error(errorMsg)
+            log.error(errorMsg, ', rOptions:', JSON.stringify(rOptions))
             reject(new Error(errorMsg))
           })
           req.pipe(proxyReq)
@@ -341,13 +341,17 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
       }
     })().catch(e => {
       if (!res.writableEnded) {
-        const status = e.status || 500
-        res.writeHead(status, { 'Content-Type': 'text/html;charset=UTF8' })
-        res.write(`DevSidecar Error:<br/>
+        try {
+          const status = e.status || 500
+          res.writeHead(status, { 'Content-Type': 'text/html;charset=UTF8' })
+          res.write(`DevSidecar Error:<br/>
 目标网站请求错误：【${e.code}】 ${e.message}<br/>
 目标地址：${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
-        )
-        res.end()
+          )
+          res.end()
+        } catch (e) {
+          // do nothing
+        }
 
         // region 忽略部分已经打印过ERROR日志的错误
         const ignoreErrors = [
