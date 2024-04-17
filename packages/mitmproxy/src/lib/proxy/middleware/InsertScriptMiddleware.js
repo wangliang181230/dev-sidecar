@@ -167,13 +167,13 @@ module.exports = {
       // 获取编解码器
       const codec = httpUtil.getCodec(encoding)
       if (codec) {
-        // 获取编码对应的解压缩方法
         proxyRes
-          .pipe(codec.createDecompressor())
+          .pipe(codec.createDecompressor()) // 解码
           .pipe(through(function (chunk, enc, callback) {
+            // 插入head和body
             chunkByteReplace(this, chunk, enc, callback, append)
           }))
-          .pipe(codec.createCompressor())
+          .pipe(codec.createCompressor()) // 编码
           .pipe(res)
       } else {
         log.error(`InsertScriptMiddleware.responseInterceptor(): 暂不支持编码方式 ${encoding}, 目前支持:`, httpUtil.supportedEncodingsStr())
