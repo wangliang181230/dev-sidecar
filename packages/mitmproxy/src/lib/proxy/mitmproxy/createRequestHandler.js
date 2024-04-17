@@ -64,7 +64,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
               if (!reqIncpt.requestIntercept) {
                 continue
               }
-              const goNext = reqIncpt.requestIntercept(context, req, res, ssl)
+              const goNext = reqIncpt.requestIntercept(context, req, res, ssl, next)
               if (goNext) {
                 next()
                 return
@@ -291,7 +291,12 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             let head = ''
             let body = ''
             for (const resIncpt of resIncpts) {
-              const append = resIncpt.responseIntercept(context, req, res, proxyReq, proxyRes, ssl)
+              const append = resIncpt.responseIntercept(context, req, res, proxyReq, proxyRes, ssl, next)
+              // 判断是否已经关闭
+              if (res.writableEnded) {
+                next()
+                return
+              }
               if (append) {
                 if (append.head) {
                   head += append.head
@@ -299,10 +304,8 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
                 if (append.body) {
                   body += append.body
                 }
-              }
-              if (res.writableEnded) {
-                next()
-                return
+              } else if (append === false) {
+                break // 返回false表示终止拦截器，跳出循环
               }
             }
             InsertScriptMiddleware.responseInterceptor(req, res, proxyReq, proxyRes, ssl, next, {
