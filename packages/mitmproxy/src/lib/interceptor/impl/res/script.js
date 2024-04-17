@@ -19,7 +19,7 @@ function getScriptByUrlOrPath (scriptUrlOrPath) {
 
 module.exports = {
   name: 'script',
-  priority: 203,
+  priority: 204,
   responseIntercept (context, interceptOpt, req, res, proxyReq, proxyRes, ssl, next) {
     const { rOptions, log, setting } = context
 
@@ -127,6 +127,7 @@ module.exports = {
                 }
               },
               cacheDays: 7,
+              monkeyScript: true,
               desc: "为伪脚本文件设置代理地址，并设置响应头 `content-type: 'application/javascript; charset=utf-8'`，同时缓存7天。"
             }
 
@@ -146,6 +147,7 @@ module.exports = {
                 }
               },
               cacheDays: 7,
+              monkeyScript: true,
               desc: "为脚本设置响应头 `content-type: 'application/javascript; charset=utf-8'`，同时缓存7天。"
             }
 
