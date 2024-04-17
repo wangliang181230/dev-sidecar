@@ -1,23 +1,38 @@
+const log = require('../../../utils/util.log')
 const through = require('through2')
 const zlib = require('zlib')
 
-const httpUtil = {}
-httpUtil.getCharset = function (res) {
-  const contentType = res.getHeader('content-type')
-  const reg = /charset=(.*)/
-  const matched = contentType.match(reg)
-  if (matched) {
-    return matched[1]
+const httpUtil = {
+  // 获取编码
+  getContentEncoding (res) {
+    return res.headers['content-encoding']
+  },
+  // 获取压缩方法
+  getCompression (encoding) {
+    switch (encoding) {
+      case 'gzip':
+        return zlib.createGunzip()
+      case 'deflate':
+        return zlib.createInflate()
+      default:
+        return null
+    }
+  },
+  // 获取解压方法
+  getDecompression (encoding) {
+    switch (encoding) {
+      case 'gzip':
+        return zlib.createGzip()
+      case 'deflate':
+        return zlib.createDeflate()
+      default:
+        return null
+    }
+  },
+  isHtml (res) {
+    const contentType = res.headers['content-type']
+    return (typeof contentType !== 'undefined') && /text\/html|application\/xhtml\+xml/.test(contentType)
   }
-  return 'utf-8'
-}
-httpUtil.isGzip = function (res) {
-  const contentEncoding = res.headers['content-encoding']
-  return !!(contentEncoding && contentEncoding.toLowerCase() === 'gzip')
-}
-httpUtil.isHtml = function (res) {
-  const contentType = res.headers['content-type']
-  return (typeof contentType !== 'undefined') && /text\/html|application\/xhtml\+xml/.test(contentType)
 }
 const HEAD = Buffer.from('</head>')
 const HEAD_UP = Buffer.from('</HEAD>')
@@ -25,16 +40,18 @@ const BODY = Buffer.from('</body>')
 const BODY_UP = Buffer.from('</BODY>')
 
 function chunkByteReplace (_this, chunk, enc, callback, append) {
-  if (append && append.head) {
-    const ret = injectScriptIntoHtml([HEAD, HEAD_UP], chunk, append.head)
-    if (ret != null) {
-      chunk = ret
+  if (append) {
+    if (append.head) {
+      const ret = injectScriptIntoHtml([HEAD, HEAD_UP], chunk, append.head)
+      if (ret != null) {
+        chunk = ret
+      }
     }
-  }
-  if (append && append.body) {
-    const ret = injectScriptIntoHtml([BODY, BODY_UP], chunk, append.body)
-    if (ret != null) {
-      chunk = ret
+    if (append.body) {
+      const ret = injectScriptIntoHtml([BODY, BODY_UP], chunk, append.body)
+      if (ret != null) {
+        chunk = ret
+      }
     }
   }
   _this.push(chunk)
@@ -60,7 +77,6 @@ function injectScriptIntoHtml (tags, chunk, script) {
 const contextPath = '/____ds_script____/'
 const monkey = require('../../monkey')
 module.exports = {
-
   requestIntercept (context, req, res, ssl, next) {
     const { rOptions, log, setting } = context
     if (rOptions.path.indexOf(contextPath) !== 0) {
@@ -99,50 +115,66 @@ module.exports = {
     if (!isHtml || contentLengthIsZero) {
       next()
       return
-    } else {
-      Object.keys(proxyRes.headers).forEach(function (key) {
-        if (proxyRes.headers[key] !== undefined) {
-          // let newkey = key.replace(/^[a-z]|-[a-z]/g, (match) => {
-          //   return match.toUpperCase()
-          // })
-          const newkey = key
-          if (isHtml && key === 'content-length') {
-            // do nothing
-            return
-          }
-          if (isHtml && key === 'content-security-policy') {
-            // content-security-policy
-            let policy = proxyRes.headers[key]
-            const reg = /script-src ([^:]*);/i
-            const matched = policy.match(reg)
-            if (matched) {
-              if (matched[1].indexOf('self') < 0) {
-                policy = policy.replace('script-src', 'script-src \'self\' ')
-              }
-            }
-            res.setHeader(newkey, policy)
-            return
-          }
+    }
 
-          res.setHeader(newkey, proxyRes.headers[key])
+    Object.keys(proxyRes.headers).forEach(function (key) {
+      if (proxyRes.headers[key] !== undefined) {
+        // let newkey = key.replace(/^[a-z]|-[a-z]/g, (match) => {
+        //   return match.toUpperCase()
+        // })
+        const newkey = key
+        if (isHtml && key === 'content-length') {
+          // do nothing
+          return
         }
-      })
+        if (isHtml && key === 'content-security-policy') {
+          // content-security-policy
+          let policy = proxyRes.headers[key]
+          const reg = /script-src ([^:]*);/i
+          const matched = policy.match(reg)
+          if (matched) {
+            if (matched[1].indexOf('self') < 0) {
+              policy = policy.replace('script-src', 'script-src \'self\' ')
+            }
+          }
+          res.setHeader(newkey, policy)
+          return
+        }
 
-      res.writeHead(proxyRes.statusCode)
+        res.setHeader(newkey, proxyRes.headers[key])
+      }
+    })
 
-      const isGzip = httpUtil.isGzip(proxyRes)
+    res.writeHead(proxyRes.statusCode)
 
-      if (isGzip) {
-        proxyRes.pipe(new zlib.Gunzip())
+    // 获取编码及其对应的压缩方法
+    const encoding = httpUtil.getContentEncoding(proxyRes)
+    const compress = httpUtil.getCompression(encoding)
+    if (encoding) {
+      if (compress) {
+        // 获取编码对应的解压方法
+        const decompress = httpUtil.getDecompression(encoding)
+        proxyRes
+          .pipe(decompress)
           .pipe(through(function (chunk, enc, callback) {
             chunkByteReplace(this, chunk, enc, callback, append)
-          })).pipe(new zlib.Gzip()).pipe(res)
+          }))
+          .pipe(compress)
+          .pipe(res)
       } else {
-        proxyRes.pipe(through(function (chunk, enc, callback) {
-          chunkByteReplace(this, chunk, enc, callback, append)
-        })).pipe(res)
+        log.warn(`InsertScriptMiddleware：暂不支持编码方式: ${encoding}, 目前支持: Gzip、Deflate`)
       }
+      next()
+      return
     }
+
+    if (compress == null) {
+      proxyRes.pipe(through(function (chunk, enc, callback) {
+        chunkByteReplace(this, chunk, enc, callback, append)
+      })).pipe(res)
+    }
+
     next()
-  }
+  },
+  httpUtil
 }
