@@ -5,15 +5,21 @@ const zlib = require('zlib')
 const httpUtil = {
   // 获取编码
   getContentEncoding (res) {
-    return res.headers['content-encoding']
+    const encoding = res.headers['content-encoding']
+    if (encoding) {
+      return encoding.toLowerCase()
+    }
+    return null
   },
   // 获取压缩方法
   getCompression (encoding) {
     switch (encoding) {
       case 'gzip':
-        return zlib.createGunzip()
+        return new zlib.Gzip()
       case 'deflate':
-        return zlib.createInflate()
+        return new zlib.Deflate()
+      case 'br':
+        return new zlib.BrotliCompress()
       default:
         return null
     }
@@ -22,9 +28,11 @@ const httpUtil = {
   getDecompression (encoding) {
     switch (encoding) {
       case 'gzip':
-        return zlib.createGzip()
+        return new zlib.Gunzip()
       case 'deflate':
-        return zlib.createDeflate()
+        return new zlib.Inflate()
+      case 'br':
+        return new zlib.BrotliDecompress()
       default:
         return null
     }
@@ -162,7 +170,7 @@ module.exports = {
           .pipe(compress)
           .pipe(res)
       } else {
-        log.warn(`InsertScriptMiddleware：暂不支持编码方式: ${encoding}, 目前支持: Gzip、Deflate`)
+        log.warn(`InsertScriptMiddleware.responseInterceptor(): 暂不支持编码方式 ${encoding}, 目前支持: gzip、deflate、br`)
       }
       next()
       return
