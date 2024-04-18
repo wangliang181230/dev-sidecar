@@ -83,7 +83,7 @@
 
 		// 创建菜单列表div
 		menusElement = document.createElement('div');
-		menusElement.innerHTML = `<div class="____ds-menus____"></div>`;
+		menusElement.className = "____ds-menus____";
 		// 将菜单列表div添加到插件div中
 		pluginElement.append(menusElement);
 
