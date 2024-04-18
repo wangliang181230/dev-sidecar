@@ -16,11 +16,15 @@ function buildScript (sc, content, scriptName) {
   }
 
   // 代码2：初始化
+  const options = {
+    name: sc.name,
+    icon: sc.icon
+  }
   const initStr = `
 const DS_init = window.__ds_global__['DS_init']
 if (typeof DS_init === 'function') {
 \tconsole.log("${scriptKey} do DS_init")
-\tDS_init(${JSON.stringify(sc)});
+\tDS_init(${JSON.stringify(options)});
 } else {
 \tconsole.log("${scriptKey} has no DS_init")
 }
