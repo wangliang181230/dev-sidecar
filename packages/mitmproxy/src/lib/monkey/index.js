@@ -27,28 +27,32 @@ if (typeof DS_init === 'function') {
 \tDS_init(${JSON.stringify(options)});
 } else {
 \tconsole.log("${scriptKey} has no DS_init")
-}
-`
+}`
 
   // 代码3：判断是否启用了脚本
   const checkEnabledStr = `
 if (!(window.__ds_global__.GM_getValue || (() => true))("ds_enabled", true)) {
 \tconsole.log("${scriptKey} disabled")
 \treturn
-}
-`
+}`
 
   // 代码4：`GM_xxx` 方法读取
   let grantStr = ''
   for (const item of sc.grant) {
+    if (item.indexOf('.') > 0) {
+      continue
+    }
+
     if (grantStr.length > 0) {
       grantStr += '\r\n'
     }
-    grantStr += (item.indexOf('.') > 0 ? '' : 'const ') + item + ' = window.__ds_global__[\'' + item + '\'] || (() => {});'
+    grantStr += 'const ' + item + ' = window.__ds_global__[\'' + item + '\'] || (() => {});'
   }
-  return eventStr + ', () => {\r\n' +
+
+  // 拼接脚本
+  return eventStr + ', () => {' +
     initStr + '\r\n' +
-    checkEnabledStr + '\r\n' +
+    checkEnabledStr + '\r\n\r\n' +
     (grantStr ? (grantStr + '\r\n\r\n') : '') +
     content +
     `\r\nconsole.log("${scriptKey} completed")` +
