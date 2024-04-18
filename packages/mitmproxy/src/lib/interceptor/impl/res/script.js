@@ -33,7 +33,7 @@ module.exports = {
       keys = [keys]
     }
     try {
-      // 内置脚本
+      // 内置脚本列表
       const scripts = monkey.get(setting.script.dirAbsolutePath)
 
       let tags = ''
@@ -51,10 +51,6 @@ module.exports = {
           if (script == null) {
             continue
           }
-          if (key === 'github') {
-            // 如果是github油猴脚本，需要先加载 `global.script`，避免 `GM_xxx` 方法不存在导致报错。
-            tags += '\r\n\t' + getScript('global', scripts.global.script)
-          }
           scriptTag = getScript(key, script.script) // 2.DS内置脚本
         }
 
@@ -62,7 +58,12 @@ module.exports = {
       }
 
       // 如果脚本为空，则不插入
-      if (tags === '') return
+      if (tags === '') {
+        return
+      }
+
+      // 插入全局脚本
+      tags = '\r\n\t' + getScript('global', scripts.global.script) + tags
 
       res.setHeader('DS-Script-Interceptor', 'true')
       log.info('script response intercept: insert script', rOptions.hostname, rOptions.path, ', head:', tags)

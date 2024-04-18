@@ -1,12 +1,195 @@
+'use strict';
 (function(){
-	const config = {};
-	window.__ds_global__={
-		GM_registerMenuCommand: () => {},
-		GM_unregisterMenuCommand: () => {},
-		GM_openInTab: () => {},
-		GM_getValue: (key) => config[key],
-		GM_setValue: (key, value) => { config[key] = value; },
-		GM_notification: () => {}
+	const PRE = "DS:"; // 前缀
+	let initialized = false; // 是否已经初始化
+	const defaultPluginOptions = {
+	};
+
+	let pluginElement; // 插件div
+	let menusElement; // 菜单列表div
+	const menus = {}; // 菜单集合
+	let menuIndex = 0; // 菜单索引，用于生成menuCommandId
+
+	// 创建插件样式
+	function createPluginStyle (options) {
+		options = options || {};
+
+		// 创建一个新的<style>元素
+		const styleElement = document.createElement('style');
+		// 设置<style>元素的type属性
+		styleElement.type = 'text/css';
+
+		// 设置<style>元素的内容
+		let cssContent = `
+.____ds-icon____{
+	position: fixed;
+	right: 5px;
+	top: 5px;
+	z-index: 9999;
+	width: 32px;
+	height: 32px;
+	background-image: url("https://www.tampermonkey.net/images/icon48.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+.____ds-menus____ {
+	display: none;
+	position: absolute;
+	right: -1px;
+	top: 31px;
+	width: 100px;
+	background-color: #323232;
+	z-index: 10000;
+}
+.____ds-icon____:hover .____ds-menus____ {
+	display: block;
+}
+.____ds-menu____ {
+	height: 30px;
+	line-height: 30px;
+	padding-left: 10px;
+	color: #fff;
+	cursor: pointer;
+}
+`;
+		// 如果有自定义样式，则添加到 CSS 内容中
+		if (options.style) {
+			cssContent += options.style;
+		}
+
+		// 添加 CSS 内容到<style>元素中
+		if (styleElement.styleSheet) {
+			// 兼容 IE
+			styleElement.styleSheet.cssText = cssContent;
+		} else {
+			styleElement.appendChild(document.createTextNode(cssContent));
+		}
+
+		// 将<style>元素添加到<head>中
+		document.head.append(styleElement);
 	}
-}();
+
+	// 创建插件div
+	function createPluginDiv (options) {
+		options = options || {};
+
+		// 创建插件div
+		pluginElement = document.createElement('div');
+		pluginElement.title = options.name || "油猴脚本";
+		pluginElement.className = "____ds-icon____";
+		if (options.icon) {
+			pluginElement.style["background-image"] = `url("${options.icon}")`;
+		}
+
+		// 创建菜单列表div
+		menusElement = document.createElement('div');
+		menusElement.innerHTML = `<div class="____ds-menus____"></div>`;
+		// 将菜单列表div添加到插件div中
+		pluginElement.append(menusElement);
+
+		// 获取body元素
+		const body = document.getElementsByTagName('body')[0];
+		// 将插件div添加到body中
+		body.prepend(pluginElement);
+	}
+
+	window.__ds_global__ = {
+		// 初始化
+		GM_init: (options) => {
+			try {
+				if (initialized) return;
+				// 合并默认参数
+				options = {
+					...defaultPluginOptions,
+					...options
+				};
+				createPluginStyle(options);
+				createPluginDiv(options);
+				initialized = true;
+
+				console.log("ds_global initialization completed")
+			} catch (e) {
+				console.error("ds_global initialization failed:", e);
+			}
+		},
+		// 注册菜单
+		GM_registerMenuCommand: (name, callback, accessKey) => {
+			// 生成菜单ID
+			const menuCommandId = PRE + (++menuIndex);
+
+			// 创建菜单元素
+			const menuElement = document.createElement('div');
+			menuElement.id = menuCommandId;
+			menuElement.className = "____ds-menu____";
+			menuElement.innerHTML = name;
+			menuElement.onclick = callback;
+
+			// 将菜单元素添加到菜单列表div中
+			menusElement.append(menuElement);
+
+			// 返回菜单ID
+			return menuCommandId;
+		},
+		// 删除菜单
+		GM_unregisterMenuCommand: (menuCommandId) => {
+			const menuElement = document.getElementById(menuCommandId)
+			if (menuElement) {
+				menuElement.remove();
+			}
+			delete menus[menuCommandId];
+		},
+		// 打开新标签
+		GM_openInTab: (url, options) => {
+			window.open(url)
+		},
+		// 获取配置
+		GM_getValue: (key, defaultValue) => {
+			key = PRE + key;
+			const value = localStorage.getItem(key);
+			if (value == null) {
+				return defaultValue;
+			}
+			return value;
+		},
+		// 设置配置
+		GM_setValue: (key, newValue) => {
+			key = PRE + key;
+			const oldValue = localStorage.getItem(key);
+			localStorage.setItem(key, newValue);
+			return oldValue;
+		},
+		// 通知
+		GM_notification: (options) => {
+			// 显示通知方法
+			const showNotification = () => {
+				const notification = new Notification(options.text);
+				if (options.timeout) {
+					setTimeout(function () {
+						notification.close()
+					}, options.timeout)
+				}
+				return notification;
+			};
+
+			// 检查浏览器是否支持Notification API
+			if (!("Notification" in window)) {
+				alert(options.text); // 不支持，直接使用alert显示通知
+			}
+			// 检查用户是否已授予权限
+			else if (Notification.permission === "granted") {
+				// 如果用户已授予权限，我们可以显示通知
+				showNotification();
+			}
+			// 否则，先请求权限
+			else if (Notification.permission !== 'denied') {
+				Notification.requestPermission(function (permission) {
+					// 如果用户接受权限，我们可以显示通知
+					if (permission === "granted") {
+						showNotification()
+					}
+				});
+			}
+		}
+	}
+})();
 console.log("ds_global completed")
