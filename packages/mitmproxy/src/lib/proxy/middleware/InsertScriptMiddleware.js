@@ -144,7 +144,7 @@ module.exports = {
     return true
   },
   responseInterceptor (req, res, proxyReq, proxyRes, ssl, next, append) {
-    if (!append || (!append.head && !append.body)) {
+    if (append == null || (!append.head && !append.body)) {
       next()
       return
     }
