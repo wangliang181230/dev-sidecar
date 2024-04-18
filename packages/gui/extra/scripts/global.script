@@ -154,7 +154,7 @@
 
 	window.__ds_global__ = {
 		// 初始化
-		GM_init: (options) => {
+		DS_init: (options) => {
 			try {
 				if (initialized) return;
 				// 合并默认参数

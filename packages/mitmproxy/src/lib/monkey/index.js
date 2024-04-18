@@ -17,12 +17,12 @@ function buildScript (sc, content, scriptName) {
 
   // 代码2：初始化
   const initStr = `
-const GM_init = window.__ds_global__['GM_init']
-if (typeof GM_init === 'function') {
-\tconsole.log("${scriptKey} do GM_init")
-\tGM_init(${JSON.stringify(sc)});
+const DS_init = window.__ds_global__['DS_init']
+if (typeof DS_init === 'function') {
+\tconsole.log("${scriptKey} do DS_init")
+\tDS_init(${JSON.stringify(sc)});
 } else {
-\tconsole.log("${scriptKey} has no GM_init")
+\tconsole.log("${scriptKey} has no DS_init")
 }
 `
 
