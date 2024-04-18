@@ -4,20 +4,52 @@ const log = require('../../utils/util.log')
 let scripts
 
 function buildScript (sc, content, scriptName) {
+  const scriptKey = `ds_${scriptName}${sc.version ? ('_' + sc.version) : ''}:`
+
+  // 代码1：监听事件
+  const runAt = sc['run-at'] || 'document-end'
+  let eventStr
+  if (runAt === 'document-end') {
+    eventStr = 'document.addEventListener("DOMContentLoaded"'
+  } else {
+    eventStr = 'window.addEventListener("load"'
+  }
+
+  // 代码2：初始化
+  const initStr = `
+const GM_init = window.__ds_global__['GM_init']
+if (typeof GM_init === 'function') {
+\tconsole.log("${scriptKey} do GM_init")
+\tGM_init(${JSON.stringify(sc)});
+} else {
+\tconsole.log("${scriptKey} has no GM_init")
+}
+`
+
+  // 代码3：判断是否启用了脚本
+  const checkEnabledStr = `
+if (!(window.__ds_global__.GM_getValue || (() => true))("ds_enabled", true)) {
+\tconsole.log("${scriptKey} disabled")
+\treturn
+}
+`
+
+  // 代码4：`GM_xxx` 方法读取
   let grantStr = ''
   for (const item of sc.grant) {
     if (grantStr.length > 0) {
       grantStr += '\r\n'
     }
-    grantStr += (item.indexOf('.') > 0 ? '' : 'const ') + item + ' = window.__ds_global__[\'' + item + '\']'
+    grantStr += (item.indexOf('.') > 0 ? '' : 'const ') + item + ' = window.__ds_global__[\'' + item + '\'] || (() => {});'
   }
-
-  return 'window.addEventListener("load", ()=> {\r\n' +
-    grantStr + ';\r\n' +
+  return eventStr + ', () => {\r\n' +
+    initStr + '\r\n' +
+    checkEnabledStr + '\r\n' +
+    (grantStr ? (grantStr + '\r\n\r\n') : '') +
     content +
-    (scriptName ? `\r\nconsole.log("ds_${scriptName} completed")` : '') +
+    `\r\nconsole.log("${scriptKey} completed")` +
     '\r\n})' +
-    (scriptName ? `\r\nconsole.log("ds_${scriptName} loaded")` : '')
+    `\r\nconsole.log("${scriptKey} loaded")`
 }
 
 function loadScript (content, scriptName) {

@@ -24,7 +24,7 @@
 .____ds-icon____{
 	position: fixed;
 	right: 5px;
-	top: 5px;
+	top: 40%;
 	z-index: 9999;
 	width: 32px;
 	height: 32px;
@@ -35,13 +35,13 @@
 .____ds-menus____ {
 	display: none;
 	position: absolute;
-	right: -1px;
-	top: 31px;
+	right: 31px;
+	top: 0;
+	z-index: 10000;
 	min-width: 200px;
 	min-height: 35px;
 	background-color: #323231;
-	border: 1px solid #695959;
-	z-index: 10000;
+	border: 1px solid #52525E;
 }
 .____ds-icon____:hover .____ds-menus____ {
 	display: block;
@@ -53,9 +53,13 @@
 	white-space: nowrap;
 	color: #FFF;
 	cursor: pointer;
+	margin-left: 26px;
 }
 .____ds-menu____:hover {
 	background-color: #855F16;
+}
+.____ds-menu0____ {
+	margin-left: 0;
 }
 `;
 		// 如果有自定义样式，则添加到 CSS 内容中
@@ -77,7 +81,10 @@
 
 	// 创建插件div
 	function createPluginDiv (options) {
-		options = options || {};
+		options = {
+			...{ name: "油猴脚本" },
+			...options
+		}
 
 		// 创建插件div
 		pluginElement = document.createElement('div');
@@ -93,10 +100,46 @@
 		// 将菜单列表div添加到插件div中
 		pluginElement.append(menusElement);
 
+		// 创建开关菜单
+		const enabled = window.__ds_global__.GM_getValue("ds_enabled", true)
+		const switchElement = document.createElement('div');
+		switchElement.className = "____ds-menu____ ____ds-menu0____";
+		switchElement.innerHTML = (enabled ? "✅" : "❌") + " " + options.name;
+		switchElement.onclick = function() {
+			let enabled = window.__ds_global__.GM_getValue("ds_enabled", true)
+			if (enabled) {
+				hideMenus();
+				window.__ds_global__.GM_notification({text: `已关闭油猴脚本 [${options.name}」] 功能\n（刷新网页后生效）`, timeout: 3500});
+				enabled = false;
+			} else {
+				showMenus();
+				window.__ds_global__.GM_notification({text: `已开启油猴脚本 [${options.name}」] 功能\n（刷新网页后生效）`, timeout: 3500});
+				enabled = true;
+			}
+			window.__ds_global__.GM_setValue("ds_enabled", enabled)
+			switchElement.innerHTML = (enabled ? "✅" : "❌") + " " + options.name;
+		};
+		// 将开关菜单添加到菜单列表div中
+		menusElement.append(switchElement);
+
 		// 获取body元素
 		const body = document.getElementsByTagName('body')[0];
 		// 将插件div添加到body中
 		body.prepend(pluginElement);
+	}
+
+	function showMenus() {
+		for (const menuCommandId in menus) {
+			const menuElement = menus[menuCommandId].element;
+			menuElement.style.display = "block";
+		}
+	}
+
+	function hideMenus() {
+		for (const menuCommandId in menus) {
+			const menuElement = menus[menuCommandId].element;
+			menuElement.style.display = "none";
+		}
 	}
 
 	window.__ds_global__ = {
@@ -113,9 +156,9 @@
 				createPluginDiv(options);
 				initialized = true;
 
-				console.log("ds_global initialization completed")
+				console.log("ds_global: initialization completed")
 			} catch (e) {
-				console.error("ds_global initialization failed:", e);
+				console.error("ds_global: initialization failed:", e);
 			}
 		},
 		// 注册菜单
@@ -128,10 +171,20 @@
 			menuElement.id = menuCommandId;
 			menuElement.className = "____ds-menu____";
 			menuElement.innerHTML = name;
-			menuElement.onclick = callback;
+			if (callback) {
+				menuElement.onclick = callback;
+			}
 
 			// 将菜单元素添加到菜单列表div中
 			menusElement.append(menuElement);
+
+			// 将菜单添加到菜单集合中
+			menus[menuCommandId] = {
+				name: name,
+				callback: callback,
+				accessKey: accessKey,
+				element: menuElement
+			};
 
 			// 返回菜单ID
 			return menuCommandId;
@@ -200,4 +253,4 @@
 		}
 	}
 })();
-console.log("ds_global completed")
+console.log("ds_global: completed")
