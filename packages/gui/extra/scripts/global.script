@@ -145,18 +145,20 @@
 		// 获取配置
 		GM_getValue: (key, defaultValue) => {
 			key = PRE + key;
-			const value = localStorage.getItem(key);
-			if (value == null) {
+			const valueStr = localStorage.getItem(key);
+			if (valueStr == null || valueStr === '') {
 				return defaultValue;
 			}
-			return value;
+			try {
+				return JSON.parse(valueStr).v;
+			} catch (e) {
+			}
+			return valueStr;
 		},
 		// 设置配置
-		GM_setValue: (key, newValue) => {
+		GM_setValue: (key, value) => {
 			key = PRE + key;
-			const oldValue = localStorage.getItem(key);
-			localStorage.setItem(key, newValue);
-			return oldValue;
+			localStorage.setItem(key, JSON.stringify({ v: value }));
 		},
 		// 通知
 		GM_notification: (options) => {
