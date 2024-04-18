@@ -115,7 +115,7 @@
 		const icon = (options.icon ? `<img src="${options.icon}"/>` : " ");
 		switchElement.className = "____ds-menu____ ____ds-menu0____";
 		switchElement.innerHTML = (enabled ? "✅" : "❌") + icon + options.name;
-		switchElement.title = `点击${enabled ? "开启" : "关闭"}此脚本功能`;
+		switchElement.title = `点击${enabled ? "关闭" : "开启"}此脚本功能`;
 		switchElement.onclick = function() {
 			let enabled = window.__ds_global__.GM_getValue("ds_enabled", true)
 			if (enabled) {
@@ -126,7 +126,7 @@
 				enabled = true;
 			}
 			switchElement.innerHTML = (enabled ? "✅" : "❌") + icon + options.name;
-			switchElement.title = `点击${enabled ? "开启" : "关闭"}此脚本功能`;
+			switchElement.title = `点击${enabled ? "关闭" : "开启"}此脚本功能`;
 			window.__ds_global__.GM_setValue("ds_enabled", enabled)
 			window.__ds_global__.GM_notification({text: `已${enabled ? "开启" : "关闭"} 「${options.name}」 功能\n（刷新网页后生效）`, timeout: 3500});
 		};
