@@ -37,19 +37,25 @@
 	position: absolute;
 	right: -1px;
 	top: 31px;
-	width: 100px;
-	background-color: #323232;
+	min-width: 200px;
+	min-height: 35px;
+	background-color: #323231;
+	border: 1px solid #695959;
 	z-index: 10000;
 }
 .____ds-icon____:hover .____ds-menus____ {
 	display: block;
 }
 .____ds-menu____ {
-	height: 30px;
-	line-height: 30px;
-	padding-left: 10px;
-	color: #fff;
+	height: 35px;
+	line-height: 35px;
+	padding: 0 10px;
+	white-space: nowrap;
+	color: #FFF;
 	cursor: pointer;
+}
+.____ds-menu____:hover {
+	background-color: #855F16;
 }
 `;
 		// 如果有自定义样式，则添加到 CSS 内容中
@@ -75,7 +81,7 @@
 
 		// 创建插件div
 		pluginElement = document.createElement('div');
-		pluginElement.title = options.name || "油猴脚本";
+		pluginElement.title = "油猴脚本" + (options.name ? "：" + options.name : "");
 		pluginElement.className = "____ds-icon____";
 		if (options.icon) {
 			pluginElement.style["background-image"] = `url("${options.icon}")`;
@@ -140,7 +146,7 @@
 		},
 		// 打开新标签
 		GM_openInTab: (url, options) => {
-			window.open(url)
+			window.open(url, options)
 		},
 		// 获取配置
 		GM_getValue: (key, defaultValue) => {
