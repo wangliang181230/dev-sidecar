@@ -1,14 +1,25 @@
+/**
+ * @name 篡改猴（Tampermonkey）| 油猴（Greasemonkey）脚本浏览器扩展
+ * @description 篡改猴 (Tampermonkey) 是拥有 超过 1000 万用户 的最流行的浏览器扩展之一。 它适用于 Chrome、Microsoft Edge、Safari、Opera Next 和 Firefox。
+ *              有些人也会把篡改猴(Tampermonkey)称作油猴(Greasemonkey)，尽管后者只是一款仅适用于 Firefox 浏览器的浏览器扩展程序。
+ *              它允许用户自定义并增强您最喜爱的网页的功能。用户脚本是小型 JavaScript 程序，可用于向网页添加新功能或修改现有功能。使用 篡改猴，您可以轻松在任何网站上创建、管理和运行这些用户脚本。
+ *              例如，使用 篡改猴，您可以向网页添加一个新按钮，可以快速在社交媒体上分享链接，或自动填写带有个人信息的表格。在数字化时代，这特别有用，因为网页常常被用作访问广泛的服务和应用程序的用户界面。
+ *              此外，篡改猴 使您轻松找到并安装其他用户创建的用户脚本。这意味着您可以快速轻松地访问为您喜爱的网页定制的广泛库，而无需花费数小时编写自己的代码。
+ *              无论您是希望为您的站点添加新功能的 Web 开发人员，还是只是希望 改善在线体验的普通用户，篡改猴 都是您的工具箱中的一个很好的工具。
+ * @homepageUrl https://www.tampermonkey.net
+ */
 'use strict';
-(function(){
+(function () {
 	const PRE = "DS:"; // 前缀
-	let initialized = false; // 是否已经初始化
-	const defaultPluginOptions = {
-	};
 
-	let pluginElement; // 插件div
-	let menusElement; // 菜单列表div
-	const menus = {}; // 菜单集合
-	let menuIndex = 0; // 菜单索引，用于生成menuCommandId
+	const context = {
+		initialized: false, // 是否已经初始化
+		defaultPluginOptions: {}, // 默认插件选项
+		pluginElement: null, // 插件div
+		menusElement: null, // 菜单列表div
+		menus: {}, // 菜单集合
+		menuIndex: 0 // 菜单索引，用于生成menuCommandId
+	};
 
 	// 创建插件样式
 	function createPluginStyle (options) {
@@ -24,7 +35,7 @@
 .____ds-icon____{
 	position: fixed;
 	right: 5px;
-	top: 48%;
+	top: 35%;
 	z-index: 9999;
 	width: 48px;
 	height: 48px;
@@ -99,24 +110,25 @@
 		}
 
 		// 创建插件div
-		pluginElement = document.createElement('div');
-		pluginElement.title = "油猴脚本" + (options.name ? "：" + options.name : "");
-		pluginElement.className = "____ds-icon____";
+		context.pluginElement = document.createElement('div');
+		context.pluginElement.title = "油猴脚本" + (options.name ? "：" + options.name : "");
+		context.pluginElement.className = "____ds-icon____";
 
 		// 创建菜单列表div
-		menusElement = document.createElement('div');
-		menusElement.className = "____ds-menus____";
+		context.menusElement = document.createElement('div');
+		context.menusElement.className = "____ds-menus____";
 		// 将菜单列表div添加到插件div中
-		pluginElement.append(menusElement);
+		context.pluginElement.append(context.menusElement);
 
 		// 创建开关菜单
 		const enabled = window.__ds_global__.GM_getValue("ds_enabled", true)
-		const switchElement = document.createElement('div');
+		const switchMenuElement = document.createElement('div');
 		const icon = (options.icon ? `<img src="${options.icon}"/>` : " ");
-		switchElement.className = "____ds-menu____ ____ds-menu0____";
-		switchElement.innerHTML = (enabled ? "✅" : "❌") + icon + options.name;
-		switchElement.title = `点击${enabled ? "关闭" : "开启"}此脚本功能`;
-		switchElement.onclick = function() {
+		switchMenuElement.id = PRE + "menu-0";
+		switchMenuElement.className = "____ds-menu____ ____ds-menu0____";
+		switchMenuElement.innerHTML = (enabled ? "✅" : "❌") + icon + options.name;
+		switchMenuElement.title = `点击${enabled ? "关闭" : "开启"}此脚本功能`;
+		switchMenuElement.onclick = function () {
 			let enabled = window.__ds_global__.GM_getValue("ds_enabled", true)
 			if (enabled) {
 				hideMenus();
@@ -125,57 +137,66 @@
 				showMenus();
 				enabled = true;
 			}
-			switchElement.innerHTML = (enabled ? "✅" : "❌") + icon + options.name;
-			switchElement.title = `点击${enabled ? "关闭" : "开启"}此脚本功能`;
+			switchMenuElement.innerHTML = (enabled ? "✅" : "❌") + icon + options.name;
+			switchMenuElement.title = `点击${enabled ? "关闭" : "开启"}此脚本功能`;
 			window.__ds_global__.GM_setValue("ds_enabled", enabled)
-			window.__ds_global__.GM_notification({text: `已${enabled ? "开启" : "关闭"} 「${options.name}」 功能\n（刷新网页后生效）`, timeout: 3500});
+			window.__ds_global__.GM_notification({
+				text: `已${enabled ? "开启" : "关闭"} 「${options.name}」 功能\n（刷新网页后生效）`,
+				timeout: 3500
+			});
 		};
 		// 将开关菜单添加到菜单列表div中
-		menusElement.append(switchElement);
+		context.menusElement.append(switchMenuElement);
 
 		// 获取body元素
 		const body = document.getElementsByTagName('body')[0];
 		// 将插件div添加到body中
-		body.prepend(pluginElement);
+		body.prepend(context.pluginElement);
 	}
 
-	function showMenus() {
-		for (const menuCommandId in menus) {
-			const menuElement = menus[menuCommandId].element;
+	function showMenus () {
+		for (const menuCommandId in context.menus) {
+			const menuElement = context.menus[menuCommandId].element;
 			menuElement.style.display = "block";
 		}
 	}
 
-	function hideMenus() {
-		for (const menuCommandId in menus) {
-			const menuElement = menus[menuCommandId].element;
+	function hideMenus () {
+		for (const menuCommandId in context.menus) {
+			const menuElement = context.menus[menuCommandId].element;
 			menuElement.style.display = "none";
 		}
 	}
 
 	window.__ds_global__ = {
+		// 获取上下文
+		getContext: () => {
+			return context;
+		},
 		// 初始化
 		DS_init: (options) => {
 			try {
-				if (initialized) return;
+				if (context.initialized) return;
 				// 合并默认参数
 				options = {
-					...defaultPluginOptions,
+					...context.defaultPluginOptions,
 					...options
 				};
 				createPluginStyle(options);
 				createPluginDiv(options);
-				initialized = true;
+				context.initialized = true;
 
-				console.log("ds_global: initialization completed")
+				console.log("ds_tampermonkey: initialization completed")
 			} catch (e) {
-				console.error("ds_global: initialization failed:", e);
+				console.error("ds_tampermonkey: initialization failed:", e);
 			}
 		},
 		// 注册菜单
-		GM_registerMenuCommand: (name, callback, accessKey) => {
+		GM_registerMenuCommand: (name, callback, options_or_accessKey) => {
+			const options = typeof options_or_accessKey === "string" ? { accessKey: options_or_accessKey } : options_or_accessKey;
+
 			// 生成菜单ID
-			const menuCommandId = PRE + (++menuIndex);
+			const menuCommandId = PRE + "menu-" + (++context.menuIndex);
 
 			// 创建菜单元素
 			const menuElement = document.createElement('div');
@@ -187,13 +208,13 @@
 			}
 
 			// 将菜单元素添加到菜单列表div中
-			menusElement.append(menuElement);
+			context.menusElement.append(menuElement);
 
 			// 将菜单添加到菜单集合中
-			menus[menuCommandId] = {
+			context.menus[menuCommandId] = {
 				name: name,
 				callback: callback,
-				accessKey: accessKey,
+				options: options,
 				element: menuElement
 			};
 
@@ -206,7 +227,7 @@
 			if (menuElement) {
 				menuElement.remove();
 			}
-			delete menus[menuCommandId];
+			delete context.menus[menuCommandId];
 		},
 		// 打开新标签
 		GM_openInTab: (url, options) => {
@@ -264,4 +285,4 @@
 		}
 	}
 })();
-console.log("ds_global: completed")
+console.log("ds_tampermonkey: completed")

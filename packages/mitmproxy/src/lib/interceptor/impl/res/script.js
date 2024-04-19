@@ -38,7 +38,7 @@ module.exports = {
 
       let tags = ''
       for (const key of keys) {
-        if (key === 'global') {
+        if (key === 'global' || key === 'tampermonkey') {
           continue
         }
 
@@ -62,8 +62,8 @@ module.exports = {
         return
       }
 
-      // 插入全局脚本
-      tags = '\r\n\t' + getScript('global', scripts.global.script) + tags
+      // 插入油猴脚本浏览器扩展
+      tags = '\r\n\t' + getScript('tampermonkey', scripts.tampermonkey.script) + tags
 
       res.setHeader('DS-Script-Interceptor', 'true')
       log.info('script response intercept: insert script', rOptions.hostname, rOptions.path, ', head:', tags)

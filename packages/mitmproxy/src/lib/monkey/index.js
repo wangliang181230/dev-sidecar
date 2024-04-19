@@ -118,7 +118,7 @@ const api = {
     scripts.github = loadScript(readFile(rootDir, 'github.script'), 'github')
     scripts.google = loadScript(readFile(rootDir, 'google.js'), 'google')
     // scripts.jquery = { script: readFile(rootDir, 'jquery.min.js') }
-    scripts.global = { script: readFile(rootDir, 'global.script') }
+    scripts.tampermonkey = { script: readFile(rootDir, 'tampermonkey.script') }
     return scripts
   },
   loadScript
