@@ -249,7 +249,7 @@ module.exports = {
           desc: '广告拦截'
         }
       },
-      '.*': {
+      '*': {
         '^.*\\?DS_DOWNLOAD$': {
           requestReplace: { doDownload: true },
           responseReplace: { doDownload: true },
