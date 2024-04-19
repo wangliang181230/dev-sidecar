@@ -10,7 +10,7 @@
  */
 'use strict';
 (function () {
-	const PRE = "DS:"; // 前缀
+	const PRE = "DS-Tampermonkey:"; // 前缀
 
 	const context = {
 		initialized: false, // 是否已经初始化
