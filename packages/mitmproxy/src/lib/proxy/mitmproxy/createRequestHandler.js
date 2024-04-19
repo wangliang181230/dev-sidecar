@@ -352,6 +352,11 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
 目标网站请求错误：【${e.code}】 ${e.message}<br/>
 目标地址：${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
           )
+        } catch (e) {
+          // do nothing
+        }
+
+        try {
           res.end()
         } catch (e) {
           // do nothing
