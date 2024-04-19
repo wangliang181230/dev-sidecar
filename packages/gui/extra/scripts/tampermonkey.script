@@ -18,7 +18,7 @@
 		pluginElement: null, // 插件div
 		menusElement: null, // 菜单列表div
 		menus: {}, // 菜单集合
-		menuIndex: 0 // 菜单索引，用于生成menuCommandId
+		menuIndex: 0 // 菜单索引，用于生成menuCmdId
 	};
 
 	// 创建插件样式
@@ -155,15 +155,15 @@
 	}
 
 	function showMenus () {
-		for (const menuCommandId in context.menus) {
-			const menuElement = context.menus[menuCommandId].element;
+		for (const menuCmdId in context.menus) {
+			const menuElement = context.menus[menuCmdId].element;
 			menuElement.style.display = "block";
 		}
 	}
 
 	function hideMenus () {
-		for (const menuCommandId in context.menus) {
-			const menuElement = context.menus[menuCommandId].element;
+		for (const menuCmdId in context.menus) {
+			const menuElement = context.menus[menuCmdId].element;
 			menuElement.style.display = "none";
 		}
 	}
@@ -196,11 +196,11 @@
 			const options = typeof options_or_accessKey === "string" ? { accessKey: options_or_accessKey } : options_or_accessKey;
 
 			// 生成菜单ID
-			const menuCommandId = PRE + "menu-" + (++context.menuIndex);
+			const menuCmdId = PRE + "menu-" + (++context.menuIndex);
 
 			// 创建菜单元素
 			const menuElement = document.createElement('div');
-			menuElement.id = menuCommandId;
+			menuElement.id = menuCmdId;
 			menuElement.className = "____ds-menu____";
 			menuElement.innerHTML = name;
 			if (callback) {
@@ -211,7 +211,7 @@
 			context.menusElement.append(menuElement);
 
 			// 将菜单添加到菜单集合中
-			context.menus[menuCommandId] = {
+			context.menus[menuCmdId] = {
 				name: name,
 				callback: callback,
 				options: options,
@@ -219,15 +219,15 @@
 			};
 
 			// 返回菜单ID
-			return menuCommandId;
+			return menuCmdId;
 		},
 		// 删除菜单
-		GM_unregisterMenuCommand: (menuCommandId) => {
-			const menuElement = document.getElementById(menuCommandId)
+		GM_unregisterMenuCommand: (menuCmdId) => {
+			const menuElement = document.getElementById(menuCmdId)
 			if (menuElement) {
 				menuElement.remove();
 			}
-			delete context.menus[menuCommandId];
+			delete context.menus[menuCmdId];
 		},
 		// 打开新标签
 		GM_openInTab: (url, options) => {
@@ -250,6 +250,11 @@
 		GM_setValue: (key, value) => {
 			key = PRE + key;
 			localStorage.setItem(key, JSON.stringify({ v: value }));
+		},
+		// 删除设置
+		GM_deleteValue: (key) => {
+			key = PRE + key;
+			localStorage.removeItem(key);
 		},
 		// 通知
 		GM_notification: (options) => {
