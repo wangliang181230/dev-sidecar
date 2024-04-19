@@ -56,10 +56,11 @@ module.exports = {
           sni: 'baidu.com'
         },
         '^(/[\\w-.]+){2,}/?(\\?.*)?$': {
-          script: [
-            'https://mirror.ghproxy.com/https://raw.githubusercontent.com/docmirror/dev-sidecar/scripts/github/monkey.js'
-          ],
-          scriptUrlDesc: '上面所使用的脚本地址，使用了高速镜像地址。',
+          // 篡改猴插件地址，以下是高速镜像地址
+          tampermonkeyScript: 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/docmirror/dev-sidecar/scripts/tampermonkey.js',
+          // Github油猴脚本地址，以下是高速镜像地址
+          script: 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/docmirror/dev-sidecar/scripts/github/monkey.js',
+          remark: '注：上面所使用的脚本地址，为高速镜像地址。',
           desc: '油猴脚本：高速下载 Git Clone/SSH、Release、Raw、Code(ZIP) 等文件 (公益加速)、项目列表单文件快捷下载、添加 git clone 命令'
         },
         // 以下三项暂时先注释掉，因为已经有油猴脚本提供高速下载地址了。
