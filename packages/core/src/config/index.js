@@ -93,10 +93,6 @@ module.exports = {
           proxy: 'https://raw.githubusercontent.com${m[1]}${m[3]}',
           responseReplace: { headers: { 'content-type': 'application/javascript; charset=utf-8' } },
           desc: '仓库内脚本，重定向改为代理，并设置响应头Content-Type。作用：方便script拦截器直接使用，避免引起跨域问题和脚本内容限制问题。'
-        },
-        '^.*\\?DS_DOWNLOAD$': {
-          requestReplace: { doDownload: true },
-          responseReplace: { doDownload: true }
         }
       },
       'github-releases.githubusercontent.com': {
@@ -251,6 +247,13 @@ module.exports = {
         '/ads/.*': {
           abort: true,
           desc: '广告拦截'
+        }
+      },
+      '.*': {
+        '^.*\\?DS_DOWNLOAD$': {
+          requestReplace: { doDownload: true },
+          responseReplace: { doDownload: true },
+          desc: '下载请求拦截：移除请求地址中的 `?DS_DOWNLOAD`，并设置响应头 `Content-Disposition: attachment; filename=xxxx`，使浏览器强制执行下载逻辑，而不是在浏览器中浏览。'
         }
       }
     },
