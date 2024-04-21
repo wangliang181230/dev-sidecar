@@ -52,7 +52,7 @@ module.exports = {
         appId: 'dev-sidecar',
         productName: 'dev-sidecar',
         // eslint-disable-next-line no-template-curly-in-string
-        artifactName: 'DevSidecar-${version}.${ext}',
+        artifactName: 'DevSidecar-${version}.myself.${ext}',
         copyright: 'Copyright © 2020-2024 docmirror.cn by Greper, WangLiang',
         nsis: {
           oneClick: false,
