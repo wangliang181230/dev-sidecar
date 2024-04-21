@@ -81,11 +81,7 @@ module.exports = {
       replaceHeaders['content-disposition'] = `attachment; filename="${encodeURIComponent(filename)}"`
       // 设置文件类型
       if (replaceHeaders['content-type'] == null) {
-        if (filename.indexOf('.') === 0) {
-          replaceHeaders['content-type'] = 'application/' + filename.substring(1)
-        } else {
-          replaceHeaders['content-type'] = 'application/octet-stream'
-        }
+        replaceHeaders['content-type'] = 'application/octet-stream'
       }
       // 如果未手动配置需要缓存，则不允许使用缓存
       const maxAge = cacheReq.getMaxAge(interceptOpt)
