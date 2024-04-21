@@ -2,7 +2,7 @@ const fs = require('fs')
 const Shell = require('./shell')
 const lodash = require('lodash')
 const defConfig = require('./config/index.js')
-const jsonApi = require('./json.js')
+const jsonApi = require('@docmirror/mitmproxy/src/json')
 const request = require('request')
 const path = require('path')
 const log = require('./utils/util.log')
@@ -23,7 +23,7 @@ function _getRemoteSavePath (prefix = '') {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
   }
-  return path.join(dir, prefix + 'remote_config.json')
+  return path.join(dir, prefix + 'remote_config.json5')
 }
 
 function _getConfigPath () {
@@ -66,8 +66,8 @@ const configApi = {
           return
         }
         if (response && response.statusCode === 200) {
-          if (body == null || body === '') {
-            log.warn('下载远程配置成功，但远程配置内容为空:', remoteConfigUrl)
+          if (body == null || body.length < 2) {
+            log.warn('下载远程配置成功，但内容为空:', remoteConfigUrl)
             resolve()
             return
           } else {
@@ -86,7 +86,7 @@ const configApi = {
           if (remoteConfig != null) {
             const remoteSavePath = _getRemoteSavePath()
             fs.writeFileSync(remoteSavePath, body)
-            log.info(`下载并保存 remote_config.json 成功, url: ${remoteConfigUrl}, path: ${remoteSavePath}`)
+            log.info('保存远程配置文件成功:', remoteSavePath)
           } else {
             log.warn('远程配置对象为空:', remoteConfigUrl)
           }
@@ -114,13 +114,13 @@ const configApi = {
     try {
       if (fs.existsSync(path)) {
         const file = fs.readFileSync(path)
-        log.info('读取 remote_config.json 成功:', path)
+        log.info('读取远程配置文件成功:', path)
         return jsonApi.parse(file.toString())
       } else {
-        log.warn('remote_config.json 文件不存在:', path)
+        log.warn('远程配置文件不存在:', path)
       }
     } catch (e) {
-      log.error('读取 remote_config.json 失败:', path, e)
+      log.error('读取远程配置文件失败:', path, ', error:', e)
     }
 
     return {}
@@ -132,14 +132,14 @@ const configApi = {
     try {
       const path = _getRemoteSavePath()
       if (fs.existsSync(path)) {
-        log.info('读取远程配置文件内容:', path)
         const file = fs.readFileSync(path)
+        log.info('读取远程配置文件内容成功:', path)
         return file.toString()
       } else {
         log.warn('远程配置文件不存在:', path)
       }
     } catch (e) {
-      log.warn('远程配置内容读取失败:', e)
+      log.error('读取远程配置文件内容失败:', e)
     }
 
     return '{}'
@@ -160,9 +160,8 @@ const configApi = {
     // 计算新配置与默认配置（启用远程配置时，含远程配置）的差异，并保存到 config.json 中
     const diffConfig = mergeApi.doDiff(defConfig, newConfig)
     const configPath = _getConfigPath()
-    const saveConfigJsonStr = mergeApi.toJson(diffConfig)
-    fs.writeFileSync(configPath, saveConfigJsonStr)
-    log.info('保存 config.json 成功:', configPath)
+    fs.writeFileSync(configPath, jsonApi.stringify(diffConfig))
+    log.info('保存 config.json 自定义配置文件成功:', configPath)
 
     // 重载配置
     const allConfig = configApi.set(diffConfig)
@@ -183,12 +182,12 @@ const configApi = {
     let userConfig
     if (!fs.existsSync(configPath)) {
       userConfig = {}
-      log.warn('config.json 文件不存在:', configPath)
+      log.info('config.json 文件不存在:', configPath)
     } else {
       const file = fs.readFileSync(configPath)
       log.info('读取 config.json 成功:', configPath)
       const fileStr = file.toString()
-      userConfig = fileStr && fileStr.length > 2 ? jsonApi.parse(file.toString()) : {}
+      userConfig = fileStr && fileStr.length > 2 ? jsonApi.parse(fileStr) : {}
     }
 
     const config = configApi.set(userConfig)
@@ -207,14 +206,15 @@ const configApi = {
     return configApi.load(newConfig)
   },
   load (newConfig) {
-    const merged = lodash.cloneDeep(defConfig)
-    const remoteConfig = configApi.readRemoteConfig()
+    // 以用户配置作为基准配置，是为了保证用户配置的顺序在前
+    const merged = newConfig != null ? lodash.cloneDeep(newConfig) : {}
 
-    mergeApi.doMerge(merged, remoteConfig)
+    mergeApi.doMerge(merged, defConfig) // 合并默认配置
+    mergeApi.doMerge(merged, configApi.readRemoteConfig()) // 合并远程配置
     if (newConfig != null) {
-      mergeApi.doMerge(merged, newConfig)
+      mergeApi.doMerge(merged, newConfig) // 再合并一次用户配置，使用户配置重新生效
     }
-    mergeApi.deleteNullItems(merged)
+    mergeApi.deleteNullItems(merged) // 删除为null及[delete]的项
     configTarget = merged
     log.info('加载及合并远程配置完成')
 
@@ -226,6 +226,7 @@ const configApi = {
   addDefault (key, defValue) {
     lodash.set(defConfig, key, defValue)
   },
+  // 移除用户配置，用于恢复出厂设置功能
   async removeUserConfig () {
     const configPath = _getConfigPath()
     if (fs.existsSync(configPath)) {

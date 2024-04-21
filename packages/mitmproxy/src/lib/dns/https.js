@@ -25,10 +25,8 @@ module.exports = class DNSOverHTTPS extends BaseDNS {
         log.info('获取到域名地址：', hostname, JSON.stringify(ret))
       }
       return ret
-    } catch (err) {
-      const errMsg = err.reason || err.message;
-      const errCode = errMsg.indexOf(err.code) >= 0 ? '' : `[${err.code}] `
-      log.warn('DNS query error:', hostname, ', dns:', this.dnsServer, `, errorMsg: ${errCode}${errMsg}`)
+    } catch (e) {
+      log.warn('DNS query error:', hostname, ', dns:', this.dnsServer, ', error:', e)
       return []
     }
   }

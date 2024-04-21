@@ -1,5 +1,5 @@
 const nodeConfig = require('./config')
-const jsonApi = require('../../../json.js')
+const jsonApi = require('@docmirror/mitmproxy/src/json')
 const NodePlugin = function (context) {
   const { config, shell, event, log } = context
   const nodeApi = {
@@ -61,7 +61,7 @@ const NodePlugin = function (context) {
 
     async setYarnEnv (list) {
       const cmds = []
-      log.debug('yarn set:', jsonApi.stringify(list))
+      log.debug('yarn set:', JSON.stringify(list))
       for (const item of list) {
         if (item.value != null) {
           cmds.push(`yarn config set ${item.key}  ${item.value}`)

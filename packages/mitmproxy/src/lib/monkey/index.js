@@ -3,20 +3,65 @@ const path = require('path')
 const log = require('../../utils/util.log')
 let scripts
 
-function buildScript (sc, content) {
-  const grant = sc.grant
-  const pre = 'window.addEventListener("load",' +
-      ' ()=> { \r\n'
-  let grantSc = ''
-  for (const item of grant) {
-    grantSc += (item.indexOf('.') > 0 ? '' : 'const ') + item + ' = window.__ds_global__[\'' + item + '\']\r\n'
+function buildScript (sc, content, scriptName) {
+  const scriptKey = `ds_${scriptName}${sc.version ? ('_' + sc.version) : ''}:`
+
+  // 代码1：监听事件
+  const runAt = sc['run-at'] || 'document-end'
+  let eventStr
+  if (runAt === 'document-end') {
+    eventStr = 'document.addEventListener("DOMContentLoaded"'
+  } else {
+    eventStr = 'window.addEventListener("load"'
   }
-  const tail = ';' + content + '\r\n' +
-      '})'
-  return pre + grantSc + tail
+
+  // 代码2：初始化
+  const options = {
+    name: sc.name,
+    icon: sc.icon
+  }
+  const initStr = `
+const DS_init = (window.__ds_global__ || {})['DS_init']
+if (typeof DS_init === 'function') {
+\tconsole.log("${scriptKey} do DS_init")
+\tDS_init(${JSON.stringify(options)});
+} else {
+\tconsole.log("${scriptKey} has no DS_init")
+}`
+
+  // 代码3：判断是否启用了脚本
+  const checkEnabledStr = `
+if (!((window.__ds_global__ || {}).GM_getValue || (() => true))("ds_enabled", true)) {
+\tconsole.log("${scriptKey} disabled")
+\treturn
+}`
+
+  // 代码4：`GM_xxx` 方法读取
+  let grantStr = ''
+  for (const item of sc.grant) {
+    if (grantStr.length > 0) {
+      grantStr += '\r\n'
+    }
+
+    if (item.indexOf('.') > 0) {
+      grantStr += item + ' = (window.__ds_global__ || {})[\'' + item + '\'];'
+    } else {
+      grantStr += 'const ' + item + ' = (window.__ds_global__ || {})[\'' + item + '\'] || (() => {});'
+    }
+  }
+
+  // 拼接脚本
+  return eventStr + ', () => {' +
+    initStr + '\r\n' +
+    checkEnabledStr + '\r\n\r\n' +
+    (grantStr ? (grantStr + '\r\n\r\n') : '') +
+    content +
+    `\r\nconsole.log("${scriptKey} completed")` +
+    '\r\n})' +
+    `\r\nconsole.log("${scriptKey} loaded")`
 }
 
-function loadScript (content) {
+function loadScript (content, scriptName) {
   // @grant        GM_registerMenuCommand
   // @grant        GM_unregisterMenuCommand
   // @grant        GM_openInTab
@@ -32,7 +77,7 @@ function loadScript (content) {
   const sc = {
     grant: [],
     match: [],
-    content: ''
+    script: ''
   }
   for (const string of confItemArr) {
     const reg = new RegExp('.*@([^\\s]+)\\s(.+)')
@@ -51,7 +96,7 @@ function loadScript (content) {
   }
   const script = arr[start + 1].trim()
 
-  sc.script = buildScript(sc, script)
+  sc.script = buildScript(sc, script, scriptName)
   return sc
 }
 
@@ -71,12 +116,13 @@ const api = {
   },
   load (rootDir) {
     scripts = {}
-    scripts.github = loadScript(readFile(rootDir, 'github.script'))
-    scripts.google = loadScript(readFile(rootDir, 'google.js'))
+    scripts.github = loadScript(readFile(rootDir, 'github.script'), 'github')
+    scripts.google = loadScript(readFile(rootDir, 'google.js'), 'google')
     // scripts.jquery = { script: readFile(rootDir, 'jquery.min.js') }
-    scripts.global = { script: readFile(rootDir, 'global.script') }
+    scripts.tampermonkey = { script: readFile(rootDir, 'tampermonkey.script') }
     return scripts
-  }
+  },
+  loadScript
 }
 
 module.exports = api

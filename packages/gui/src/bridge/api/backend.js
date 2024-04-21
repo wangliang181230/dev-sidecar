@@ -6,12 +6,23 @@ import path from 'path'
 const pk = require('../../../package.json')
 const mitmproxyPath = path.join(__dirname, 'mitmproxy.js')
 process.env.DS_EXTRA_PATH = path.join(__dirname, '../extra/')
+const jsonApi = require('@docmirror/mitmproxy/src/json')
 const log = require('../../utils/util.log')
-const jsonApi = require('@docmirror/dev-sidecar/src/json.js')
-const mergeApi = require('@docmirror/dev-sidecar/src/merge.js')
 
 const getDefaultConfigBasePath = function () {
   return DevSidecar.api.config.get().server.setting.userBasePath
+}
+
+const getDateTimeStr = function () {
+  const date = new Date() // 创建一个表示当前日期和时间的 Date 对象
+  const year = date.getFullYear() // 获取年份
+  const month = String(date.getMonth() + 1).padStart(2, '0') // 获取月份（注意月份从 0 开始计数）
+  const day = String(date.getDate()).padStart(2, '0') // 获取天数
+  const hours = String(date.getHours()).padStart(2, '0') // 获取小时
+  const minutes = String(date.getMinutes()).padStart(2, '0') // 获取分钟
+  const seconds = String(date.getSeconds()).padStart(2, '0') // 获取秒数
+  const milliseconds = String(date.getMilliseconds()).padStart(3, '0') // 获取毫秒
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`
 }
 
 const localApi = {
@@ -50,8 +61,12 @@ const localApi = {
       let setting = {}
       if (fs.existsSync(settingPath)) {
         const file = fs.readFileSync(settingPath)
-        log.info('读取 setting.json 成功:', settingPath)
-        setting = jsonApi.parse(file.toString())
+        try {
+          setting = jsonApi.parse(file.toString())
+          log.info('读取 setting.json 成功:', settingPath)
+        } catch (e) {
+          log.error('读取 setting.json 失败:', settingPath, ', error:', e)
+        }
         if (setting == null) {
           setting = {}
         }
@@ -61,16 +76,8 @@ const localApi = {
       }
 
       if (setting.installTime == null) {
-        // 初始化安装时间
-        const date = new Date() // 创建一个表示当前日期和时间的 Date 对象
-        const year = date.getFullYear() // 获取年份
-        const month = String(date.getMonth() + 1).padStart(2, '0') // 获取月份（注意月份从 0 开始计数）
-        const day = String(date.getDate()).padStart(2, '0') // 获取天数
-        const hours = String(date.getHours()).padStart(2, '0') // 获取小时
-        const minutes = String(date.getMinutes()).padStart(2, '0') // 获取分钟
-        const seconds = String(date.getSeconds()).padStart(2, '0') // 获取秒数
-        const milliseconds = String(date.getMilliseconds()).padStart(3, '0') // 获取毫秒
-        setting.installTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`
+        // 设置安装时间
+        setting.installTime = getDateTimeStr()
 
         // 初始化 rootCa.setuped
         if (setting.rootCa == null) {
@@ -87,8 +94,8 @@ const localApi = {
     },
     save (setting = {}) {
       const settingPath = _getSettingsPath()
-      fs.writeFileSync(settingPath, mergeApi.toJson(setting))
-      log.info('保存 setting.json 成功:', settingPath)
+      fs.writeFileSync(settingPath, jsonApi.stringify(setting))
+      log.info('保存 setting.json 配置文件成功:', settingPath)
     }
   },
   /**
@@ -184,5 +191,6 @@ export default {
     doStart()
   },
   devSidecar: DevSidecar,
-  invoke
+  invoke,
+  getDateTimeStr
 }

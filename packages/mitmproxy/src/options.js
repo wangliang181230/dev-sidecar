@@ -3,10 +3,20 @@ const dnsUtil = require('./lib/dns')
 const log = require('./utils/util.log')
 const matchUtil = require('./utils/util.match')
 const path = require('path')
+const scriptInterceptor = require('./lib/interceptor/impl/res/script')
+
 const createOverwallMiddleware = require('./lib/proxy/middleware/overwall')
 
+// 处理拦截配置
+function buildIntercepts (intercepts) {
+  // 自动生成script拦截器所需的辅助配置，降低使用`script拦截器`配置绝对地址和相对地址时的门槛
+  scriptInterceptor.handleScriptInterceptConfig(intercepts)
+
+  return intercepts
+}
+
 module.exports = (config) => {
-  const intercepts = matchUtil.domainMapRegexply(config.intercepts)
+  const intercepts = matchUtil.domainMapRegexply(buildIntercepts(config.intercepts))
   const whiteList = matchUtil.domainMapRegexply(config.whiteList)
 
   const dnsMapping = config.dns.mapping
@@ -65,7 +75,6 @@ module.exports = (config) => {
     },
     createIntercepts: (context) => {
       const rOptions = context.rOptions
-      // const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
       const interceptOpts = matchUtil.matchHostnameAll(intercepts, rOptions.hostname, 'get interceptOpts')
       if (!interceptOpts) { // 该域名没有配置拦截器，直接过
         return

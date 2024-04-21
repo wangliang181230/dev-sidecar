@@ -8,8 +8,8 @@ module.exports = {
     const status = response.status || 200
 
     const body = response.html || response.json || response.script || response.css || response.text || response.body ||
-      `DevSidecar ${status}: Request success.\n\n` +
-      '  This request is matched by success intercept.\n\n' +
+      `DevSidecar ${status}: Request success.\r\n\r\n` +
+      '  This request is matched by success intercept.\r\n' +
       '  因配置success拦截器，本请求直接返回200成功。'
 
     // headers
@@ -37,8 +37,10 @@ module.exports = {
       }
     }
     // headers.Access-Control-Allow-*：避免跨域问题
-    headers['Access-Control-Allow-Credentials'] = 'true'
-    headers['Access-Control-Allow-Origin'] = '*'
+    if (rOptions.headers.origin) {
+      headers['Access-Control-Allow-Credentials'] = 'true'
+      headers['Access-Control-Allow-Origin'] = rOptions.headers.origin
+    }
 
     res.writeHead(status, headers)
     if (status !== 204) {

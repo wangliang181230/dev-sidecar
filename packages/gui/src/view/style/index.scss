@@ -8,12 +8,13 @@
   align-content:  center;
   display: flex;
   justify-content: flex-end;
-  align-items: center
-}
-.flex-l-r>a{
-  align-content:  center;
-  display: flex;
-  align-items: center
+  align-items: center;
+
+  &>a{
+    align-content:  center;
+    display: flex;
+    align-items: center;
+  }
 }
 
 .md-mr-5{margin-right: 5px;}
@@ -47,4 +48,9 @@ ol{
   font-size:12px;
   line-height: 15px;
   color: #aaa;
+}
+
+.ace_search_form .ace_searchbtn{
+  width: auto;
+  min-width: 27px;
 }

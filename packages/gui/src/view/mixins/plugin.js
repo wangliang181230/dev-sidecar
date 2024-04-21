@@ -10,8 +10,8 @@ export default {
       key: undefined,
       config: undefined,
       status: {},
-      labelCol: { span: 4 },
-      wrapperCol: { span: 20 },
+      labelCol: { span: 5 },
+      wrapperCol: { span: 19 },
       resetDefaultLoading: false,
       applyLoading: false,
       systemPlatform: ''
@@ -59,7 +59,7 @@ export default {
       const key = this.getKey()
       this.$confirm({
         title: '提示',
-        content: `确定要恢复当前页面（${this.key}）为默认设置吗？`,
+        content: '确定要恢复默认设置吗？',
         cancelText: '取消',
         okText: '确定',
         onOk: async () => {
