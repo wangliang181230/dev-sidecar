@@ -132,7 +132,7 @@ export default {
       setupCa: {
         visible: false
       },
-      update: { downloading: false, progress: 0, newVersion: false }
+      update: { checking: false, downloading: false, progress: 0, newVersion: false }
     }
   },
   async created () {
