@@ -24,7 +24,7 @@ module.exports = {
       url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/remote_config/packages/core/src/config/remote_config_myself.json'
     },
     theme: 'dark', // 主题：light=亮色, dark=暗色
-    autoChecked: true, // 是否自动检查更新
+    autoChecked: false, // 是否自动检查更新
     skipPreRelease: true, // 是否忽略预发布版本
     dock: {
       hideWhenWinClose: false

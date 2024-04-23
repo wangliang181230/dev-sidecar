@@ -11,7 +11,7 @@ function install (app, api) {
         updateParams.fromUser = fromUser
       }
       updateParams.checking = true
-      api.ipc.send('update', { key: 'checkForUpdate' })
+      api.ipc.send('update', { key: 'checkForUpdate', fromUser })
     },
     downloadUpdate () {
       api.ipc.send('update', { key: 'downloadUpdate' })
@@ -57,7 +57,7 @@ function install (app, api) {
     }
   }
 
-  function noNewVersion (value) {
+  function noNewVersion () {
     updateParams.newVersion = false
     if (updateParams.fromUser) {
       app.$message.info('当前已经是最新版本')
@@ -73,6 +73,7 @@ function install (app, api) {
   }
 
   function goManualUpdate (value) {
+    updateParams.newVersion = false
     app.$confirm({
       // title: '暂不支持自动升级',
       title: '暂不提供自动升级',
@@ -93,8 +94,7 @@ function install (app, api) {
 
   // /**
   //  * 是否小版本升级
-  //  * @param version1
-   * @param version2
+  //  * @param value
   //  */
   // async function isSupportPartUpdate (value) {
   //   const info = await api.info.get()
@@ -112,9 +112,9 @@ function install (app, api) {
     goManualUpdate(value)
 
     // const platform = await api.shell.getSystemPlatform()
-    // console.log('download new version platform', platform)
+    // console.log(`download new version: ${JSON.stringify(value)}, platform: ${platform}`)
     // if (platform === 'linux') {
-    //   goManualUpdate(app, value)
+    //   goManualUpdate(value)
     //   return
     // }
     // const partUpdate = await isSupportPartUpdate(value)
@@ -139,13 +139,13 @@ function install (app, api) {
       downloadNewVersion(value)
       return
     }
+    console.log(value)
     app.$confirm({
       title: '发现新版本：v' + value.version,
       cancelText: '暂不升级',
       okText: '升级',
       width: 710,
       content: h => {
-        console.log(value)
         if (value.releaseNotes) {
           if (typeof value.releaseNotes === 'string') {
             return <div>{value.releaseNotes}</div>

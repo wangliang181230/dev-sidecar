@@ -6,6 +6,13 @@
           <a-button style="margin-right:10px" @click="openSetupCa">
             <a-badge :count="_rootCaSetuped?0:1" dot>安装根证书</a-badge>
           </a-button>
+
+          <a-button style="margin-right:10px" @click="doCheckUpdate(true)" :loading="update.downloading || update.checking"
+                    :title="'当前版本:'+info.version">
+            <a-badge :count="update.newVersion?1:0" dot>
+              <span v-if="update.downloading">{{ update.progress }}%</span>{{ update.downloading ? '新版本下载中' : ('检查更新' + (update.checking ? '中' : '')) }}
+            </a-badge>
+          </a-button>
       </span>
     </template>
 
@@ -103,6 +110,7 @@ export default {
   },
   data () {
     return {
+      donateModal: false,
       status: undefined,
       startup: {
         loading: false,
@@ -141,6 +149,10 @@ export default {
     this.$set(this, 'status', this.$status)
     this.switchBtns = this.createSwitchBtns()
     this.$set(this, 'update', this.$global.update)
+    if (!this.update.autoChecked && this.config.app.autoChecked) {
+      this.update.autoChecked = true // 应用启动时，执行一次
+      this.doCheckUpdate(false)
+    }
     this.$api.info.get().then(ret => {
       this.info = ret
     })
@@ -310,6 +322,15 @@ export default {
           return this.$api.server.restart()
         }
       })
+    },
+    goDonate () {
+      this.$message.info('感谢支持')
+    },
+    doCheckUpdate (fromUser) {
+      this.$api.update.checkForUpdate(fromUser)
+    },
+    async openExternal (url) {
+      await this.$api.ipc.openExternal(url)
     },
     onShutdownTipClose (e) {
       this.$confirm({
