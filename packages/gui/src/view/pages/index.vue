@@ -78,7 +78,6 @@
         <div class="right"></div>
       </div>
     </div>
-
   </ds-container>
 
 </template>

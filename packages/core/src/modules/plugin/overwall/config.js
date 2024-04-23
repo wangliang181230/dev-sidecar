@@ -1,6 +1,6 @@
 module.exports = {
   name: '梯子',
-  enabled: true, // 默认开启梯子
+  enabled: false, // 默认关闭梯子
   server: {},
   serverDefault: {
     'ow-prod.docmirror.top': {
