@@ -72,7 +72,7 @@ const localApi = {
         }
       }
       if (setting.overwall == null) {
-        setting.overwall = true
+        setting.overwall = false
       }
 
       if (setting.installTime == null) {

@@ -1,5 +1,5 @@
 function install (app, api) {
-  const updateParams = app.$global.update = { fromUser: false, autoDownload: false, progress: 0, downloading: false, newVersion: false, isFullUpdate: true }
+  const updateParams = app.$global.update = { fromUser: false, autoDownload: false, progress: 0, checking: false, downloading: false, newVersion: false, isFullUpdate: true }
   api.ipc.on('update', (event, message) => {
     console.log('on message', event, message)
     handleUpdateMessage(message, app)
@@ -10,7 +10,8 @@ function install (app, api) {
       if (fromUser != null) {
         updateParams.fromUser = fromUser
       }
-      api.ipc.send('update', { key: 'checkForUpdate' })
+      updateParams.checking = true
+      api.ipc.send('update', { key: 'checkForUpdate', fromUser })
     },
     downloadUpdate () {
       api.ipc.send('update', { key: 'downloadUpdate' })
@@ -27,8 +28,11 @@ function install (app, api) {
   function handleUpdateMessage (message) {
     const type = message.key
     if (type === 'available') {
+      updateParams.checking = false
+      updateParams.newVersionData = message.value
       foundNewVersion(message.value)
     } else if (type === 'notAvailable') {
+      updateParams.checking = false
       noNewVersion()
     } else if (type === 'downloaded') {
       // 更新包已下载完成，让用户确认是否更新
@@ -38,12 +42,22 @@ function install (app, api) {
     } else if (type === 'progress') {
       progressUpdate(message.value)
     } else if (type === 'error') {
-      const error = message.error
-      app.$message.error('Error: ' + (error == null ? '未知错误' : (error.stack || error).toString()))
+      updateParams.checking = false
+      updateParams.downloading = false
+      if (message.action === 'checkForUpdate' && updateParams.newVersionData) {
+        // 如果检查更新报错了，但刚才成功拿到过一次数据，就拿之前的数据
+        foundNewVersion(updateParams.newVersionData)
+      } else {
+        if (updateParams.fromUser === false && message.action === 'checkForUpdate') {
+          return // 不是手动检查更新，不提示错误信息，避免打扰
+        }
+        const error = message.error
+        app.$message.error((error == null ? '未知错误' : (error.stack || error).toString()))
+      }
     }
   }
 
-  function noNewVersion (value) {
+  function noNewVersion () {
     updateParams.newVersion = false
     if (updateParams.fromUser) {
       app.$message.info('当前已经是最新版本')
@@ -54,60 +68,67 @@ function install (app, api) {
     updateParams.progress = value
   }
 
+  function openGithubUrl () {
+    api.ipc.openExternal('https://github.com/docmirror/dev-sidecar/releases')
+  }
+
   function goManualUpdate (value) {
+    updateParams.newVersion = false
     app.$confirm({
-      title: '暂不支持自动升级',
+      // title: '暂不支持自动升级',
+      title: '暂不提供自动升级',
       cancelText: '取消',
-      okText: '确定',
+      okText: '打开链接',
+      width: 420,
       content: h => {
-        function openGithubUrl () {
-          api.ipc.openExternal('https://github.com/docmirror/dev-sidecar/releases')
-        }
         return <div>
-          <div>请前往github项目release页面下载新版本手动安装</div>
-          <ol>
-            <li><a onClick={openGithubUrl}>Github release</a></li>
-          </ol>
+          <div>请前往 <a onClick={openGithubUrl}>github项目release页面</a> 下载新版本手动安装</div>
+          <div><a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a></div>
         </div>
+      },
+      onOk () {
+        openGithubUrl()
       }
     })
   }
 
-  /**
-   * 是否小版本升级
-   * @param version1
-   * @param version2
-   */
-  async function isSupportPartUpdate (value) {
-    const info = await api.info.get()
-    console.log('升级版本:', value.version)
-    console.log('增量更新最小版本:', value.partMiniVersion)
-    console.log('当前版本:', info.version)
-    if (!value.partPackage) {
-      return false
-    }
-    return !!(value.partMiniVersion && value.partMiniVersion < info.version)
-  }
+  // /**
+  //  * 是否小版本升级
+  //  * @param value
+  //  */
+  // async function isSupportPartUpdate (value) {
+  //   const info = await api.info.get()
+  //   console.log('升级版本:', value.version)
+  //   console.log('增量更新最小版本:', value.partMiniVersion)
+  //   console.log('当前版本:', info.version)
+  //   if (!value.partPackage) {
+  //     return false
+  //   }
+  //   return !!(value.partMiniVersion && value.partMiniVersion < info.version)
+  // }
 
   async function downloadNewVersion (value) {
-    const platform = await api.shell.getSystemPlatform()
-    console.log('download new version platform', platform)
-    if (platform === 'linux') {
-      goManualUpdate(app, value)
-      return
-    }
-    const partUpdate = await isSupportPartUpdate(value)
-    if (partUpdate) {
-      // 有增量更新
-      api.update.downloadPart(value)
-    } else {
-      if (platform === 'mac') {
-        goManualUpdate(value)
-        return
-      }
-      updateParams.downloading = true
-      api.update.downloadUpdate()
-    }
+    // 暂时取消自动更新功能
+    goManualUpdate(value)
+
+    // const platform = await api.shell.getSystemPlatform()
+    // console.log(`download new version: ${JSON.stringify(value)}, platform: ${platform}`)
+    // if (platform === 'linux') {
+    //   goManualUpdate(value)
+    //   return
+    // }
+    // const partUpdate = await isSupportPartUpdate(value)
+    // if (partUpdate) {
+    //   // 有增量更新
+    //   api.update.downloadPart(value)
+    // } else {
+    //   if (platform === 'mac') {
+    //     goManualUpdate(value)
+    //     return
+    //   }
+    //   updateParams.downloading = true
+    //   api.update.downloadUpdate()
+    // }
   }
   function foundNewVersion (value) {
     updateParams.newVersion = true
@@ -118,18 +139,37 @@ function install (app, api) {
       downloadNewVersion(value)
       return
     }
+    console.log(value)
     app.$confirm({
-      title: '发现新版本',
+      title: '发现新版本：v' + value.version,
       cancelText: '暂不升级',
       okText: '升级',
+      width: 550,
       content: h => {
-        console.log(value)
         if (value.releaseNotes) {
           const notes = []
-          for (const note of value.releaseNotes) {
-            notes.push(<li>{note}</li>)
+          if (typeof value.releaseNotes === 'string') {
+            const releaseNotes = value.releaseNotes.replace(/\r?\n/g, '\n').split('\n')
+            for (const note of releaseNotes) {
+              notes.push(<div>{note}</div>)
+            }
+            return <div>
+              <div>发布公告：<a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a></div>
+              <div>更新内容：</div>
+              <div style="max-height:350px;overflow-y:auto">
+                {notes}
+              </div>
+            </div>
+          } else {
+            for (const note of value.releaseNotes) {
+              notes.push(<li>{note}</li>)
+            }
+            return <div>
+              <div>发布公告：<a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a></div>
+              <div>更新内容：</div>
+              <ol>{notes}</ol>
+            </div>
           }
-          return <div><div>更新内容：</div><ol>{notes}</ol></div>
         }
       },
       onOk () {
@@ -144,24 +184,41 @@ function install (app, api) {
 
   function newUpdateIsReady (value) {
     updateParams.downloading = false
+    console.log(value)
     app.$confirm({
-      title: `新版本(v${value.version})已准备好,是否立即升级?`,
+      title: `新版本(v${value.version})已准备好，是否立即升级?`,
       cancelText: '暂不升级',
       okText: '立即升级',
+      width: 550,
       content: h => {
-        console.log(value)
         if (value.releaseNotes) {
           const notes = []
-          for (const note of value.releaseNotes) {
-            notes.push(<li>{note}</li>)
+          if (typeof value.releaseNotes === 'string') {
+            const releaseNotes = value.releaseNotes.replace(/\r?\n/g, '\n').split('\n')
+            for (const note of releaseNotes) {
+              notes.push(<div>{note}</div>)
+            }
+            return <div>
+              <div>发布公告：<a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a></div>
+              <div>更新内容：</div>
+              <div style="max-height:350px;overflow-y:auto">
+                {notes}
+              </div>
+            </div>
+          } else {
+            for (const note of value.releaseNotes) {
+              notes.push(<li>{note}</li>)
+            }
+            return <div>
+              <div>发布公告：<a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a></div>
+              <div>更新内容：</div>
+              <ol>{notes}</ol>
+            </div>
           }
-          return <div><div>更新内容：</div><ol>{notes}</ol></div>
         }
       },
       onOk () {
         api.update.doUpdateNow()
-      },
-      onCancel () {
       }
     })
   }

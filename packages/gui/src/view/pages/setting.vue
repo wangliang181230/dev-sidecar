@@ -12,7 +12,7 @@
           本应用开机自启
         </a-checkbox>
         <div class="form-help">
-          windows下建议开启开机自启。<a @click="openExternal('https://gitee.com/wangliang181230/dev-sidecar/blob/master/doc/recover.md')">更多说明参考</a>
+          windows下建议开启开机自启。<a @click="openExternal('https://github.com/docmirror/dev-sidecar/blob/master/doc/recover.md')">更多说明参考</a>
         </div>
       </a-form-item>
       <a-form-item v-if="systemPlatform === 'mac'" label="隐藏Dock图标" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -28,7 +28,7 @@
           启用远程配置
         </a-checkbox>
         <div class="form-help">
-          应用启动时会向下面的地址请求配置补丁，无需发布升级包即可获得最新优化后的github访问体验。
+          应用启动时会向下面的地址请求配置补丁，获得最新的优化后的github访问体验。
           <br/>如果您觉得远程更新配置有安全风险，请关闭此功能。
         </div>
       </a-form-item>
@@ -50,6 +50,32 @@
           <a-radio-button :value="'dark'">
             暗色
           </a-radio-button>
+        </a-radio-group>
+      </a-form-item>
+      <a-form-item label="自动检查更新" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-radio-group v-model="config.app.autoChecked" default-value="light" button-style="solid">
+          <a-radio-button :value="true">
+            开启
+          </a-radio-button>
+          <a-radio-button :value="false">
+            关闭
+          </a-radio-button>
+        </a-radio-group>
+        <div class="form-help">
+          开启自动检查更新后，每次应用启动时会检查一次更新，如有新版本，则会弹出提示。
+        </div>
+      </a-form-item>
+      <a-form-item label="忽略预发布版本" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-radio-group v-model="config.app.skipPreRelease" default-value="light" button-style="solid">
+          <a-radio-button :value="true">
+            忽略
+          </a-radio-button>
+          <a-radio-button :value="false">
+            不忽略
+          </a-radio-button>
+          <div class="form-help">
+            预发布版本为版本号带有 “Pre-release” 的版本
+          </div>
         </a-radio-group>
       </a-form-item>
       <a-form-item label="首页提示" :label-col="labelCol" :wrapper-col="wrapperCol">

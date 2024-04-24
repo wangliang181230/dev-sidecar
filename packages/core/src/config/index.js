@@ -24,6 +24,8 @@ module.exports = {
       url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/remote_config/packages/core/src/config/remote_config_myself.json'
     },
     theme: 'dark', // 主题：light=亮色, dark=暗色
+    autoChecked: false, // 是否自动检查更新
+    skipPreRelease: true, // 是否忽略预发布版本
     dock: {
       hideWhenWinClose: false
     },
@@ -59,7 +61,7 @@ module.exports = {
           // 篡改猴插件地址，以下是高速镜像地址
           tampermonkeyScript: 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/docmirror/dev-sidecar/scripts/tampermonkey.js',
           // Github油猴脚本地址，以下是高速镜像地址
-          script: 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/docmirror/dev-sidecar/scripts/github/monkey.js',
+          script: 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/docmirror/dev-sidecar/scripts/GithubEnhanced-High-Speed-Download.user.js',
           remark: '注：上面所使用的脚本地址，为高速镜像地址。',
           desc: '油猴脚本：高速下载 Git Clone/SSH、Release、Raw、Code(ZIP) 等文件 (公益加速)、项目列表单文件快捷下载、添加 git clone 命令'
         },

@@ -59,7 +59,7 @@ module.exports = {
   key: 'git',
   config: pluginConfig,
   status: {
-    enabled: true
+    enabled: false
   },
   plugin: Plugin
 }

@@ -18,14 +18,14 @@
           当前未启动
         </a-tag>
         <div class="form-help">
-          <a @click="openExternal('https://gitee.com/wangliang181230/dev-sidecar/blob/master/doc/recover.md')">卸载与恢复网络说明</a>
+          <a @click="openExternal('https://github.com/docmirror/dev-sidecar/blob/master/doc/recover.md')">卸载与恢复网络说明</a>
         </div>
       </a-form-item>
       <a-form-item v-if="isWindows()" label="设置环境变量" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-checkbox v-model="config.proxy.setEnv" >
           是否同时修改HTTPS_PROXY环境变量（不好用，不建议勾选）
         </a-checkbox>
-        <div class="form-help">当发现某些应用并没有走加速通道或者加速报错时，可以尝试勾选此选项，并重新开启系统代理开关</div>
+        <div class="form-help">当发现某些应用并没有走加速通道或加速报错时，可尝试勾选此选项，并重新开启系统代理开关</div>
         <div class="form-help">注意：当前已打开的命令行并不会实时生效，需要重新打开一个新的命令行窗口</div>
       </a-form-item>
       <a-form-item v-if="isWindows()" label="设置loopback" :label-col="labelCol" :wrapper-col="wrapperCol">
