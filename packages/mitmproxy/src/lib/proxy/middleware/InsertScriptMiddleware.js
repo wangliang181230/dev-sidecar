@@ -124,7 +124,7 @@ module.exports = {
       return
     }
     const urlPath = rOptions.path
-    let filename = urlPath.replace(contextPath, '').toLowerCase()
+    let filename = urlPath.replace(contextPath, '')
 
     // 重命名过，向下兼容
     if (filename === 'global') {
