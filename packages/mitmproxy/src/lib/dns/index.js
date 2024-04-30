@@ -8,11 +8,18 @@ module.exports = {
     const dnsMap = {}
     for (const provider in dnsProviders) {
       const conf = dnsProviders[provider]
-      if (conf.type === 'ipaddress') {
-        dnsMap[provider] = new DNSOverIpAddress(conf.server)
-        continue
+      switch (conf.type) {
+        case 'https':
+          dnsMap[provider] = new DNSOverHTTPS(conf.server)
+          break
+        case 'ipaddress':
+          dnsMap[provider] = new DNSOverIpAddress(conf.server)
+          break
+        case 'tlk':
+        default:
+          dnsMap[provider] = new DNSOverTLS(conf.server)
+          break
       }
-      dnsMap[provider] = conf.type === 'https' ? new DNSOverHTTPS(conf.server) : new DNSOverTLS(conf.server)
     }
     return dnsMap
   },
