@@ -35,15 +35,14 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
     const { hostname, port } = url.parse(`https://${req.url}`)
     if (isSslConnect(sslConnectInterceptors, req, cltSocket, head)) {
       fakeServerCenter.getServerPromise(hostname, port).then((serverObj) => {
-        log.info('')
-        log.info(`-----***** fakeServer connect: ${localIP}:${serverObj.port} ➜ ${req.url} *****-----`)
+        log.info(`----- fakeServer connect: ${localIP}:${serverObj.port} ➜ ${req.url} -----`)
         connect(req, cltSocket, head, localIP, serverObj.port)
       }, (e) => {
-        log.error(`--- fakeServer getServerPromise error: ${hostname}:${port}, exception:`, e)
+        log.error(`--- fakeServer getServerPromise error: ${hostname}:${port}, error:`, e)
       })
     } else {
-      log.info(`未匹配到任何 sslConnectInterceptors: ${req.url}`)
-      connect(req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpMap */)
+      log.info('未匹配到任何 sslConnectInterceptors，不拦截请求：', hostname)
+      connect(req, cltSocket, head, hostname, port, dnsConfig/*, sniRegexpMap */)
     }
   }
 }

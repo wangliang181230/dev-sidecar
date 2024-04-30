@@ -114,9 +114,9 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
 
           if (url.indexOf('github') > -1 ||
               url.indexOf('docker') > -1) {
-            log.info('发起代理请求:', url)
+            log.info('发起代理请求:', url, (rOptions.servername ? ', sni: ' + rOptions.servername : ''))
           } else {
-            log.info('发起代理请求:', url,
+            log.info('发起代理请求:', url, (rOptions.servername ? ', sni: ' + rOptions.servername : ''),
               '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\treferer:', rOptions.headers.referer,
               '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\torigin:', rOptions.headers.origin,
               '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tuserAgent:', rOptions.headers['user-agent']
@@ -356,12 +356,12 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
         }
 
         // region 忽略部分已经打印过ERROR日志的错误
-        const ignoreErrors = [
-          '代理请求错误: ',
-          '代理请求超时: ',
-          '代理请求被取消: '
-        ]
         if (e.message) {
+          const ignoreErrors = [
+            '代理请求错误: ',
+            '代理请求超时: ',
+            '代理请求被取消: '
+          ]
           for (const ignoreError of ignoreErrors) {
             if (e.message.startsWith(ignoreError)) {
               return

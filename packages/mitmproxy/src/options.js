@@ -59,7 +59,7 @@ module.exports = (config) => {
       const hostname = req.url.split(':')[0]
       const inWhiteList = matchUtil.matchHostname(whiteList, hostname, 'in whiteList') != null
       if (inWhiteList) {
-        log.info('为白名单域名:', hostname,
+        log.info('为白名单域名，不拦截:', hostname,
           '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\treferer:', req.headers.Referer || req.headers.referer,
           '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\torigin:', req.headers.Origin || req.headers.origin,
           '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tuserAgent:', req.headers['User-Agent'] || req.headers['user-agent']
@@ -106,7 +106,7 @@ module.exports = (config) => {
             const matchedInterceptOpt = matchInterceptsOpts[impl.name]
             if (matchedInterceptOpt) {
               if (matchedInterceptOpt.order >= interceptOpt.order) {
-                // log.warn(`duplicate interceptor: ${impl.name}, hostname: ${rOptions.hostname}`)
+                log.warn(`duplicate interceptor: ${impl.name}, hostname: ${rOptions.hostname}`)
                 continue
               }
               action = 'replace'
