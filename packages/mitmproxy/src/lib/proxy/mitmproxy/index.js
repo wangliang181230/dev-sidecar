@@ -42,9 +42,8 @@ module.exports = {
     const speedTestConfig = dnsConfig.speedTest
     const dnsMap = dnsConfig.providers
     if (speedTestConfig) {
-      const dnsProviders = speedTestConfig.dnsProviders
       const map = {}
-      for (const dnsProvider of dnsProviders) {
+      for (const dnsProvider of speedTestConfig.dnsProviders) {
         if (dnsMap[dnsProvider]) {
           map[dnsProvider] = dnsMap[dnsProvider]
         }
