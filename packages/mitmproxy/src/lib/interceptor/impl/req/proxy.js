@@ -98,7 +98,7 @@ module.exports = {
       if (count.value == null) {
         log.error('`count.value` is null, the count:', count)
       } else {
-        count.doCount(count.value)
+        // count.doCount(count.value)
         proxyConf = count.value
         context.requestCount = {
           key,

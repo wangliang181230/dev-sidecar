@@ -18,7 +18,7 @@ function matched (hostname, overWallTargetMap) {
     log.info(`matchHostname: matched overwall: '${hostname}' -> '${ret}' in pac.txt`)
     return true
   } else {
-    log.debug(`matchHostname: matched overwall: Not-Matched '${hostname}' -> '${ret}' in pac.txt`)
+    // log.debug(`matchHostname: matched overwall: Not-Matched '${hostname}' -> '${ret}' in pac.txt`)
     return false
   }
 }
@@ -66,7 +66,7 @@ module.exports = function createOverWallIntercept (overWallConfig) {
         if (count.value == null) {
           log.error('`count.value` is null, the count:', count)
         } else {
-          count.doCount(count.value)
+          // count.doCount(count.value)
           proxyServer = count.value
           context.requestCount = {
             key: cacheKey,

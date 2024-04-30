@@ -35,13 +35,13 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
     const { hostname, port } = url.parse(`https://${req.url}`)
     if (isSslConnect(sslConnectInterceptors, req, cltSocket, head)) {
       fakeServerCenter.getServerPromise(hostname, port).then((serverObj) => {
-        log.info('--- fakeServer connect', hostname)
+        log.info(`----- fakeServer connect: ${localIP}:${serverObj.port} ➜ ${req.url} -----`)
         connect(req, cltSocket, head, localIP, serverObj.port)
       }, (e) => {
-        log.error('getServerPromise', e)
+        log.error(`--- fakeServer getServerPromise error: ${hostname}:${port}, error:`, e)
       })
     } else {
-      log.info('不拦截请求：', hostname)
+      log.info('未匹配到任何 sslConnectInterceptors，不拦截请求：', hostname)
       connect(req, cltSocket, head, hostname, port, dnsConfig/*, sniRegexpMap */)
     }
   }
@@ -50,7 +50,7 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
 function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpMap */) {
   // tunneling https
   // log.info('connect:', hostname, port)
-  const start = new Date().getTime()
+  const start = new Date()
   let isDnsIntercept = null
   const hostport = `${hostname}:${port}`
   // const replaceSni = matchUtil.matchHostname(sniRegexpMap, hostname, 'sni')
@@ -102,18 +102,24 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
       log.error(`cltSocket error:   ${hostport}, errorMsg: ${e.message}`)
     })
     proxySocket.on('timeout', () => {
-      const end = new Date().getTime()
-      log.info('代理socket timeout：', hostname, port, (end - start) + 'ms')
-    })
-    proxySocket.on('error', (e) => {
-      // 连接失败，可能被GFW拦截，或者服务端拥挤
-      const end = new Date().getTime()
-      log.error('代理连接失败：', e.message, hostname, port, (end - start) + 'ms')
-      cltSocket.destroy()
+      const cost = new Date() - start
+      const errorMsg = `代理连接超时: ${hostport}, cost: ${cost} ms`
+      log.error(errorMsg)
       if (isDnsIntercept) {
         const { dns, ip, hostname } = isDnsIntercept
         dns.count(hostname, ip, true)
-        log.error('记录ip失败次数,用于优选ip：', hostname, ip)
+        log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${errorMsg}, dns:`, JSON.stringify(dns))
+      }
+    })
+    proxySocket.on('error', (e) => {
+      // 连接失败，可能被GFW拦截，或者服务端拥挤
+      const cost = new Date() - start
+      const errorMsg = `代理连接失败: ${hostport}, cost: ${cost} ms, errorMsg: ${e.message}`
+      log.error(errorMsg)
+      if (isDnsIntercept) {
+        const { dns, ip, hostname } = isDnsIntercept
+        dns.count(hostname, ip, true)
+        log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${errorMsg}, dns:`, JSON.stringify(dns))
       }
     })
     return proxySocket
