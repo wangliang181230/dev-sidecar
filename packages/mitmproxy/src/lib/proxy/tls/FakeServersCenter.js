@@ -60,10 +60,10 @@ module.exports = class FakeServersCenter {
         const fakeServer = new https.Server({
           key: keyPem,
           cert: certPem,
-          SNICallback: (hostname, done) => {
+          SNICallback: (servername, done) => {
             (async () => {
-              const certObj = await this.certAndKeyContainer.getCertPromise(hostname, port)
-              log.info('sni callback:', hostname)
+              const certObj = await this.certAndKeyContainer.getCertPromise(servername, port)
+              log.info('sni callback:', servername, ', the hostname:', hostname)
               done(null, tls.createSecureContext({
                 key: pki.privateKeyToPem(certObj.key),
                 cert: pki.certificateToPem(certObj.cert)
@@ -90,8 +90,7 @@ module.exports = class FakeServersCenter {
           log.error('fakeServer error:', e)
         })
         fakeServer.on('listening', () => {
-          const mappingHostNames = tlsUtils.getMappingHostNamesFromCert(certObj.cert)
-          serverPromiseObj.mappingHostNames = mappingHostNames
+          serverPromiseObj.mappingHostNames = tlsUtils.getMappingHostNamesFromCert(certObj.cert)
           resolve(serverObj)
         })
         fakeServer.on('upgrade', (req, socket, head) => {
