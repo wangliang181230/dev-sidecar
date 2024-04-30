@@ -5,7 +5,7 @@ const DnsUtil = require('../../dns/index')
 const localIP = '127.0.0.1'
 const defaultDns = require('dns')
 // const matchUtil = require('../../../utils/util.match')
-const speedTest = require('../../speed/index.js')
+const speedTestUtil = require('../../speed/index.js')
 function isSslConnect (sslConnectInterceptors, req, cltSocket, head) {
   for (const intercept of sslConnectInterceptors) {
     const ret = intercept(req, cltSocket, head)
@@ -64,7 +64,7 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
       const dns = DnsUtil.hasDnsLookup(dnsConfig, hostname)
       if (dns) {
         options.lookup = (hostname, options, callback) => {
-          const tester = speedTest.getSpeedTester(hostname)
+          const tester = speedTestUtil.getSpeedTester(hostname)
           if (tester) {
             const ip = tester.pickFastAliveIp()
             if (ip) {

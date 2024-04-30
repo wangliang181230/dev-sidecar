@@ -3,7 +3,7 @@ const ProxyOptions = require('./options')
 const proxyConfig = require('./lib/proxy/common/config')
 const log = require('./utils/util.log')
 const { fireError, fireStatus } = require('./utils/util.process')
-const speedTest = require('./lib/speed/index.js')
+const speedTestUtil = require('./lib/speed/index.js')
 let server
 
 function registerProcessListener () {
@@ -12,7 +12,7 @@ function registerProcessListener () {
     if (msg.type === 'action') {
       api[msg.event.key](msg.event.params)
     } else if (msg.type === 'speed') {
-      speedTest.action(msg.event)
+      speedTestUtil.action(msg.event)
     }
   })
 
@@ -115,5 +115,5 @@ module.exports = {
   ...api,
   config: proxyConfig,
   log,
-  speedTest
+  speedTest: speedTestUtil
 }

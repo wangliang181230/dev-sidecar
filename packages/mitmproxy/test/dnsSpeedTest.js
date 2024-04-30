@@ -1,5 +1,5 @@
 const SpeedTester = require('../src/lib/speed/SpeedTester.js')
-const SpeedTest = require('../src/lib/speed/index.js')
+const speedTestUtil = require('../src/lib/speed/index.js')
 const dnsUtil = require('../src/lib/dns/index.js')
 
 const dnsMap = dnsUtil.initDNS({
@@ -30,7 +30,7 @@ const dnsMap = dnsUtil.initDNS({
   // }
 })
 
-SpeedTest.initSpeedTest({ hostnameList: {}, dnsMap })
+speedTestUtil.initSpeedTest({ hostnameList: {}, dnsMap })
 
 const tester = new SpeedTester({ hostname: 'github.com' })
 tester.test().then(ret => {

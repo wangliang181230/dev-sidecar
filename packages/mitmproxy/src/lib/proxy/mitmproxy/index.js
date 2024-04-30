@@ -6,7 +6,7 @@ const createRequestHandler = require('./createRequestHandler')
 const createConnectHandler = require('./createConnectHandler')
 const createFakeServerCenter = require('./createFakeServerCenter')
 const createUpgradeHandler = require('./createUpgradeHandler')
-const speedTest = require('../../speed/index.js')
+const speedTestUtil = require('../../speed/index.js')
 module.exports = {
   createProxy ({
     host = config.defaultHost,
@@ -49,7 +49,7 @@ module.exports = {
           map[dnsProvider] = dnsMap[dnsProvider]
         }
       }
-      speedTest.initSpeedTest({ ...speedTestConfig, dnsMap: map })
+      speedTestUtil.initSpeedTest({ ...speedTestConfig, dnsMap: map })
     }
 
     const requestHandler = createRequestHandler(

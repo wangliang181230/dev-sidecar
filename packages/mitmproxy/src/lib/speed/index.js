@@ -2,9 +2,9 @@ const SpeedTester = require('./SpeedTester.js')
 const _ = require('lodash')
 const config = require('./config')
 const log = require('../../utils/util.log.js')
-const SpeedTestPool = {
 
-}
+const SpeedTestPool = {}
+
 function initSpeedTest (runtimeConfig) {
   const { enabled, hostnameList } = runtimeConfig
   const conf = config.getConfig()
@@ -45,9 +45,9 @@ function getSpeedTester (hostname) {
   return instance
 }
 
-function registerNotify (notify) {
-  config.notify = notify
-}
+// function registerNotify (notify) {
+//   config.notify = notify
+// }
 
 function reSpeedTest () {
   _.forEach(SpeedTestPool, (item, key) => {
@@ -64,11 +64,11 @@ function action (event) {
   }
 }
 module.exports = {
-  SpeedTester,
+  // SpeedTester,
   initSpeedTest,
   getSpeedTester,
-  getAllSpeedTester,
-  registerNotify,
-  reSpeedTest,
+  // getAllSpeedTester,
+  // registerNotify,
+  // reSpeedTest,
   action
 }
