@@ -115,7 +115,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           log.info('发起代理请求:', url, (rOptions.servername ? ', sni: ' + rOptions.servername : ''))
           let isDnsIntercept
           if (dnsConfig && dnsConfig.providers) {
-            let dns = DnsUtil.hasDnsLookup(dnsConfig, rOptions.hostname)
+            let dns = DnsUtil.matchDns(dnsConfig, rOptions.hostname)
             if (!dns && rOptions.servername) {
               dns = dnsConfig.providers.quad9
               if (dns) {

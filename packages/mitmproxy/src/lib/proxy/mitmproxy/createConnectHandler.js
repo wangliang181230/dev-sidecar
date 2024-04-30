@@ -61,7 +61,7 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
       connectTimeout: 10000
     }
     if (dnsConfig) {
-      const dns = DnsUtil.hasDnsLookup(dnsConfig, hostname)
+      const dns = DnsUtil.matchDns(dnsConfig, hostname)
       if (dns) {
         options.lookup = (hostname, options, callback) => {
           const tester = speedTestUtil.getSpeedTester(hostname)

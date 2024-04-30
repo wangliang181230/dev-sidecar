@@ -23,7 +23,7 @@ module.exports = {
     }
     return dnsMap
   },
-  hasDnsLookup (dnsConfig, hostname) {
+  matchDns (dnsConfig, hostname) {
     const providerName = matchUtil.matchHostname(dnsConfig.mapping, hostname, 'get dns providerName')
     if (providerName) {
       return dnsConfig.providers[providerName]

@@ -8,23 +8,6 @@ const cacheSize = 1024
 //   return v && isIP(v)
 // }
 
-class IpCache extends DynamicChoice {
-  constructor (hostname) {
-    super(hostname)
-    this.lookupCount = 0
-  }
-
-  /**
-   * 设置新的ipList
-   *
-   * @param newBackupList
-   */
-  setBackupList (newBackupList) {
-    super.setBackupList(newBackupList)
-    this.lookupCount++
-  }
-}
-
 module.exports = class BaseDNS {
   constructor () {
     this.cache = new LRU(cacheSize)
@@ -39,18 +22,18 @@ module.exports = class BaseDNS {
 
   async lookup (hostname) {
     try {
+      // 获取缓存
       let ipCache = this.cache.get(hostname)
-      if (ipCache) {
-        if (ipCache.value != null) {
-          // ipCache.doCount(ipCache.value, false)
-          return ipCache.value
-        }
-      } else {
-        ipCache = new IpCache(hostname)
+      if (!ipCache) {
+        // 如果缓存不存在，则创建一个新的缓存
+        ipCache = new DynamicChoice(hostname)
         this.cache.set(hostname, ipCache)
+      } else if (ipCache.value != null) {
+        // 如果缓存存在，且value有值，则直接返回value值
+        return ipCache.value
       }
 
-      const t = new Date()
+      const start = new Date()
       let ipList = await this._lookup(hostname) // 调用子类的实现方法
       if (ipList == null) {
         // 没有获取到ipv4地址
@@ -59,12 +42,13 @@ module.exports = class BaseDNS {
       ipList.push(hostname) // 把原域名加入到统计里去
 
       ipCache.setBackupList(ipList)
-      const cost = new Date() - t
+
+      const cost = new Date() - start
       log.info(`[DNS]: ${hostname} ➜ ${ipCache.value} (${cost} ms), ipList: ${JSON.stringify(ipList)}, ipCache:`, JSON.stringify(ipCache))
 
       return ipCache.value
     } catch (error) {
-      log.error(`[DNS] cannot resolve hostname ${hostname} (${error})`, error)
+      log.error(`[DNS] cannot resolve hostname: ${hostname}, error:`, error)
       return hostname
     }
   }
