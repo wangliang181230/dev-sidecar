@@ -3,7 +3,7 @@ const fs = require('fs')
 const log = require('../../../utils/util.log')
 const path = require('path')
 const config = require('../common/config')
-const _ = require('lodash')
+const lodash = require('lodash')
 const mkdirp = require('mkdirp')
 // const colors = require('colors')
 
@@ -174,7 +174,7 @@ utils.createFakeCertificateByCA = function (caKey, caCert, originCertificate) {
 
   certificate.subjectaltname && (cert.subjectaltname = certificate.subjectaltname)
 
-  const subjectAltName = _.find(certificate.extensions, { name: 'subjectAltName' })
+  const subjectAltName = lodash.find(certificate.extensions, { name: 'subjectAltName' })
   cert.setExtensions([{
     name: 'basicConstraints',
     critical: true,
@@ -235,7 +235,7 @@ utils.getMappingHostNamesFromCert = function (cert) {
   let mappingHostNames = []
   mappingHostNames.push(cert.subject.getField('CN') ? cert.subject.getField('CN').value : '')
   const altNames = cert.getExtension('subjectAltName') ? cert.getExtension('subjectAltName').altNames : []
-  mappingHostNames = mappingHostNames.concat(_.map(altNames, 'value'))
+  mappingHostNames = mappingHostNames.concat(lodash.map(altNames, 'value'))
   return mappingHostNames
 }
 

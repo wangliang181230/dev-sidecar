@@ -1,5 +1,5 @@
 const SpeedTester = require('./SpeedTester.js')
-const _ = require('lodash')
+const lodash = require('lodash')
 const config = require('./config')
 const log = require('../../utils/util.log.js')
 
@@ -8,11 +8,11 @@ const SpeedTestPool = {}
 function initSpeedTest (runtimeConfig) {
   const { enabled, hostnameList } = runtimeConfig
   const conf = config.getConfig()
-  _.merge(conf, runtimeConfig)
+  lodash.merge(conf, runtimeConfig)
   if (!enabled) {
     return
   }
-  _.forEach(hostnameList, (hostname) => {
+  lodash.forEach(hostnameList, (hostname) => {
     SpeedTestPool[hostname] = new SpeedTester({ hostname })
   })
   log.info('[speed] enabled')
@@ -23,7 +23,7 @@ function getAllSpeedTester () {
   if (!config.getConfig().enabled) {
     return allSpeed
   }
-  _.forEach(SpeedTestPool, (item, key) => {
+  lodash.forEach(SpeedTestPool, (item, key) => {
     allSpeed[key] = {
       hostname: key,
       alive: item.alive,
@@ -50,7 +50,7 @@ function getSpeedTester (hostname) {
 // }
 
 function reSpeedTest () {
-  _.forEach(SpeedTestPool, (item, key) => {
+  lodash.forEach(SpeedTestPool, (item, key) => {
     item.test()
   })
 }

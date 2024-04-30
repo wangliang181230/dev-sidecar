@@ -1,5 +1,5 @@
 // 1个小时不访问，取消获取
-const _ = require('lodash')
+const lodash = require('lodash')
 const net = require('net')
 const config = require('./config.js')
 const log = require('../../utils/util.log.js')
@@ -84,7 +84,7 @@ class SpeedTester {
   async test () {
     const newList = await this.getIpListFromDns(this.dnsMap)
     const newBackupList = [...newList, ...this.backupList]
-    this.backupList = _.unionBy(newBackupList, 'host')
+    this.backupList = lodash.unionBy(newBackupList, 'host')
     this.testCount++
 
     log.info('[speed]', this.hostname, '➜ ips:', this.backupList)
@@ -108,7 +108,7 @@ class SpeedTester {
   async doTest (item, aliveList) {
     try {
       const ret = await this.testOne(item)
-      _.merge(item, ret)
+      lodash.merge(item, ret)
       aliveList.push({ ...ret, ...item })
       aliveList.sort((a, b) => a.time - b.time)
       this.backupList.sort((a, b) => a.time - b.time)
