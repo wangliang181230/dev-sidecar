@@ -57,8 +57,8 @@ class DynamicChoice {
 
     log.info('Do rank:', JSON.stringify(countList))
 
-    const backupList = countList.map(item => item.value)
-    this.setBackupList(backupList)
+    const newBackupList = countList.map(item => item.value)
+    this.setBackupList(newBackupList)
   }
 
   newCount (ip) {
@@ -168,8 +168,6 @@ class DynamicChoice {
     }
     // 计算成功率
     count.successRate = parseFloat((count.success / count.total).toFixed(2)) // 保留两位小数
-
-    log.info(`DynamicChoice.doCount('${ip}', ${isError}):`, JSON.stringify(count))
 
     // 如果出错了，且当前使用的就是这个地址，才校验切换策略
     if (isError && this.value === count.value) {

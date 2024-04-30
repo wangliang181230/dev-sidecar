@@ -110,7 +110,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
 
         function onFree () {
           const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
-          const start = new Date().getTime()
+          const start = new Date()
 
           if (url.indexOf('github') > -1 ||
               url.indexOf('docker') > -1) {
@@ -165,8 +165,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           // log.debug('agent:', rOptions.agent)
           // log.debug('agent.options:', rOptions.agent.options)
           proxyReq = (rOptions.protocol === 'https:' ? https : http).request(rOptions, (proxyRes) => {
-            const end = new Date().getTime()
-            const cost = end - start
+            const cost = new Date() - start
             log.info(`代理请求成功: ${url}, cost: ${cost} ms`)
             // console.log('request:', proxyReq, proxyReq.socket)
 
@@ -191,8 +190,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
 
           // 代理请求的事件监听
           proxyReq.on('timeout', () => {
-            const end = new Date().getTime()
-            const cost = end - start
+            const cost = new Date() - start
             const errorMsg = `代理请求超时: ${url}, cost: ${cost} ms`
             log.error(errorMsg, ', rOptions:', jsonApi.stringify2(rOptions))
             countSlow(isDnsIntercept, `代理请求超时, cost: ${cost} ms`)
@@ -203,15 +201,13 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             reject(error)
           })
           proxyReq.on('error', (e) => {
-            const end = new Date().getTime()
-            const cost = end - start
+            const cost = new Date() - start
             log.error(`代理请求错误: ${url}, cost: ${cost} ms, error:`, e, ', rOptions:', jsonApi.stringify2(rOptions))
             countSlow(isDnsIntercept, '代理请求错误: ' + e.message)
             reject(e)
           })
           proxyReq.on('aborted', () => {
-            const end = new Date().getTime()
-            const cost = end - start
+            const cost = new Date() - start
             const errorMsg = `代理请求被取消: ${url}, cost: ${cost} ms`
             log.error(errorMsg, ', rOptions:', jsonApi.stringify2(rOptions))
 
@@ -227,8 +223,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
 
           // 普通请求的事件监听
           req.on('aborted', function () {
-            const end = new Date().getTime()
-            const cost = end - start
+            const cost = new Date() - start
             const errorMsg = `请求被取消: ${url}, cost: ${cost} ms`
             log.error(errorMsg, ', rOptions:', jsonApi.stringify2(rOptions))
             proxyReq.abort()
@@ -238,14 +233,12 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             reject(new Error(errorMsg))
           })
           req.on('error', function (e, req, res) {
-            const end = new Date().getTime()
-            const cost = end - start
+            const cost = new Date() - start
             log.error(`请求错误: ${url}, cost: ${cost} ms, error:`, e, ', rOptions:', jsonApi.stringify2(rOptions))
             reject(e)
           })
           req.on('timeout', () => {
-            const end = new Date().getTime()
-            const cost = end - start
+            const cost = new Date() - start
             const errorMsg = `请求超时: ${url}, cost: ${cost} ms`
             log.error(errorMsg, ', rOptions:', jsonApi.stringify2(rOptions))
             reject(new Error(errorMsg))
