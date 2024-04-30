@@ -1,6 +1,6 @@
-import dns from '../src/lib/dns/index.js'
+import dnsUtil from '../src/lib/dns/index.js'
 
-const dnsProviders = dns.initDNS({
+const dnsProviders = dnsUtil.initDNS({
   aliyun: {
     type: 'https',
     server: 'https://dns.alidns.com/dns-query',

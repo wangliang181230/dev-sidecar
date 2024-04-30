@@ -51,7 +51,7 @@ module.exports = class BaseDNS {
       }
 
       const t = new Date()
-      let ipList = await this._lookup(hostname)
+      let ipList = await this._lookup(hostname) // 调用子类的实现方法
       if (ipList == null) {
         // 没有获取到ipv4地址
         ipList = []
@@ -59,7 +59,8 @@ module.exports = class BaseDNS {
       ipList.push(hostname) // 把原域名加入到统计里去
 
       ipCache.setBackupList(ipList)
-      log.info(`[DNS]: ${hostname} ➜ ${ipCache.value} (${new Date() - t} ms), ipList: ${JSON.stringify(ipList)}, ipCache:`, JSON.stringify(ipCache))
+      const cost = new Date() - t
+      log.info(`[DNS]: ${hostname} ➜ ${ipCache.value} (${cost} ms), ipList: ${JSON.stringify(ipList)}, ipCache:`, JSON.stringify(ipCache))
 
       return ipCache.value
     } catch (error) {

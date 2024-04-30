@@ -1,8 +1,8 @@
 const SpeedTester = require('../src/lib/speed/SpeedTester.js')
 const SpeedTest = require('../src/lib/speed/index.js')
-const dns = require('../src/lib/dns/index.js')
+const dnsUtil = require('../src/lib/dns/index.js')
 
-const dnsMap = dns.initDNS({
+const dnsMap = dnsUtil.initDNS({
   // ipaddress: {
   //   type: 'ipaddress',
   //   server: 'ipaddress',
