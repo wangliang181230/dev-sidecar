@@ -11,6 +11,45 @@ module.exports = class DNSOverHTTPS extends BaseDNS {
   }
 
   async _lookup (hostname) {
+    // region 部分域名，直接使用预设IP
+
+    // 直接判断域名是否为 github.com
+    if (hostname === 'github.com') {
+      log.info('域名 github.com 使用内置IP集')
+      return ['140.82.114.4', '20.87.245.0', '20.27.177.113', '20.205.243.166', '20.248.137.48', '140.82.116.4', '20.200.245.247', '20.26.156.215', '140.82.113.3', '20.201.28.151']
+    }
+    // 直接判断域名是否为 api.github.com
+    if (hostname === 'api.github.com') {
+      log.info('域名 api.github.com 使用内置IP集')
+      return ['20.87.245.6', '140.82.112.5', '140.82.116.6', '20.26.156.210', '20.200.245.245', '20.27.177.116', '20.248.137.49', '20.201.28.148', '140.82.113.6', '20.205.243.168', '140.82.121.6']
+    }
+    if (hostname === 'codeload.github.com') {
+      log.info('域名 codeload.github.com 使用内置IP集')
+      return ['20.27.177.114', '140.82.116.10', '140.82.114.10', '20.26.156.216', '20.87.245.7', '20.200.245.246', '20.248.137.55', '20.205.243.165', '20.201.28.149', '140.82.121.9', '140.82.113.9']
+    }
+    if (hostname.match(/.*\.githubusercontent\.com$/)) {
+      log.info('域名 *.githubusercontent.com 及其子域使用内置IP集')
+      return ['185.199.111.133', '185.199.108.133', '185.199.109.133', '185.199.110.133']
+    }
+    if (hostname === 'github.githubassets.com') {
+      log.info('域名 github.githubassets.com 使用内置IP集')
+      return ['185.199.110.154', '185.199.111.154', '185.199.109.154', '185.199.108.154']
+    }
+    if (hostname === 'collector.github.com') {
+      log.info('域名 collector.github.com 已根据AdGuard DNS filter规则拦截')
+      return ['0.0.0.0']
+    }
+    if (hostname === 'github.io') {
+      log.info('域名 github.io 使用内置IP集')
+      return ['185.199.108.153', '185.199.109.153', '185.199.111.153', '185.199.110.153']
+    }
+    if (hostname === 'hub.docker.com') {
+      log.info('域名 hub.docker.com 使用内置IP集')
+      return ['54.156.140.159', '52.44.227.212', '44.221.37.199']
+    }
+
+    // endregion
+
     try {
       const result = await dohQueryAsync({ url: this.dnsServer }, [{ type: 'A', name: hostname }])
       if (result.answers.length === 0) {
