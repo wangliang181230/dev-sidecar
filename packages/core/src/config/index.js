@@ -341,6 +341,7 @@ module.exports = {
       ]
     },
     whiteList: {
+      '*.cn': true,
       'cn.*': true,
       '*china*': true,
       '*.dingtalk.com': true,

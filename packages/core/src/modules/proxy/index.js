@@ -59,6 +59,7 @@ module.exports = {
       // region 常用国内可访问域名
 
       // 中国大陆
+      '*.cn': true,
       'cn.*': true,
       '*china*': true,
 
