@@ -53,6 +53,15 @@ module.exports = {
       enabled: true
     },
     intercepts: {
+      'zkpt.zj.msa.gov.cn': {
+        '^/baiduOcr\\?.*$': {
+          baiduOcr: {
+            id: '101474620',
+            ak: 'fqCvIHGisGwpsglzV2wdxZJ5',
+            sk: 'RhTOXUA4V6CrGuCTJJvUQ7z6Nl4m0Lij'
+          }
+        }
+      },
       'github.com': {
         '.*': {
           sni: 'baidu.com'
@@ -328,7 +337,6 @@ module.exports = {
       ]
     },
     whiteList: {
-      '*.cn': true,
       'cn.*': true,
       '*china*': true,
       '*.dingtalk.com': true,
