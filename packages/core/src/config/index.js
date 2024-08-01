@@ -55,11 +55,15 @@ module.exports = {
     intercepts: {
       'zkpt.zj.msa.gov.cn': {
         '^/baiduOcr\\?.*$': {
-          baiduOcr: {
+          baiduOcr: [{
             id: '101474620',
             ak: 'fqCvIHGisGwpsglzV2wdxZJ5',
             sk: 'RhTOXUA4V6CrGuCTJJvUQ7z6Nl4m0Lij'
-          }
+          }, {
+            id: '101635455',
+            ak: 'vnnFPJIupwFKW4XKcw4HPYnn',
+            sk: 'bBwsXII9iNjHYuivzcwqp4dE483glzFb'
+          }]
         }
       },
       'github.com': {
