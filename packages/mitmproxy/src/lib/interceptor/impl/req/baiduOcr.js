@@ -30,6 +30,10 @@ function getConfig (interceptOpt, tryCount) {
     // 避免count值过大，造成问题
     if (count >= 10000) count = 0
 
+    if (config && config.enable === false) {
+      return getConfig(interceptOpt, tryCount + 1) // 递归找到有效的配置
+    }
+
     return config
   } else {
     return interceptOpt.baiduOcr
