@@ -1,22 +1,24 @@
-var AipOcrClient = require('baidu-aip-sdk').ocr
+const AipOcrClient = require('baidu-aip-sdk').ocr
 
-var AipOcrClientMap = {}
+const AipOcrClientMap = {}
+
 function createBaiduOcrClient (config) {
-  var key = config.id + config.ak + config.sk
+  const key = config.id + config.ak + config.sk
   if (AipOcrClientMap[key]) {
     return AipOcrClientMap[key]
   }
-  var client = new AipOcrClient(config.id, config.ak, config.sk)
+  const client = new AipOcrClient(config.id, config.ak, config.sk)
   AipOcrClientMap[key] = client
   return client
 }
 
-var count = 0
+let count = 0
+
 function getConfig (interceptOpt, tryCount) {
   tryCount = tryCount || 1
 
   if (typeof (interceptOpt.baiduOcr) && interceptOpt.baiduOcr.length > 0) {
-    const config = interceptOpt.baiduOcr[count % interceptOpt.baiduOcr.length];
+    const config = interceptOpt.baiduOcr[count % interceptOpt.baiduOcr.length]
     count++
 
     if (tryCount < interceptOpt.baiduOcr.length) {
@@ -54,7 +56,6 @@ module.exports = {
       return true
     }
     imageBase64 = decodeURIComponent(imageBase64)
-    console.info('baiduOcr: image base64 = ' + imageBase64)
 
     const config = getConfig(interceptOpt)
     if (!config.id || !config.ak || !config.sk) {
@@ -79,20 +80,20 @@ module.exports = {
       res.writeHead(200, headers)
       res.write(JSON.stringify(result)) // 格式如：{"words_result":[{"words":"6525"}],"words_result_num":1,"log_id":1818877093747960000}
       res.end()
+      if (next) next() // 异步执行完继续next
     }).catch(function (err) {
       log.info('baiduOcr error:', err)
       res.writeHead(500, headers)
       res.write('{"error": "' + err + '"}') // 格式如：{"words_result":[{"words":"6525"}],"words_result_num":1,"log_id":1818877093747960000}
       res.end()
+      if (next) next() // 异步执行完继续next
     })
 
     log.info('proxy baiduOcr: hostname:', req.hostname)
 
-    res.waitingToWrite = true
     return 'no-next'
   },
   is (interceptOpt) {
-    console.info('baiduOcr', interceptOpt.baiduOcr)
     return !!interceptOpt.baiduOcr
   }
 }
