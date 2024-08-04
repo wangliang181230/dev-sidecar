@@ -13,9 +13,9 @@ function getNextMonthFirstDay () {
 const AipOcrClient = require('baidu-aip-sdk').ocr
 const AipOcrClientMap = {}
 const apis = [
-  'handwriting', // 手写文字识别
   'accurateBasic', // 调用通用文字识别（高精度版）
-  'accurate' // 调用通用文字识别（含位置高精度版）
+  'accurate', // 调用通用文字识别（含位置高精度版）
+  'handwriting' // 手写文字识别
 ]
 
 const limitMap = {}
