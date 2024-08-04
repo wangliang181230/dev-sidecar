@@ -55,15 +55,31 @@ module.exports = {
     intercepts: {
       'zkpt.zj.msa.gov.cn': {
         '^/baiduOcr\\?.*$': {
-          baiduOcr: [{
-            id: '101474620',
-            ak: 'fqCvIHGisGwpsglzV2wdxZJ5',
-            sk: 'RhTOXUA4V6CrGuCTJJvUQ7z6Nl4m0Lij'
-          }, {
-            id: '101635455',
-            ak: 'vnnFPJIupwFKW4XKcw4HPYnn',
-            sk: 'bBwsXII9iNjHYuivzcwqp4dE483glzFb'
-          }]
+          baiduOcr: [
+            {
+              id: '101474620',
+              ak: 'fqCvIHGisGwpsglzV2wdxZJ5',
+              sk: 'RhTOXUA4V6CrGuCTJJvUQ7z6Nl4m0Lij',
+              account: 'zjjyhk'
+            },
+            {
+              id: '101635455',
+              ak: 'vnnFPJIupwFKW4XKcw4HPYnn',
+              sk: 'bBwsXII9iNjHYuivzcwqp4dE483glzFb',
+              account: '841369634'
+            },
+            {
+              id: '101894291',
+              ak: '1fSRH8NkmvBYbU5VHhUj1VWK',
+              sk: 'kkqomydj16fcIx9UyBcpZQkvAjJW7ivo',
+              account: 'tomtaw23'
+            },
+            {
+              id: '101894748',
+              ak: 'ruN3GBpvREE82xgLTSjo1ta6',
+              sk: '10rRaf3psTgBjrsQlmaWc2CGyDtOcm6X',
+              account: 'emu87138018'
+            }]
         }
       },
       'github.com': {
