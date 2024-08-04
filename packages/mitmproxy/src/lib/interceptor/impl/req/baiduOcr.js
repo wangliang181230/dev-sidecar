@@ -1,14 +1,25 @@
-function getNextMonthFirstDay () {
+function getTomorrow () {
   const now = new Date()
-  const currentYear = now.getFullYear()
-  const currentMonth = now.getMonth()
+  const tomorrow = new Date(now)
 
-  // 如果当前月份是12月，年份增加1，并且月份设为0（1月）
-  const nextMonth = (currentMonth + 1) % 12
-  const nextYear = nextMonth === 0 ? currentYear + 1 : currentYear
+  // 设置日期为明天
+  tomorrow.setDate(now.getDate() + 1)
+  // 重置时间为凌晨 0 点 0 分 0 秒
+  tomorrow.setHours(0, 0, 0, 0)
 
-  return new Date(nextYear, nextMonth, 1, 0, 0, 0, 0)
+  return tomorrow.getTime()
 }
+// function getNextMonth () {
+//   const now = new Date()
+//   const currentYear = now.getFullYear()
+//   const currentMonth = now.getMonth()
+//
+//   // 如果当前月份是12月，年份增加1，并且月份设为0（1月）
+//   const nextMonth = (currentMonth + 1) % 12
+//   const nextYear = nextMonth === 0 ? currentYear + 1 : currentYear
+//
+//   return new Date(nextYear, nextMonth, 1, 0, 0, 0, 0).getTime()
+// }
 
 const AipOcrClient = require('baidu-aip-sdk').ocr
 const AipOcrClientMap = {}
@@ -81,7 +92,7 @@ function getConfig (interceptOpt, tryCount, log) {
 
 function limitConfig (id, api) {
   const key = id + '_' + api
-  limitMap[key] = getNextMonthFirstDay().getTime()
+  limitMap[key] = getTomorrow()
   // limitMap[key] = Date.now() + 5000 // 测试用，5秒后解禁
 }
 
@@ -145,7 +156,7 @@ module.exports = {
         if (result.error_code === 17) {
           // 当前百度云账号，达到当日调用次数上限
           limitConfig(config.id, config.api)
-          log.error(`当前百度云账号的接口 ${config.api}，已达到当月调用次数上限，现已禁用它，等待下个月免费额度发放，或者充值继续使用:`, config)
+          log.error(`当前百度云账号的接口 ${config.api}，已达到当日调用次数上限，暂时禁用它，明天会自动放开:`, config)
         }
       } else {
         log.info('baiduOcr success:', result)
