@@ -28,7 +28,7 @@
     let lastText;
 
     // 获取输入框
-    function getInput() {
+    function getInput () {
         return document.querySelector('input[placeholder="图片验证码"]');
     }
     // 获取提交按钮
@@ -71,7 +71,7 @@
 
         // 绑定验证码刷新事件
         if (!img.onload) {
-            img.onload = function() {
+            img.onload = function () {
                 if (!img) return;
 
                 if (startTime == null) curInterval = 0;
@@ -85,7 +85,7 @@
             };
         }
         if (!img.onerror) {
-            img.onerror = function() {
+            img.onerror = function () {
                 if (!img) return;
                 console.info('--------------------------------------------------------------');
                 warn('验证码图片加载失败了，重新加载验证码');
@@ -95,7 +95,7 @@
 
         // 发现图片，首次执行
         if (startTime === null) {
-            setTimeout(function() {
+            setTimeout(function () {
                 if (startTime === null) doParse();
             }, 2000);
         }
@@ -126,7 +126,7 @@
         }
     }
 
-    function fetchParse(imageBase64) {
+    function fetchParse (imageBase64) {
         fetch('/baiduOcr?' + imageBase64, { method: 'POST' }).then(response => {
             debug('<-- 调用图片识别接口完成：', response.status);
 
@@ -143,8 +143,17 @@
             response.json().then(data => {
                 if (data.error_code) {
                     warn(`调用了图片识别接口，但接口报错了：code: ${data.error_code}, msg: ${data.error_msg}`);
-                    if (data.error_code === 17) {
-                        return fetchParse(imageBase64); // 所使用的百度云账号已达到每日请求限制
+
+                    if (data.error_code === 99917) {
+                        stop();
+                        try {
+                            showMsg(data.error_msg + '现停止识别验证码！');
+                        } catch(e) {
+                        }
+
+                        return;
+                    } else if (data.error_code === 17) {
+                        return fetchParse(imageBase64); // 所使用的百度云账号已达到每日请求限制，重新发起识别请求
                     } else {
                         return flushImg();
                     }
@@ -171,7 +180,8 @@
                   .replaceAll(/[多名号]/g, '45')
                   .replaceAll('龙', '46')
                   .replaceAll('刘', '47')
-                  .replaceAll('么', '72')
+                  .replaceAll('哈', '47')
+                  .replaceAll(/[么年]/g, '72')
                   .replaceAll('方', '75')
                   .replaceAll(/[入何]/g, '77')
                   .replaceAll('的', '83')
@@ -182,7 +192,6 @@
                   .replaceAll(/[b]/g, '6')
                   .replaceAll(/[1lnT|>~/\\]/g, '7')
                   .replaceAll(/[B]/g, '8')
-
                   .replaceAll(/[oO°。]/g, '0')
                 ;
                 while (text.includes('0')) {
@@ -198,7 +207,7 @@
                 if (text.length !== 4 && text.length !== len) {
                     const warnMsg = `重要：当前识别结果，存在未转换字符：${originText}    请将此日志复制并发送给研发人员，以提高识别率！！！当前图片Base64：data:image/png;base64,${decodeURIComponent(imageBase64)}`;
                     warn(warnMsg);
-                    //alert(warnMsg);
+                    alert(warnMsg);
                 }
                 if (!text) {
                     debug('识别结果不是数字：', originText);
@@ -249,7 +258,7 @@
                 img.base64 = null;
                 endTime = Date.now();
 
-                setTimeout(function() {
+                setTimeout(function () {
                     checkBtnClick(text);
                 }, 500);
             });
@@ -309,12 +318,15 @@
         lastText = null;
         clearInterval(window.qmwInterval);
         window.qmwInterval = null;
+        count = 0;
         startTime = null;
+        endTime = null;
+        lastText = null;
         info('--- 停止抢锚位！！！');
     }
 
 
-    function logTime() {
+    function logTime () {
         const time = new Date();
         const hours = String(time.getHours()).padStart(2, '0');
         const minutes = String(time.getMinutes()).padStart(2, '0');
@@ -323,20 +335,20 @@
 
         return `${hours}:${minutes}:${seconds}.${milliseconds}   `;
     }
-    function log(args) {
+    function log (args) {
         let str = logTime();
         for (let i = 0; i < args.length; i++) {
             str += ' ' + args[i];
         }
         return str;
     }
-    function debug() {
+    function debug () {
         console.debug(log(arguments));
     }
-    function info() {
+    function info () {
         console.info(log(arguments));
     }
-    function warn() {
+    function warn () {
         console.warn(log(arguments));
     }
     function showMsg (msg) {
@@ -350,7 +362,7 @@
                     new Notification(msg);
                 } else if (Notification.permission !== 'denied') {
                     // 如果权限没有被拒绝，向用户请求权限
-                    Notification.requestPermission().then(function(permission) {
+                    Notification.requestPermission().then(function (permission) {
                         if (permission === 'granted') {
                             new Notification(msg);
                         }
@@ -359,7 +371,7 @@
             }
         } catch(e) {}
 
-        setTimeout(function() { alert(msg); }, 1000);
+        setTimeout(function () { alert(msg); }, 1000);
     }
 
     function checkResult (text) {
@@ -393,7 +405,7 @@
     }
 
     // 绑定键盘事件，用于启停程序
-    window.addEventListener('keyup', function(event) {
+    window.addEventListener('keyup', function (event) {
         if (event.key === 'F2') {
             if (enable) {
                 stop();
