@@ -207,7 +207,7 @@
                 if (text.length !== 4 && text.length !== len) {
                     const warnMsg = `重要：当前识别结果，存在未转换字符：${originText}    请将此日志复制并发送给研发人员，以提高识别率！！！当前图片Base64：data:image/png;base64,${decodeURIComponent(imageBase64)}`;
                     warn(warnMsg);
-                    alert(warnMsg);
+                    //alert(warnMsg);
                 }
                 if (!text) {
                     debug('识别结果不是数字：', originText);
