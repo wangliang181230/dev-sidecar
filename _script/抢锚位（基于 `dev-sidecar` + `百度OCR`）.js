@@ -147,7 +147,7 @@
                     if (data.error_code === 99917) {
                         stop();
                         try {
-                            showMsg(data.error_msg + '现停止识别验证码！');
+                            showMsg('❌ ' + data.error_msg + '现停止识别验证码！');
                         } catch(e) {
                         }
 
@@ -289,7 +289,7 @@
 
                 // 提示已被抢走
                 try {
-                    showMsg(`很遗憾，该锚位已被其他人抢走了，停止识别验证码，有需要时再按F2开启！！！！！！此次尝试识别验证码图片次数：${count} 次，总计耗时：${(endTime - startTime) / 1000} 秒`);
+                    showMsg(`❌ 很遗憾，该锚位已被其他人抢走了，停止识别验证码，有需要时再按F2开启！！！！！！此次尝试识别验证码图片次数：${count} 次，总计耗时：${(endTime - startTime) / 1000} 秒`);
                 } catch(e) {
                 }
                 count = 0;
@@ -382,13 +382,13 @@
 
         const successElement = document.querySelector('p.after-title');
         if (successElement && successElement.innerText && successElement.innerText.indexOf('成功') > 0) {
-            title = '抢锚位成功啦！！！';
+            title = '✅ 抢锚位成功啦！！！';
             logFun = showMsg;
         } else if (location.hash === '#/home') {
-            title = '登录成功啦！！！';
+            title = '✅ 登录成功啦！！！';
             logFun = showMsg;
         } else {
-            title = `很遗憾，${ location.hash === '#/login' ? '登录' : '抢锚位' }未能成功。`;
+            title = `❌ 很遗憾，${ location.hash === '#/login' ? '登录' : '抢锚位' }未能成功。`;
             logFun = warn;
         }
 
