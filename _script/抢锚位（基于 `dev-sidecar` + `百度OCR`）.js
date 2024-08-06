@@ -13,15 +13,19 @@
 (function() {
     'use strict';
 
-    let defaultInterval = 100; // 默认验证码图片识别执行间隔（按需手动调整此配置值）
-    let interval = defaultInterval; // 当前验证码图片识别执行间隔
+    // 验证码图片识别的执行间隔
+    // 说明：按需手动调整此配置值，如果觉得识别过快，可以将间隔调大点
+    let interval = 100; // 单位：毫秒
+
 
     let img;
     let count = 0;
     let startTime = null;
     let endTime = null;
     let enable = false;
-    let minBase64Length = 4000; // 当前站点的验证码图片base64最小长度，避免无效的识别请求
+    let minBase64Length = 6000; // 当前站点的验证码图片base64最小长度，避免无效的识别请求
+    let curInterval = interval; // 当前执行间隔
+    let lastText;
 
     // 获取输入框
     function getInput() {
@@ -37,10 +41,10 @@
     }
     // 解析图片为base64
     function parseImageBase64 (img) {
-        var canvas = document.createElement('canvas');
+        const canvas = document.createElement('canvas');
         canvas.width = img.width;
         canvas.height = img.height;
-        var ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, img.width, img.height);
         return canvas.toDataURL('image/png').replace('data:image/png;base64,', '');
     }
@@ -69,12 +73,15 @@
         if (!img.onload) {
             img.onload = function() {
                 if (!img) return;
+
+                if (startTime == null) curInterval = 0;
                 setTimeout(function () {
+                    if (!img) return;
                     console.info('--------------------------------------------------------------');
-                    debug('刷新图片验证码');
-                    doParse(img);
-                }, interval);
-                interval = defaultInterval;
+                    debug('验证码图片刷新完成了');
+                    doParse();
+                }, curInterval);
+                curInterval = interval;
             };
         }
         if (!img.onerror) {
@@ -88,7 +95,9 @@
 
         // 发现图片，首次执行
         if (startTime === null) {
-            doParse();
+            setTimeout(function() {
+                if (startTime === null) doParse();
+            }, 2000);
         }
     }
     function doParse () {
@@ -103,7 +112,9 @@
         try {
             let imageBase64 = parseImageBase64(img);
             //info('imageBase64.length:', imageBase64.length);
-            if (!imageBase64 || imageBase64.length < minBase64Length) return;
+            if (!imageBase64 || imageBase64.length < minBase64Length) {
+                return debug('图片未加载完成，暂不识别！');
+            }
             if (img.base64) return debug('正在识别图片，不重复发起识别');
             imageBase64 = encodeURIComponent(imageBase64);
             img.base64 = imageBase64;
@@ -151,17 +162,62 @@
                     debug('识别结果为空：', originText);
                     return flushImg();
                 }
-                const text = originText.replaceAll(/\D/g, '');
+
+                // 替换部分字符（注：当前站点的验证码，没有0、1、9，碰到这几个数字需要替换掉）
+                let text = originText.replaceAll(/[.,]/g, '')
+
+                  .replaceAll('香', '35')
+                  .replaceAll('对', '44')
+                  .replaceAll(/[多名号]/g, '45')
+                  .replaceAll('龙', '46')
+                  .replaceAll('刘', '47')
+                  .replaceAll('么', '72')
+                  .replaceAll('方', '75')
+                  .replaceAll(/[入何]/g, '77')
+                  .replaceAll('的', '83')
+
+                  .replaceAll(/[q9%÷<=\-]/g, '2')
+                  .replaceAll(/[ANtxXyY*×:又双]/g, '4')
+                  .replaceAll(/[sSgG分台白]/g, '5')
+                  .replaceAll(/[b]/g, '6')
+                  .replaceAll(/[1lnT|>~/\\]/g, '7')
+                  .replaceAll(/[B]/g, '8')
+
+                  .replaceAll(/[oO°。]/g, '0')
+                ;
+                while (text.includes('0')) {
+                    const idx = text.indexOf('0');
+                    if (idx <= 2) {
+                        text = text.replace('0', '8');
+                    } else {
+                        text = text.replace('0', '5');
+                    }
+                }
+                const len = text.length;
+                text = text.replaceAll(/\D/g, ''); // 移除非数字字符
+                if (text.length !== 4 && text.length !== len) {
+                    const warnMsg = `重要：当前识别结果，存在未转换字符：${originText}    请将此日志复制并发送给研发人员，以提高识别率！！！当前图片Base64：data:image/png;base64,${decodeURIComponent(imageBase64)}`;
+                    warn(warnMsg);
+                    //alert(warnMsg);
+                }
                 if (!text) {
                     debug('识别结果不是数字：', originText);
                     return flushImg();
+                }
+
+                while (text.length < 4) {
+                    text += '7'; // 7经常识别漏，所以补7
                 }
                 if (!text.match('^\\d{4}$')) {
                     debug('识别结果不是4位数字：', originText);
                     return flushImg();
                 }
 
-                info(`识别结果为4位数字：${text}，尝试提交验证`); // 输出验证码识别结果
+                if (text !== originText) {
+                    warn(`识别结果不正确：${originText}，转换后尝试提交：${text}`);
+                } else {
+                    info(`识别结果为4位数字：${text}，尝试提交验证`); // 输出验证码识别结果
+                }
 
                 // 自动填入验证码
                 const input = getInput();
@@ -186,7 +242,8 @@
                     return;
                 }
 
-                interval = 600 + defaultInterval;
+                curInterval = 600 + interval;
+                lastText = text;
                 btn.click();
 
                 img.base64 = null;
@@ -204,7 +261,7 @@
 
     function checkBtnClick (text) {
         if (document.querySelector('p.after-title') || location.hash === '#/home') {
-            checkResult();
+            checkResult(text);
             return;
         }
 
@@ -233,7 +290,7 @@
                 warn(`提交了验证码 ${text}，但失败了，错误信息：${errorMsg}`);
             }
         } else {
-            warn(`提交了验证码 ${text}，但未找到执行结果信息，不知道有没有成功或失败！`);
+            warn(`提交了验证码 ${text}，但未找到执行结果信息，不知道是成功还是失败！（这可能是由于提交请求响应时间超过 500 ms，或者页面卡住了导致错误信息未及时弹出，大部分情况属于正常现象！）`);
         }
     }
 
@@ -241,16 +298,18 @@
         if (window.qmwInterval || enable) return;
 
         enable = true;
+        lastText = null;
         info('>>> 开始抢锚位！！！');
-        checkDoParse();
         window.qmwInterval = setInterval(checkDoParse, 100);
     }
     function stop () {
         if (!window.qmwInterval || !enable) return;
 
         enable = false;
+        lastText = null;
         clearInterval(window.qmwInterval);
         window.qmwInterval = null;
+        startTime = null;
         info('--- 停止抢锚位！！！');
     }
 
@@ -303,7 +362,7 @@
         setTimeout(function() { alert(msg); }, 1000);
     }
 
-    function checkResult () {
+    function checkResult (text) {
         if (count === 0 || endTime === null) return false;
 
         let title;
@@ -322,12 +381,14 @@
         }
 
         try {
-            logFun(`${title}此次尝试识别验证码图片次数：${count} 次，总计耗时：${(endTime - startTime) / 1000} 秒`);
+            text = text || lastText;
+            logFun(`${title}此次尝试识别验证码图片次数：${count} 次，总计耗时：${(endTime - startTime) / 1000} 秒${text ? `，验证码为：${text}` : ''}`);
         } catch(e) {
         }
         count = 0;
         startTime = null;
         endTime = null;
+        lastText = null;
         return true;
     }
 
