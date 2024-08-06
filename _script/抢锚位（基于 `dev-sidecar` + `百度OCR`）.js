@@ -179,8 +179,7 @@
                   .replaceAll('对', '44')
                   .replaceAll(/[多名号]/g, '45')
                   .replaceAll('龙', '46')
-                  .replaceAll('刘', '47')
-                  .replaceAll('哈', '47')
+                  .replaceAll(/[刘哈]/g, '47')
                   .replaceAll(/[么年]/g, '72')
                   .replaceAll('方', '75')
                   .replaceAll(/[入何]/g, '77')
@@ -192,6 +191,7 @@
                   .replaceAll(/[b]/g, '6')
                   .replaceAll(/[1lnT|>~/\\]/g, '7')
                   .replaceAll(/[B]/g, '8')
+
                   .replaceAll(/[oO°。]/g, '0')
                 ;
                 while (text.includes('0')) {
