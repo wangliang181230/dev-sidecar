@@ -121,24 +121,24 @@ module.exports = {
     const config = getConfig(interceptOpt, null, log)
     if (!config) {
       res.writeHead(200, headers)
-      res.write('{"error_code": 999, "error_msg": "dev-sidecar中，未配置百度云账号，或所有百度云账号的免费额度都已用完！！！"}')
+      res.write('{"error_code": 99917, "error_msg": "dev-sidecar中，未配置百度云账号，或所有百度云账号的免费额度都已用完！！！"}')
       res.end()
       return true
     }
-    if (!config.id || !config.ak || !config.sk || !config.api) {
+    if (!config.id || !config.ak || !config.sk) {
       res.writeHead(200, headers)
-      res.write('{"error_code": 999, "error_msg": "dev-sidecar中，baiduOcr的 id 或 ak 或 sk 或 api 配置为空"}')
+      res.write('{"error_code": 999500, "error_msg": "dev-sidecar中，baiduOcr的 id 或 ak 或 sk 配置为空"}')
       res.end()
       return true
     }
 
-    headers['DS-Interceptor'] = `baiduOcr: id=${config.id},api=${config.api}`
+    headers['DS-Interceptor'] = `baiduOcr: id=${config.id}, api=${config.api || apis[0]}, account=${config.account}`
 
     // 获取图片的base64编码
     let imageBase64 = rOptions.path.substring(rOptions.path.indexOf('?') + 1)
     if (!imageBase64) {
       res.writeHead(200, headers)
-      res.write('{"error_code": 999, "error_msg": "图片Base64参数为空"}')
+      res.write('{"error_code": 999400, "error_msg": "图片Base64参数为空"}')
       res.end()
       return true
     }
@@ -154,7 +154,7 @@ module.exports = {
       ...(config.options || {})
     }
     log.info('发起百度ocr请求', req.hostname)
-    client[config.api](imageBase64, options).then(function (result) {
+    client[config.api || apis[0]](imageBase64, options).then(function (result) {
       if (result.error_code != null) {
         log.error('baiduOcr error:', result)
         if (result.error_code === 17) {
@@ -173,7 +173,7 @@ module.exports = {
     }).catch(function (err) {
       log.info('baiduOcr error:', err)
       res.writeHead(200, headers)
-      res.write('{"error_code": 999, "error_msg": "' + err + '"}') // 格式如：{"words_result":[{"words":"6525"}],"words_result_num":1,"log_id":1818877093747960000}
+      res.write('{"error_code": 999500, "error_msg": "' + err + '"}') // 格式如：{"words_result":[{"words":"6525"}],"words_result_num":1,"log_id":1818877093747960000}
       res.end()
       if (next) next() // 异步执行完继续next
     })
