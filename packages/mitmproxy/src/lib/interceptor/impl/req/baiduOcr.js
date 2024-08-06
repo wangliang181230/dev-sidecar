@@ -82,8 +82,12 @@ function getConfig (interceptOpt, tryCount, log) {
     if (tryCount == null) {
       return null // 只配置了一个账号，没有更多账号可以选择了，直接返回null
     } else {
-      // 递归找到有效的配置
-      return getConfig(interceptOpt, tryCount + 1, log)
+      if (tryCount < interceptOpt.baiduOcr.length) {
+        // 递归找到有效的配置
+        return getConfig(interceptOpt, tryCount + 1, log)
+      } else {
+        return null
+      }
     }
   }
 
