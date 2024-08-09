@@ -79,7 +79,20 @@ module.exports = {
               ak: 'ruN3GBpvREE82xgLTSjo1ta6',
               sk: '10rRaf3psTgBjrsQlmaWc2CGyDtOcm6X',
               account: 'emu87138018'
-            }]
+            },
+            {
+              id: '103617126',
+              ak: 'rdVb5PY4t4UuCjGvl68wmZ3Z',
+              sk: 'K05oJHyViiVMAxa5bAJcuhTwW1X0PvA7',
+              account: 'wangliang181230'
+            },
+            {
+              id: '104829729',
+              ak: '695cdQgfSPPP0eef8IlGhy61',
+              sk: 'hrCcYTa6eZAcuilf4EzTcFuYgAzgOiRF',
+              account: '20240809001'
+            }
+          ]
         }
       },
       'github.com': {
