@@ -91,6 +91,12 @@ module.exports = {
               ak: '695cdQgfSPPP0eef8IlGhy61',
               sk: 'hrCcYTa6eZAcuilf4EzTcFuYgAzgOiRF',
               account: '20240809001'
+            },
+            {
+              id: '106140277',
+              ak: 'R62I2B4sSldgkEaUZBiH70jR',
+              sk: 'WHV27baLgs3uUIZObuduDXwW8Dcbk9u4',
+              account: '20240814002'
             }
           ]
         }
