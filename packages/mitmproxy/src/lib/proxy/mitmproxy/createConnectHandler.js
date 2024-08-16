@@ -77,12 +77,29 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
           dns.lookup(hostname).then(ip => {
             isDnsIntercept = { dns, hostname, ip }
             if (ip !== hostname) {
-              log.info(`---- connect: ${hostport}, use ip from dns '${dns.name}': ${ip} ----`)
-              callback(null, ip, 4)
-            } else {
-              log.info(`----- connect: ${hostport}, use hostname: ${hostname} -----`)
-              defaultDns.lookup(hostname, options, callback)
+              // 判断是否为测速失败的IP，如果是，则不使用当前IP
+              let isTestFailedIp = false
+              if (tester && tester.ready && tester.backupList && tester.backupList.length > 0) {
+                for (let i = 0; i < tester.backupList.length; i++) {
+                  const item = tester.backupList[i]
+                  if (item.host === ip) {
+                    isTestFailedIp = true
+                    break
+                  }
+                }
+              }
+              if (isTestFailedIp === false) {
+                log.info(`----- connect: ${hostport}, use ip from dns '${dns.name}': ${ip} -----`)
+                callback(null, ip, 4)
+                return
+              } else {
+                log.warn(`----- connect: ${hostport}, 通过 dns '${dns.name}' 获取到了 ip '${ip}'，但该IP测速未通过，忽略掉它。 -----`)
+              }
             }
+
+            // 使用默认dns
+            log.info(`----- connect: ${hostport}, use hostname by default DNS: ${hostname} -----`)
+            defaultDns.lookup(hostname, options, callback)
           })
         }
       }

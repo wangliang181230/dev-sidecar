@@ -146,12 +146,29 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
                 dns.lookup(hostname).then(ip => {
                   isDnsIntercept = { dns, hostname, ip }
                   if (ip !== hostname) {
-                    log.info(`---- request url: ${url}, use ip from dns '${dns.name}': ${ip} ----`)
-                    callback(null, ip, 4)
-                  } else {
-                    log.info(`---- request url: ${url}, use hostname: ${hostname} ----`)
-                    defaultDns.lookup(hostname, options, callback)
+                    // 判断是否为测速失败的IP，如果是，则不使用当前IP
+                    let isTestFailedIp = false
+                    if (tester && tester.ready && tester.backupList && tester.backupList.length > 0) {
+                      for (let i = 0; i < tester.backupList.length; i++) {
+                        const item = tester.backupList[i]
+                        if (item.host === ip) {
+                          isTestFailedIp = true
+                          break
+                        }
+                      }
+                    }
+                    if (isTestFailedIp === false) {
+                      log.info(`----- request url: ${url}, use ip from dns '${dns.name}': ${ip} -----`)
+                      callback(null, ip, 4)
+                      return
+                    } else {
+                      log.warn(`----- request url: ${url}, 通过 dns '${dns.name}' 获取到了 ip '${ip}'，但该IP测速未通过，忽略掉它。 -----`)
+                    }
                   }
+
+                  // 使用默认dns
+                  log.info(`----- request url: ${url}, use hostname by default DNS: ${hostname} -----`)
+                  defaultDns.lookup(hostname, options, callback)
                 })
               }
             }
