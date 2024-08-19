@@ -83,7 +83,9 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
                 for (let i = 0; i < tester.backupList.length; i++) {
                   const item = tester.backupList[i]
                   if (item.host === ip) {
-                    isTestFailedIp = true
+                    if (item.time == null) {
+                      isTestFailedIp = true
+                    }
                     break
                   }
                 }
