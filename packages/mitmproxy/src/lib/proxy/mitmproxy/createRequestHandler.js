@@ -141,6 +141,8 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
                     log.info(`----- request url: ${url}, use alive ip from dns '${aliveIpObj.dns}': ${aliveIpObj.host} -----`)
                     callback(null, aliveIpObj.host, 4)
                     return
+                  } else {
+                    log.info(`----- request url: ${url}, no alive ip, tester:`, tester)
                   }
                 }
                 dns.lookup(hostname).then(ip => {
@@ -152,7 +154,9 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
                       for (let i = 0; i < tester.backupList.length; i++) {
                         const item = tester.backupList[i]
                         if (item.host === ip) {
-                          isTestFailedIp = true
+                          if (item.time == null) {
+                            isTestFailedIp = true
+                          }
                           break
                         }
                       }
@@ -167,7 +171,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
                   }
 
                   // 使用默认dns
-                  log.info(`----- request url: ${url}, use hostname by default DNS: ${hostname} -----`)
+                  log.info(`----- request url: ${url}, use hostname by default DNS: ${hostname}, options:`, options)
                   defaultDns.lookup(hostname, options, callback)
                 })
               }

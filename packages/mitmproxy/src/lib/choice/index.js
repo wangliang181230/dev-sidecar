@@ -92,17 +92,6 @@ class DynamicChoice {
 
     // 如果当前未使用任何ip，切换到backupList中的第一个
     if (this.value == null && this.backupList.length > 0) {
-      // 我自己使用的规则：特殊处理github.com，优先使用直连
-      if (this.key === 'github.com') {
-        for (let i = 0; i < this.backupList.length; i++) {
-          if (this.backupList[i] === 'github.com') {
-            this.value = this.backupList[i]
-            this.backupList.splice(i, 1)
-            break
-          }
-        }
-      }
-
       // 为空时，直接使用第一个
       if (this.value == null) {
         this.value = this.backupList.shift()

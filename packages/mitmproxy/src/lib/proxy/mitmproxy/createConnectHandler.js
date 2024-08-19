@@ -98,7 +98,7 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
             }
 
             // 使用默认dns
-            log.info(`----- connect: ${hostport}, use hostname by default DNS: ${hostname} -----`)
+            log.info(`----- connect: ${hostport}, use hostname by default DNS: ${hostname}, options:`, options)
             defaultDns.lookup(hostname, options, callback)
           })
         }
