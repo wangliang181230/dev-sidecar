@@ -201,7 +201,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             reject(new Error(errorMsg))
           })
 
-          // 普通请求的事件监听
+          // 原始请求的事件监听
           req.on('aborted', function () {
             const cost = new Date() - start
             const errorMsg = `请求被取消: ${url}, cost: ${cost} ms`
