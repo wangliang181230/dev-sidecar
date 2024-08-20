@@ -38,7 +38,7 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
         log.info(`----- fakeServer connect: ${localIP}:${serverObj.port} ➜ ${req.url} -----`)
         connect(req, cltSocket, head, localIP, serverObj.port)
       }, (e) => {
-        log.error(`--- fakeServer getServerPromise error: ${hostname}:${port}, error:`, e)
+        log.error(`----- fakeServer getServerPromise error: ${hostname}:${port}, error:`, e)
       })
     } else {
       log.info(`未匹配到任何 sslConnectInterceptors，不拦截请求，直接连接目标服务器: ${hostname}:${port}`)
@@ -86,30 +86,34 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpM
       const cost = new Date() - start
       const errorMsg = `代理连接超时: ${hostport}, cost: ${cost} ms`
       log.error(errorMsg)
+
+      cltSocket.write('HTTP/1.1 408 Proxy connect timeout\r\n' +
+          'Proxy-agent: dev-sidecar\r\n' +
+          '\r\n')
+      cltSocket.end()
+
       if (isDnsIntercept && isDnsIntercept.dns) {
         const { dns, ip, hostname } = isDnsIntercept
         dns.count(hostname, ip, true)
         log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${errorMsg}, dns: ${dns.name}`)
       }
-      cltSocket.write('HTTP/1.1 408 Proxy connect timeout\r\n' +
-          'Proxy-agent: dev-sidecar\r\n' +
-          '\r\n')
-      cltSocket.end()
     })
     proxySocket.on('error', (e) => {
       // 连接失败，可能被GFW拦截，或者服务端拥挤
       const cost = new Date() - start
       const errorMsg = `代理连接失败: ${hostport}, cost: ${cost} ms, errorMsg: ${e.message}`
       log.error(errorMsg)
+
+      cltSocket.write(`HTTP/1.1 400 Proxy connect error: ${e.message}\r\n` +
+          'Proxy-agent: dev-sidecar\r\n' +
+          '\r\n')
+      cltSocket.end()
+
       if (isDnsIntercept && isDnsIntercept.dns && isDnsIntercept.ip !== isDnsIntercept.hostname) {
         const { dns, ip, hostname } = isDnsIntercept
         dns.count(hostname, ip, true)
         log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${errorMsg}, dns: ${dns.name}`)
       }
-      cltSocket.write(`HTTP/1.1 400 Proxy connect error: ${e.message}\r\n` +
-          'Proxy-agent: dev-sidecar\r\n' +
-          '\r\n')
-      cltSocket.end()
     })
     return proxySocket
   } catch (e) {
