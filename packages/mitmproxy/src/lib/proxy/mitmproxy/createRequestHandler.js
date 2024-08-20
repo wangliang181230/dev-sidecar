@@ -7,9 +7,9 @@ const DnsUtil = require('../../dns/index')
 const log = require('../../../utils/util.log')
 const RequestCounter = require('../../choice/RequestCounter')
 const InsertScriptMiddleware = require('../middleware/InsertScriptMiddleware')
-const speedTest = require('../../speed/index.js')
-const defaultDns = require('dns')
+const dnsLookup = require('./dnsLookup')
 const MAX_SLOW_TIME = 8000 // 超过此时间 则认为太慢了
+
 // create requestHandler function
 module.exports = function createRequestHandler (createIntercepts, middlewares, externalProxy, dnsConfig, setting) {
   // return
@@ -82,10 +82,10 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
     }
 
     function countSlow (isDnsIntercept, reason) {
-      if (isDnsIntercept) {
+      if (isDnsIntercept && isDnsIntercept.dns && isDnsIntercept.ip !== isDnsIntercept.hostname) {
         const { dns, ip, hostname } = isDnsIntercept
         dns.count(hostname, ip, true)
-        log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${reason}, dns:`, JSON.stringify(dns))
+        log.error(`记录ip失败次数，用于优选ip！ hostname: ${hostname}, ip: ${ip}, reason: ${reason}, dns: ${dns.name}`)
       }
       const counter = context.requestCount
       if (counter != null) {
@@ -123,7 +123,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             )
           }
 
-          let isDnsIntercept
+          const isDnsIntercept = {}
           if (dnsConfig && dnsConfig.providers) {
             let dns = DnsUtil.hasDnsLookup(dnsConfig, rOptions.hostname)
             if (!dns && rOptions.servername) {
@@ -133,48 +133,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
               }
             }
             if (dns) {
-              rOptions.lookup = (hostname, options, callback) => {
-                const tester = speedTest.getSpeedTester(hostname)
-                if (tester) {
-                  const aliveIpObj = tester.pickFastAliveIpObj()
-                  if (aliveIpObj) {
-                    log.info(`----- request url: ${url}, use alive ip from dns '${aliveIpObj.dns}': ${aliveIpObj.host} -----`)
-                    callback(null, aliveIpObj.host, 4)
-                    return
-                  } else {
-                    log.info(`----- request url: ${url}, no alive ip, tester:`, tester)
-                  }
-                }
-                dns.lookup(hostname).then(ip => {
-                  isDnsIntercept = { dns, hostname, ip }
-                  if (ip !== hostname) {
-                    // 判断是否为测速失败的IP，如果是，则不使用当前IP
-                    let isTestFailedIp = false
-                    if (tester && tester.ready && tester.backupList && tester.backupList.length > 0) {
-                      for (let i = 0; i < tester.backupList.length; i++) {
-                        const item = tester.backupList[i]
-                        if (item.host === ip) {
-                          if (item.time == null) {
-                            isTestFailedIp = true
-                          }
-                          break
-                        }
-                      }
-                    }
-                    if (isTestFailedIp === false) {
-                      log.info(`----- request url: ${url}, use ip from dns '${dns.name}': ${ip} -----`)
-                      callback(null, ip, 4)
-                      return
-                    } else {
-                      log.warn(`----- request url: ${url}, 通过 dns '${dns.name}' 获取到了 ip '${ip}'，但该IP测速未通过，忽略掉它。 -----`)
-                    }
-                  }
-
-                  // 使用默认dns
-                  log.info(`----- request url: ${url}, use hostname by default DNS: ${hostname}, options:`, options)
-                  defaultDns.lookup(hostname, options, callback)
-                })
-              }
+              rOptions.lookup = dnsLookup.createLookupFunc(dns, 'request url', url, isDnsIntercept)
             }
           }
 
@@ -193,7 +152,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             if (cost > MAX_SLOW_TIME) {
               countSlow(isDnsIntercept, `代理请求成功但太慢, cost: ${cost} ms > ${MAX_SLOW_TIME} ms`)
             } else {
-              if (isDnsIntercept) {
+              if (isDnsIntercept && isDnsIntercept.dns && isDnsIntercept.ip !== isDnsIntercept.hostname) {
                 // 代理请求成功，记录请求成功次数
                 const { dns, ip, hostname } = isDnsIntercept
                 dns.count(hostname, ip, false)
