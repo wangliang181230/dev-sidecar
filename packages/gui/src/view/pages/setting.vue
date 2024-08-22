@@ -155,15 +155,16 @@ export default {
       this.$api.ipc.openPath(dir + '/logs/')
     },
     async applyAfter () {
-      let reloadLazy = 0
+      let reloadLazy = 10
 
+      // 判断远程配置地址是否变更过，如果是则重载远程配置并重启服务
       if (this.config.app.remoteConfig.url !== this.urlBackup || this.config.app.remoteConfig.personalUrl !== this.personalUrlBackup) {
         await this.$api.config.downloadRemoteConfig()
         await this.reloadConfigAndRestart()
-        reloadLazy = 500
+        reloadLazy = 300
       }
 
-      // 判断是否切换了主题
+      // 判断是否切换了主题，如果是，则刷新页面
       if (this.config.app.theme !== this.themeBackup) {
         setTimeout(() => window.location.reload(), reloadLazy)
       }
