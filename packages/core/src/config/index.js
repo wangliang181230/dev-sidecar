@@ -21,7 +21,7 @@ module.exports = {
     },
     remoteConfig: {
       enabled: true,
-      // 共用远程配置地址（一般情况下保持默认即可）
+      // 共享远程配置地址
       url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/docmirror/packages/core/src/config/remote_config.json5',
       // 个人远程配置地址
       personalUrl: 'https://gitee.com/wangliang181230/dev-sidecar/raw/remote_config/packages/core/src/config/remote_config_myself.json'
