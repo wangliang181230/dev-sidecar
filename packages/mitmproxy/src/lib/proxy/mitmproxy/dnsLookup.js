@@ -3,17 +3,19 @@ const log = require('../../../utils/util.log')
 const defaultDns = require('dns')
 
 module.exports = {
-  createLookupFunc: function (dns, action, target, isDnsIntercept) {
+  createLookupFunc: function (dns, action, hostname, isDnsIntercept, url) {
+    url = url ? (', url: ' + url) : ''
+
     return (hostname, options, callback) => {
       const tester = speedTest.getSpeedTester(hostname)
       if (tester && tester.ready) {
         const aliveIpObj = tester.pickFastAliveIpObj()
         if (aliveIpObj) {
-          log.info(`----- ${action}: ${target}, use alive ip from dns '${aliveIpObj.dns}': ${aliveIpObj.host} -----`)
+          log.info(`----- ${action}: ${hostname}, use alive ip from dns '${aliveIpObj.dns}': ${aliveIpObj.host}${url} -----`)
           callback(null, aliveIpObj.host, 4)
           return
         } else {
-          log.info(`----- ${action}: ${target}, no alive ip, tester:`, tester)
+          log.info(`----- ${action}: ${hostname}, no alive ip${url}, tester:`, tester)
         }
       }
       dns.lookup(hostname).then(ip => {
@@ -38,16 +40,16 @@ module.exports = {
             }
           }
           if (isTestFailedIp === false) {
-            log.info(`----- ${action}: ${target}, use ip from dns '${dns.name}': ${ip} -----`)
+            log.info(`----- ${action}: ${hostname}, use ip from dns '${dns.name}': ${ip}${url} -----`)
             callback(null, ip, 4)
             return
           } else {
             // 使用默认dns
-            log.info(`----- ${action}: ${target}, use hostname by default DNS: ${hostname}, skip test failed ip from dns '${dns.name}: ${ip}', options:`, options)
+            log.info(`----- ${action}: ${hostname}, use hostname by default DNS: ${hostname}, skip test failed ip from dns '${dns.name}: ${ip}'${url}, options:`, options)
           }
         } else {
           // 使用默认dns
-          log.info(`----- ${action}: ${target}, use hostname by default DNS: ${hostname}, options:`, options, ', dns:', dns)
+          log.info(`----- ${action}: ${hostname}, use hostname by default DNS: ${hostname}${url}, options:`, options, ', dns:', dns)
         }
         defaultDns.lookup(hostname, options, callback)
       })
