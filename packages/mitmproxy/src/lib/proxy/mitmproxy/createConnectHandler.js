@@ -42,17 +42,18 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
       })
     } else {
       log.info(`未匹配到任何 sslConnectInterceptors，不拦截请求，直接连接目标服务器: ${hostname}:${port}`)
-      connect(req, cltSocket, head, hostname, port, dnsConfig)
+      connect(req, cltSocket, head, hostname, port, dnsConfig/*, sniRegexpMap */)
     }
   }
 }
 
-function connect (req, cltSocket, head, hostname, port, dnsConfig) {
+function connect (req, cltSocket, head, hostname, port, dnsConfig/* , sniRegexpMap */) {
   // tunneling https
   // log.info('connect:', hostname, port)
   const start = new Date()
   const isDnsIntercept = {}
   const hostport = `${hostname}:${port}`
+  // const replaceSni = matchUtil.matchHostname(sniRegexpMap, hostname, 'sni')
   try {
     const options = {
       port,
@@ -62,7 +63,7 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig) {
     if (dnsConfig && dnsConfig.providers) {
       const dns = DnsUtil.hasDnsLookup(dnsConfig, hostname)
       if (dns) {
-        options.lookup = dnsLookup.createLookupFunc(dns, 'connect', hostname, isDnsIntercept)
+        options.lookup = dnsLookup.createLookupFunc(dns, 'connect', hostport, isDnsIntercept)
       }
     }
     const proxySocket = net.connect(options, () => {
