@@ -90,6 +90,7 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig) {
           'Proxy-agent: dev-sidecar\r\n' +
           '\r\n')
       cltSocket.end()
+      cltSocket.destroy()
 
       if (isDnsIntercept && isDnsIntercept.dns && isDnsIntercept.ip !== isDnsIntercept.hostname) {
         const { dns, ip, hostname } = isDnsIntercept
@@ -107,6 +108,7 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig) {
           'Proxy-agent: dev-sidecar\r\n' +
           '\r\n')
       cltSocket.end()
+      cltSocket.destroy()
 
       if (isDnsIntercept && isDnsIntercept.dns && isDnsIntercept.ip !== isDnsIntercept.hostname) {
         const { dns, ip, hostname } = isDnsIntercept
