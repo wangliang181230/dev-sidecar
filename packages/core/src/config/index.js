@@ -56,6 +56,60 @@ module.exports = {
       enabled: true
     },
     intercepts: {
+      'zkpt.zj.msa.gov.cn': {
+        '^/baiduOcr\\?.*$': {
+          baiduOcr: [
+            {
+              id: '101474620',
+              ak: 'fqCvIHGisGwpsglzV2wdxZJ5',
+              sk: 'RhTOXUA4V6CrGuCTJJvUQ7z6Nl4m0Lij',
+              account: 'zjjyhk'
+            },
+            {
+              id: '101635455',
+              ak: 'vnnFPJIupwFKW4XKcw4HPYnn',
+              sk: 'bBwsXII9iNjHYuivzcwqp4dE483glzFb',
+              account: '841369634'
+            },
+            {
+              id: '101894291',
+              ak: '1fSRH8NkmvBYbU5VHhUj1VWK',
+              sk: 'kkqomydj16fcIx9UyBcpZQkvAjJW7ivo',
+              account: 'tomtaw23'
+            },
+            {
+              id: '101894748',
+              ak: 'ruN3GBpvREE82xgLTSjo1ta6',
+              sk: '10rRaf3psTgBjrsQlmaWc2CGyDtOcm6X',
+              account: 'emu87138018'
+            },
+            {
+              id: '103617126',
+              ak: 'rdVb5PY4t4UuCjGvl68wmZ3Z',
+              sk: 'K05oJHyViiVMAxa5bAJcuhTwW1X0PvA7',
+              account: 'wangliang181230'
+            },
+            {
+              id: '104829729',
+              ak: '695cdQgfSPPP0eef8IlGhy61',
+              sk: 'hrCcYTa6eZAcuilf4EzTcFuYgAzgOiRF',
+              account: '20240809001'
+            },
+            {
+              id: '106140277',
+              ak: 'R62I2B4sSldgkEaUZBiH70jR',
+              sk: 'WHV27baLgs3uUIZObuduDXwW8Dcbk9u4',
+              account: '20240814002'
+            },
+            {
+              id: '112578236',
+              ak: 'rO2BIjujRWOYsXaU1Gekn5Sc',
+              sk: 'OKVlKAu483uRdMOCbHMyo1HQL49OWUvg',
+              account: '20240830003'
+            }
+          ]
+        }
+      },
       'github.com': {
         '.*': {
           sni: 'baidu.com'
