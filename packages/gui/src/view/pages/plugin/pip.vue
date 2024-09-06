@@ -66,7 +66,7 @@
           <a-input v-model="config.plugin.pip.setting.trustedHost"></a-input>
           <div class="form-help">
             使用以上域名安装包时，不会进行SSL证书验证，多个域名用空格隔开<br/>
-            注意：切换仓库镜像同时会修改pip.ini中的trusted-host配置，和镜像一样，关闭ds也会继续保持
+            注意：切换仓库镜像同时会修改pip.ini中的trusted-host配置，即使关闭ds也会继续保持
           </div>
         </a-form-item>
       </a-form>
