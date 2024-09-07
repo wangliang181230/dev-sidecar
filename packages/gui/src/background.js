@@ -136,10 +136,10 @@ function changeAppConfig (config) {
 
 function createWindow (startHideWindow) {
   // Create the browser window.
-
+  const windowSize = DevSidecar.api.config.get().app.windowSize || {}
   win = new BrowserWindow({
-    width: 900,
-    height: 750,
+    width: windowSize.width || 900,
+    height: windowSize.height || 750,
     title: 'DevSidecar',
     webPreferences: {
       enableRemoteModule: true,
@@ -238,7 +238,7 @@ function setDock () {
 app.disableHardwareAcceleration() // 禁用gpu
 
 // 开启后是否默认隐藏window
-let startHideWindow = !DevSidecar.api.config.get().app.startOpenWindow
+let startHideWindow = !DevSidecar.api.config.get().app.startShowWindow
 if (app.getLoginItemSettings().wasOpenedAsHidden) {
   startHideWindow = true
 } else if (process.argv) {
