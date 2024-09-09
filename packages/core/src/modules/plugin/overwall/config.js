@@ -43,7 +43,7 @@ module.exports = {
   pac: {
     enabled: true,
     // update: [ 'https://gitlab.com/gfwlist/gfwlist/raw/master/gfwlist.txt' ],
-    pacFileAbsolutePath: null, // 自定义pac文件位置
-    pacFilePath: './extra/pac/pac.txt'
+    pacFileAbsolutePath: null, // 自定义 pac.txt 文件位置，可以是本地文件路径
+    pacFilePath: './extra/pac/pac.txt' // 内置 pac.txt 文件路径
   }
 }
