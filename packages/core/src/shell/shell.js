@@ -93,7 +93,7 @@ function _childExec (composeCmds, options = {}) {
   })
 }
 
-function childExec (composeCmds, args) {
+function childExec (composeCmds, options = {}) {
   return new Promise((resolve, reject) => {
     const encoding = 'cp936'
     const binaryEncoding = 'binary'
@@ -104,7 +104,7 @@ function childExec (composeCmds, args) {
       if (error) {
         // console.log('------', decoder.decode(stderr))
         const message = iconv.decode(Buffer.from(stderr, binaryEncoding), encoding)
-        if (args.printErrorLog !== false) {
+        if (options.printErrorLog !== false) {
           log.error('cmd 命令执行错误：\n------------------------------\ncommands:', composeCmds, '\n message:', message, '\n   error:', error, '\n  stdout:', stdout, '\n  stderr:', stderr, '\n------------------------------')
         }
         reject(new Error(message))
