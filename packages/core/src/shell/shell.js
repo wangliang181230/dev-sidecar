@@ -102,7 +102,7 @@ function childExec (composeCmds) {
       if (error) {
         // console.log('------', decoder.decode(stderr))
         const message = iconv.decode(Buffer.from(stderr, binaryEncoding), encoding)
-        log.error('cmd 命令执行错误：', composeCmds, message)
+        log.error('cmd 命令执行错误：\n------------------------------\ncommands:', composeCmds, '\n message:', message, '\n   error:', error, '\n  stdout:', stdout, '\n  stderr:', stderr, '\n------------------------------')
         reject(new Error(message))
       } else {
         // log.info('cmd 命令完成：', stdout)
