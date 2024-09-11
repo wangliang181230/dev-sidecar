@@ -37,18 +37,50 @@ function getTmpPacFilePath () {
   return path.join(getUserBasePath(), '/pac.txt')
 }
 
+function loadPacLastModifiedTime (pacTxt) {
+  const matched = pacTxt.match(/(?<=! Last Modified: )[^\n]+/g)
+  if (matched && matched.length > 0) {
+    try {
+      return new Date(matched[0])
+    } catch (ignore) {
+      return null
+    }
+  }
+}
+
 // 保存 pac 内容到 `~/pac.txt` 文件中
 function savePacFile (pacTxt) {
   const pacFilePath = getTmpPacFilePath()
   fs.writeFileSync(pacFilePath, pacTxt)
   log.info('保存 pac.txt 文件成功:', pacFilePath)
+
+  // 尝试解析和修改 pac.txt 文件时间
+  const lastModifiedTime = loadPacLastModifiedTime(pacTxt)
+  if (lastModifiedTime) {
+    fs.stat(pacFilePath, (err, stats) => {
+      if (err) {
+        log.error('修改 pac.txt 文件时间失败:', err)
+        return
+      }
+
+      // 修改文件的访问时间和修改时间为当前时间
+      fs.utimes(pacFilePath, lastModifiedTime, lastModifiedTime, (utimesErr) => {
+        if (utimesErr) {
+          log.error('修改 pac.txt 文件时间失败:', utimesErr)
+        } else {
+          log.info(`${pacFilePath} 文件时间已被修改其最近更新时间 '${lastModifiedTime}'`)
+        }
+      })
+    })
+  }
+
   return pacFilePath
 }
 
 // 异步下载 pac.txt ，避免影响代理服务的启动速度
 async function downloadPacAsync (pacConfig) {
   const remotePacFileUrl = pacConfig.pacFileUpdateUrl
-  log.info('开始下载远程 pac.txt from:', remotePacFileUrl)
+  log.info('开始下载远程 pac.txt 文件:', remotePacFileUrl)
   request(remotePacFileUrl, (error, response, body) => {
     if (error) {
       log.error('下载远程 pac.txt 文件失败, error:', error, ', response:', response, ', body:', body)
