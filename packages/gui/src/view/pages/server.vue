@@ -106,7 +106,7 @@
         </a-tab-pane>
         <a-tab-pane tab="IP预设置" key="5">
           <div style="height:100%;display:flex;flex-direction:column">
-            <div>提示：<span class="tip">IP预设置</span>功能，优先级高于 <span class="tip">DNS设置</span>；以下配置可以使用通配符或正则</div>
+            <div>提示：<span class="tip">IP预设置</span>功能，优先级高于 <span class="tip">DNS设置</span>；域名配置可使用通配符或正则</div>
             <vue-json-editor style="flex-grow:1;min-height:300px;margin-top:10px;" ref="editor" v-model="config.server.preSetIpList" mode="code"
                              :show-btns="false" :expandedOnStart="true"></vue-json-editor>
           </div>
