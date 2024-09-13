@@ -59,7 +59,7 @@
           <a-checkbox v-model="config.plugin.node.startup.variables">
             自动设置，启动npm加速开关时将会设置如下环境变量
           </a-checkbox>
-          <div class="form-help">某些库需要自己设置镜像变量，才能下载，比如：electron</div>
+          <div class="form-help">某些库需要自己设置镜像变量，才能下载，比如：<code>electron</code></div>
           <a-row :gutter="10" style="margin-top: 2px" v-for="(item,index) of npmVariables" :key='index'>
             <a-col :span="10">
               <a-input v-model="item.key" :title="item.key" readOnly></a-input>
