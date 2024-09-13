@@ -54,6 +54,10 @@ ol{
     font-style: normal;
     font-weight: bold;
   }
+
+  code {
+    padding: 0 .4em;
+  }
 }
 
 code {
@@ -62,9 +66,11 @@ code {
   border-radius: 6px;
   color: #888;
   background-color: #f1f1f1;
-  margin-left: 2px;
-  margin-right: 2px;
+  margin-left: .2em;
+  margin-right: .2em;
   padding: .2em .4em;
+  white-space: break-spaces;
+  display: inline-block;
 }
 
 .ace_search_form .ace_searchbtn{

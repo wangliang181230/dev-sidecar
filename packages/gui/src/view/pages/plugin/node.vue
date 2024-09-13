@@ -40,7 +40,7 @@
               taobao镜像
             </a-radio-button>
           </a-radio-group>
-          <div class="form-help">设置后立即生效，即使关闭ds也会继续保持</div>
+          <div class="form-help">设置后立即生效，即使关闭 ds 也会继续保持</div>
         </a-form-item>
 
         <a-form-item label="yarn仓库镜像" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -52,7 +52,7 @@
               taobao镜像
             </a-radio-button>
           </a-radio-group>
-          <div class="form-help">设置后立即生效，即使关闭ds也会继续保持</div>
+          <div class="form-help">设置后立即生效，即使关闭 ds 也会继续保持</div>
         </a-form-item>
 
         <a-form-item label="镜像变量设置" :label-col="labelCol" :wrapper-col="wrapperCol">
