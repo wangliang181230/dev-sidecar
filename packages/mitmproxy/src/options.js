@@ -17,6 +17,25 @@ function buildIntercepts (intercepts) {
   return intercepts
 }
 
+// 从拦截器配置中，获取exclusions字段，返回数组类型
+function getExclusionArray (exclusions) {
+  let ret = null
+  if (Array.isArray(exclusions)) {
+    if (exclusions.length > 0) {
+      ret = exclusions
+    }
+  } else if (lodash.isObject(exclusions)) {
+    ret = []
+    for (const exclusion in exclusions) {
+      ret.push(exclusion)
+    }
+    if (ret.length === 0) {
+      return null
+    }
+  }
+  return ret
+}
+
 module.exports = (serverConfig) => {
   const intercepts = matchUtil.domainMapRegexply(buildIntercepts(serverConfig.intercepts))
   const whiteList = matchUtil.domainMapRegexply(serverConfig.whiteList)
@@ -122,15 +141,9 @@ module.exports = (serverConfig) => {
         if (interceptOpt.exclusions) {
           let isExcluded = false
           try {
-            if (Array.isArray(interceptOpt.exclusions) && interceptOpt.exclusions.length > 0) {
-              for (const exclusion of interceptOpt.exclusions) {
-                if (matchUtil.isMatched(rOptions.path, exclusion)) {
-                  log.debug(`拦截器配置排除了path：${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}, exclusion: '${exclusion}', interceptOpt:`, interceptOpt)
-                  isExcluded = true
-                }
-              }
-            } else if (lodash.isObject(interceptOpt.exclusions)) {
-              for (const exclusion in interceptOpt.exclusions) {
+            const exclusions = getExclusionArray(interceptOpt.exclusions)
+            if (exclusions) {
+              for (const exclusion of exclusions) {
                 if (matchUtil.isMatched(rOptions.path, exclusion)) {
                   log.debug(`拦截器配置排除了path：${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}, exclusion: '${exclusion}', interceptOpt:`, interceptOpt)
                   isExcluded = true
