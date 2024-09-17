@@ -17,7 +17,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
     let proxyReq
 
     const rOptions = commonUtil.getOptionsFromRequest(req, ssl, externalProxy, setting)
-    const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
+    let url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
 
     if (rOptions.agent) {
       rOptions.agent.options.rejectUnauthorized = setting.verifySsl
@@ -110,6 +110,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
         onFree()
 
         function onFree () {
+          url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
           const start = new Date()
 
           if (url.indexOf('github') > -1 ||
