@@ -344,7 +344,7 @@ npm config delete https-proxy
 
 推荐安装 nodejs `16.x.x` 的版本，其他版本未做测试
 
-#### 2）安装 `lerna` 和 `phantomjs`
+#### 2）安装 `lerna`
 
 运行如下命令即可安装所需依赖：
 > 注：lerna指定为6.x版本，更高版本会导致打包失败（不兼容导致）
@@ -359,15 +359,19 @@ cnpm install lerna@6 -g
 
 运行如下命令即可开发模式启动
 ```shell
+# 拉取代码
 git clone https://github.com/docmirror/dev-sidecar
 
 cd dev-sidecar 
 
 # 注意不要使用 `npm install` 来安装依赖，因为 `lerna bootstrap` 会自动安装依赖
 lerna bootstrap
+# 如果 `lerna bootstrap` 有报错，可以尝试执行如下两行命令，用yarn替换掉npm：
+#cnpm install yarn
+#lerna bootstrap --npm-client=yarn
 
+# 运行DevSidecar
 cd packages/gui
-
 npm run electron
 
 ```
