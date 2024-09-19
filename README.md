@@ -342,7 +342,7 @@ npm config delete https-proxy
 
 #### 1）安装 `nodejs`
 
-推荐安装 nodejs 16.x版本，其他版本未做测试
+推荐安装 nodejs `16.x.x` 的版本，其他版本未做测试
 
 #### 2）安装 `lerna` 和 `phantomjs`
 
@@ -352,8 +352,6 @@ npm config delete https-proxy
 npm install cnpm -g --registry=https://registry.npm.taobao.org
 
 cnpm install lerna@6 -g
-
-cnpm install phantomjs -g
 
 ```
 
