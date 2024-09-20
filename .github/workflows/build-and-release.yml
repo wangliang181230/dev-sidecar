@@ -10,20 +10,14 @@ on:
 jobs:
   # job 1
   build-and-upload:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
         os: [
-          windows-latest,
-          ubuntu-latest,
-          macos-latest
-        ]
-        node: [
-          16
-        ]
-        lerna: [
-          6
+          windows,
+          ubuntu,
+          macos
         ]
     steps:
       - name: "Checkout"
@@ -32,7 +26,7 @@ jobs:
       - name: "Setup Node.js environment"
         uses: actions/setup-node@v4.0.3
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 16
           registry-url: https://npm.pkg.github.com/
 
       - name: "Get package info"
@@ -48,12 +42,12 @@ jobs:
           echo "github.ref = ${{ github.ref }}";
           echo "github.ref_name = ${{ github.ref_name }}";
 
-      - name: "npm install lerna/yarn -g"
+      - name: "npm install lerna@6/yarn -g"
         run: |
           echo "======================================================================";
-          echo "npm install lerna@${{ matrix.lerna }} -g";
+          echo "npm install lerna@6 -g";
           echo "--------------------";
-          npm install lerna@${{ matrix.lerna }} -g;
+          npm install lerna@6 -g;
 
           echo "======================================================================";
           echo "npm install yarn -g";
@@ -112,30 +106,30 @@ jobs:
           cd ../../../;
           dir || ls -lah;
 
-      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.exe"
+      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.exe - Windows"
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: ${{ matrix.os == 'windows' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.exe
           name: "DevSidecar-${{ steps.package-info.outputs.version }}.exe"
           if-no-files-found: error
-      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.deb"
+      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.deb - Ubuntu"
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.deb
           name: "DevSidecar-${{ steps.package-info.outputs.version }}.deb"
           if-no-files-found: error
-      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.AppImage"
+      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.AppImage - Ubuntu"
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.AppImage
           name: "DevSidecar-${{ steps.package-info.outputs.version }}.AppImage"
           if-no-files-found: error
-      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.dmg "
+      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.dmg - Mac"
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ matrix.os == 'macos-11' || matrix.os == 'macos-12' || matrix.os == 'macos-13' || matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.dmg
           name: "DevSidecar-${{ steps.package-info.outputs.version }}.dmg"
@@ -159,22 +153,22 @@ jobs:
       - name: "Make 'release' dir"
         run: mkdir release
 
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}.exe"
+      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}.exe - Windows"
         uses: actions/download-artifact@v4.1.8
         with:
           name: DevSidecar-${{ steps.package-info.outputs.version }}.exe
           path: release
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}.deb"
+      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}.deb - Ubuntu"
         uses: actions/download-artifact@v4.1.8
         with:
           name: DevSidecar-${{ steps.package-info.outputs.version }}.deb
           path: release
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}.AppImage"
+      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}.AppImage - Ubuntu"
         uses: actions/download-artifact@v4.1.8
         with:
           name: DevSidecar-${{ steps.package-info.outputs.version }}.AppImage
           path: release
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}.dmg"
+      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}.dmg - Mac"
         uses: actions/download-artifact@v4.1.8
         with:
           name: DevSidecar-${{ steps.package-info.outputs.version }}.dmg
