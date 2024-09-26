@@ -15,9 +15,9 @@ function getRootCaKeyPath () {
 
 module.exports = {
   app: {
-    mode: 'ow',
+    mode: 'default',
     autoStart: {
-      enabled: true
+      enabled: false
     },
     remoteConfig: {
       enabled: true,
@@ -30,13 +30,13 @@ module.exports = {
     showHideShortcut: 'Alt + S', // 显示/隐藏窗口快捷键
     windowSize: { width: 900, height: 750 }, // 启动时，窗口的尺寸
     theme: 'dark', // 主题：light=亮色, dark=暗色
-    autoChecked: false, // 是否自动检查更新
+    autoChecked: true, // 是否自动检查更新
     skipPreRelease: true, // 是否忽略预发布版本
     dock: {
       hideWhenWinClose: false
     },
-    closeStrategy: 2,
-    showShutdownTip: false
+    closeStrategy: 0,
+    showShutdownTip: true
   },
   server: {
     enabled: true,
