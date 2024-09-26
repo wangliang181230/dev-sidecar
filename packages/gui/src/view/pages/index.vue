@@ -83,7 +83,7 @@
         </div>
         <div class="right"></div>
       </div>
-      <div class="star" v-if="setting.development == null || !setting.development ">
+      <div class="star" v-if="setting.development == null || !setting.development">
         <div class="donate" @click="donateModal=true">
           <a-icon type="like" theme="outlined"/>
           捐赠
