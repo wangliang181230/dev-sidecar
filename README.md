@@ -218,9 +218,9 @@ const intercepts = {
 ```js
  dns: {
     mapping: {
-      'api.github.com': 'usa', // "解决push的时候需要输入密码的问题",
-      'gist.github.com': 'usa' // 解决gist无法访问的问题
-      '*.githubusercontent.com': 'usa' // 解决github头像经常下载不到的问题
+      'api.github.com': 'cloudflare', // "解决push的时候需要输入密码的问题",
+      'gist.github.com': 'cloudflare' // 解决gist无法访问的问题
+      '*.githubusercontent.com': 'cloudflare' // 解决github头像经常下载不到的问题
     }
   }
 ```
@@ -239,7 +239,7 @@ const intercepts = {
 #### 1）Mac系统使用时，首页的系统代理开关无法打开
 出现这个问题可能是没有开启系统代理命令的执行权限   
 ```
-networksetup -setwebproxy 'WiFi' 127.0.0.1 1181 
+networksetup -setwebproxy 'WiFi' 127.0.0.1 31181 
 #看是否有如下错误提示
 ** Error: Command requires admin privileges.
 ```
@@ -319,12 +319,13 @@ Error: www.github.com:443, 代理请求超时
 如果你在卸载应用前，没有正常退出app，就有可能无法上网。请按如下步骤操作恢复您的网络：
 
 1、关闭系统代理设置，参见：[手动关闭系统代理设置](./doc/recover.md)   
-2、执行下面的命令关闭git的代理设置(如果你开启过git.ext的开关)
+2、执行下面的命令关闭git的代理设置（如果你开启过 `Git.exe代理` 的开关）
 ```shell
 git config --global --unset http.proxy
 git config --global --unset https.proxy
+git config --global --unset http.sslVerify
 ```
-3、执行下面的命令关闭npm的代理设置(如果你开启过npm加速的开关)
+3、执行下面的命令关闭npm的代理设置（如果你开启过npm加速的开关）
 ```shell
 npm config delete proxy
 npm config delete https-proxy
@@ -341,18 +342,16 @@ npm config delete https-proxy
 
 #### 1）安装 `nodejs`
 
-推荐安装 nodejs 16.x版本，其他版本未做测试
+推荐安装 nodejs `16.x.x` 的版本，其他版本未做测试
 
-#### 2）安装 `lerna` 和 `phantomjs`
+#### 2）安装 `lerna`
 
 运行如下命令即可安装所需依赖：
 > 注：lerna指定为6.x版本，更高版本会导致打包失败（不兼容导致）
 ```shell
-npm install cnpm -g --registry=https://registry.npm.taobao.org
+npm install -g cnpm --registry=https://registry.npmmirror.com
 
-cnpm install lerna@6 -g
-
-cnpm install phantomjs -g
+cnpm install -g lerna@6
 
 ```
 
@@ -360,15 +359,19 @@ cnpm install phantomjs -g
 
 运行如下命令即可开发模式启动
 ```shell
+# 拉取代码
 git clone https://github.com/docmirror/dev-sidecar
 
 cd dev-sidecar 
 
 # 注意不要使用 `npm install` 来安装依赖，因为 `lerna bootstrap` 会自动安装依赖
 lerna bootstrap
+# 如果 `lerna bootstrap` 有报错，可以尝试执行如下两行命令，用yarn替换掉npm：
+#cnpm install -g yarn
+#lerna bootstrap --npm-client=yarn
 
+# 运行DevSidecar
 cd packages/gui
-
 npm run electron
 
 ```
@@ -385,15 +388,14 @@ npm run electron:build
 
 
 ## 九、联系作者
-欢迎bug反馈，需求建议，技术交流等（请备注dev-sidecar，或简称DS）
+欢迎bug反馈，需求建议，技术交流等
 
-1、 加群
-<div style="display: flex; justify-content:space-around;">
-<img height="230px" src="./doc/qq_group.png">
-</div>
-
-
-
+1、 加群（请备注dev-sidecar，或简称DS）
+- QQ 1群：[390691483](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=v-T8bQM_DGhUSl4mqZJjKVm_1UtMzozL&authKey=n8wkpinS7tORlhSfJ%2FBe%2BQLbXq7h2KCn8nV6K7OExYKtDdks660%2FnrwcYIPsAnRg&noverify=0&group_code=390691483)，人数：487 / 500
+- QQ 2群：[667666069](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=n4nksr4sji93vZtD5e8YEHRT6qbh6VyQ&authKey=XKBZnzmoiJrAFyOT4V%2BCrgX5c13ds59b84g%2FVRhXAIQd%2FlAiilsuwDRGWJct%2B570&noverify=0&group_code=667666069)，人数：441 / 500
+- QQ 3群：419807815，人数：500 / 500（满）
+- QQ 4群：438148299，人数：200 / 200（满）
+- QQ 5群：[767622917](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=nAWi_Rxj7mM4Unp5LMiatmUWhGimtbcB&authKey=aswmlWGjbt3GIWXtvjB2GJqqAKuv7hWjk6UBs3MTb%2Biyvr%2Fsbb1kA9CjF6sK7Hgg&noverify=0&group_code=767622917)，人数：002 / 200（new）
 
 
 ## 十、求star

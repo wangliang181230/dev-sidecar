@@ -18,20 +18,28 @@ const getDefaultConfigBasePath = function () {
   return get().server.setting.userBasePath
 }
 
-function _getRemoteSavePath (prefix = '') {
+function _getRemoteSavePath (suffix = '') {
   const dir = getDefaultConfigBasePath()
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
   }
-  return path.join(dir, prefix + 'remote_config.json5')
+  return path.join(dir, `/remote_config${suffix}.json5`)
 }
 
 function _getConfigPath () {
   const dir = getDefaultConfigBasePath()
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
+  } else {
+    // 兼容1.7.3及以下版本的配置文件处理逻辑
+    const newFilePath = path.join(dir, '/config.json')
+    const oldFilePath = path.join(dir, '/config.json5')
+    if (!fs.existsSync(newFilePath) && fs.existsSync(oldFilePath)) {
+      return oldFilePath // 如果新文件不存在，且旧文件存在，则返回旧文件路径
+    }
+    return newFilePath
   }
-  return path.join(dir, 'config.json')
+  return path.join(dir, '/config.json')
 }
 
 let timer
@@ -51,15 +59,39 @@ const configApi = {
     await download()
     timer = setInterval(download, 24 * 60 * 60 * 1000) // 1天
   },
-  downloadRemoteConfig () {
+  async downloadRemoteConfig () {
+    if (get().app.remoteConfig.enabled !== true) {
+      // 删除保存的远程配置文件
+      configApi.deleteRemoteConfigFile()
+      configApi.deleteRemoteConfigFile('_personal')
+      return
+    }
+
+    const remoteConfig = get().app.remoteConfig
+    await configApi.doDownloadCommonRemoteConfig(remoteConfig.url)
+    await configApi.doDownloadCommonRemoteConfig(remoteConfig.personalUrl, '_personal')
+  },
+  doDownloadCommonRemoteConfig (remoteConfigUrl, suffix = '') {
     if (get().app.remoteConfig.enabled !== true) {
       return
     }
-    const remoteConfigUrl = get().app.remoteConfig.url
+    if (!remoteConfigUrl) {
+      // 删除保存的远程配置文件
+      configApi.deleteRemoteConfigFile(suffix)
+      return
+    }
     // eslint-disable-next-line handle-callback-err
     return new Promise((resolve, reject) => {
       log.info('开始下载远程配置:', remoteConfigUrl)
-      request(remoteConfigUrl, (error, response, body) => {
+
+      const headers = {
+        'Cache-Control': 'no-cache', // 禁止使用缓存
+        Pragma: 'no-cache' // 禁止使用缓存
+      }
+      if (remoteConfigUrl.startsWith('https://raw.githubusercontent.com/')) {
+        headers['Server-Name'] = 'baidu.com'
+      }
+      request(remoteConfigUrl, { headers }, (error, response, body) => {
         if (error) {
           log.error('下载远程配置失败, error:', error, ', response:', response, ', body:', body)
           reject(error)
@@ -84,7 +116,7 @@ const configApi = {
           }
 
           if (remoteConfig != null) {
-            const remoteSavePath = _getRemoteSavePath()
+            const remoteSavePath = _getRemoteSavePath(suffix)
             fs.writeFileSync(remoteSavePath, body)
             log.info('保存远程配置文件成功:', remoteSavePath)
           } else {
@@ -106,31 +138,31 @@ const configApi = {
       })
     })
   },
-  readRemoteConfig () {
-    if (get().app.remoteConfig.enabled !== true) {
-      return {}
+  deleteRemoteConfigFile (suffix = '') {
+    const remoteSavePath = _getRemoteSavePath(suffix)
+    if (fs.existsSync(remoteSavePath)) {
+      fs.unlinkSync(remoteSavePath)
+      log.info('删除远程配置文件成功:', remoteSavePath)
     }
-    const path = _getRemoteSavePath()
-    try {
-      if (fs.existsSync(path)) {
-        const file = fs.readFileSync(path)
-        log.info('读取远程配置文件成功:', path)
-        return jsonApi.parse(file.toString())
-      } else {
-        log.warn('远程配置文件不存在:', path)
-      }
-    } catch (e) {
-      log.error('读取远程配置文件失败:', path, ', error:', e)
-    }
-
-    return {}
   },
-  readRemoteConfigStr () {
+  readRemoteConfig (suffix = '') {
+    return jsonApi.parse(configApi.readRemoteConfigStr(suffix))
+  },
+  readRemoteConfigStr (suffix = '') {
     if (get().app.remoteConfig.enabled !== true) {
+      if (suffix === '_personal') {
+        if (!get().app.remoteConfig.personalUrl) {
+          return '{}'
+        }
+      } else if (suffix === '') {
+        if (!get().app.remoteConfig.url) {
+          return '{}'
+        }
+      }
       return '{}'
     }
     try {
-      const path = _getRemoteSavePath()
+      const path = _getRemoteSavePath(suffix)
       if (fs.existsSync(path)) {
         const file = fs.readFileSync(path)
         log.info('读取远程配置文件内容成功:', path)
@@ -154,7 +186,12 @@ const configApi = {
 
     // 如果开启了远程配置，则读取远程配置，合并到默认配置中
     if (get().app.remoteConfig.enabled === true) {
-      defConfig = mergeApi.doMerge(defConfig, configApi.readRemoteConfig())
+      if (get().app.remoteConfig.url) {
+        defConfig = mergeApi.doMerge(defConfig, configApi.readRemoteConfig())
+      }
+      if (get().app.remoteConfig.personalUrl) {
+        defConfig = mergeApi.doMerge(defConfig, configApi.readRemoteConfig('_personal'))
+      }
     }
 
     // 计算新配置与默认配置（启用远程配置时，含远程配置）的差异，并保存到 config.json 中
@@ -209,8 +246,28 @@ const configApi = {
     // 以用户配置作为基准配置，是为了保证用户配置的顺序在前
     const merged = newConfig != null ? lodash.cloneDeep(newConfig) : {}
 
-    mergeApi.doMerge(merged, defConfig) // 合并默认配置
-    mergeApi.doMerge(merged, configApi.readRemoteConfig()) // 合并远程配置
+    if (get().app.remoteConfig.enabled === true) {
+      let personalRemoteConfig = null
+      let shareRemoteConfig = null
+
+      if (get().app.remoteConfig.personalUrl) {
+        personalRemoteConfig = configApi.readRemoteConfig('_personal')
+        mergeApi.doMerge(merged, personalRemoteConfig) // 先合并一次个人远程配置，使配置顺序在前
+      }
+      if (get().app.remoteConfig.url) {
+        shareRemoteConfig = configApi.readRemoteConfig()
+        mergeApi.doMerge(merged, shareRemoteConfig) // 先合并一次共享远程配置，使配置顺序在前
+      }
+      mergeApi.doMerge(merged, defConfig) // 合并默认配置，顺序排在最后
+      if (get().app.remoteConfig.url) {
+        mergeApi.doMerge(merged, shareRemoteConfig) // 再合并一次共享远程配置，使配置生效
+      }
+      if (get().app.remoteConfig.personalUrl) {
+        mergeApi.doMerge(merged, personalRemoteConfig) // 再合并一次个人远程配置，使配置生效
+      }
+    } else {
+      mergeApi.doMerge(merged, defConfig) // 合并默认配置
+    }
     if (newConfig != null) {
       mergeApi.doMerge(merged, newConfig) // 再合并一次用户配置，使用户配置重新生效
     }
@@ -231,23 +288,26 @@ const configApi = {
     const configPath = _getConfigPath()
     if (fs.existsSync(configPath)) {
       // 读取 config.json 文件内容
-      const fileStr = fs.readFileSync(configPath).toString().replace(/\s/g, '')
+      const fileOriginalStr = fs.readFileSync(configPath).toString()
 
       // 判断文件内容是否为空或空配置
-      if (fileStr === '' || fileStr === '{}') {
-        fs.rmSync(configPath)
+      const fileStr = fileOriginalStr.replace(/\s/g, '')
+      if (fileStr.length < 5) {
+        fs.writeFileSync(configPath, '{}')
         return false // config.json 内容为空，或为空json
       }
 
       // 备份用户自定义配置文件
-      fs.renameSync(configPath, configPath + '.bak' + new Date().getTime() + '.json')
+      fs.writeFileSync(`${configPath}.${Date.now()}.bak.json`, fileOriginalStr)
+      // 原配置文件内容设为空
+      fs.writeFileSync(configPath, '{}')
 
       // 重新加载配置
       configApi.load(null)
 
       return true // 删除并重新加载配置成功
     } else {
-      return false // config.json 文件不存在或内容为配置
+      return false // config.json 文件不存在
     }
   },
   resetDefault (key) {

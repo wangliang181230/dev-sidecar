@@ -60,7 +60,7 @@ module.exports = {
       setting
     )
 
-    const upgradeHandler = createUpgradeHandler()
+    const upgradeHandler = createUpgradeHandler(setting)
 
     const fakeServersCenter = createFakeServerCenter({
       caCertPath,
@@ -80,7 +80,7 @@ module.exports = {
 
     const server = new http.Server()
     server.listen(port, host, () => {
-      log.info(`dev-sidecar启动端口: ${port}`)
+      log.info(`dev-sidecar启动端口: ${host}:${port}`)
       server.on('error', (e) => {
         log.error('server error:', e)
       })

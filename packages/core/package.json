@@ -1,6 +1,6 @@
 {
   "name": "@docmirror/dev-sidecar",
-  "version": "1.8.0",
+  "version": "1.8.5",
   "description": "给开发者的加速代理工具",
   "main": "src/index.js",
   "keywords": [
@@ -17,7 +17,7 @@
     "test": "mocha"
   },
   "dependencies": {
-    "@docmirror/mitmproxy": "^1.8.0",
+    "@docmirror/mitmproxy": "^1.8.5",
     "agentkeepalive": "^2.1.1",
     "babel-preset-es2020": "^1.0.2",
     "charset": "^1.0.0",
@@ -47,7 +47,7 @@
     "winreg": "^1.2.4"
   },
   "devDependencies": {
-    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-eslint": "^4.5.0",
     "@vue/eslint-config-standard": "^5.1.2",
     "babel-eslint": "^10.1.0",
     "chai": "^4.3.4",

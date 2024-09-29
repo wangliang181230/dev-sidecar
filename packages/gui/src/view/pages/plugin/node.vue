@@ -20,6 +20,10 @@
             当前未启动
           </a-tag>
         </a-form-item>
+        <a-form-item label="npm命令名" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-input v-model="config.plugin.node.setting.command"></a-input>
+          <div class="form-help">如果你的npm命令改成了其他名字，或者想设置绿色版npm程序路径，可在此处修改</div>
+        </a-form-item>
         <a-form-item label="SSL校验" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-checkbox v-model="config.plugin.node.setting['strict-ssl']">
             关闭strict-ssl
@@ -29,42 +33,42 @@
         <a-form-item label="npm仓库镜像" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-radio-group v-model="config.plugin.node.setting.registry" @change="onSwitchRegistry"
                          default-value="https://registry.npmjs.org" button-style="solid">
-            <a-radio-button value="https://registry.npmjs.org">
+            <a-radio-button value="https://registry.npmjs.org" title="https://registry.npmjs.org">
               npmjs原生
             </a-radio-button>
-            <a-radio-button value="https://registry.npmmirror.com">
+            <a-radio-button value="https://registry.npmmirror.com" title="https://registry.npmmirror.com">
               taobao镜像
             </a-radio-button>
           </a-radio-group>
-          <div class="form-help">设置后立即生效，即使关闭ds也会继续保持</div>
+          <div class="form-help">设置后立即生效，即使关闭 ds 也会继续保持</div>
         </a-form-item>
 
         <a-form-item label="yarn仓库镜像" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-radio-group v-model="config.plugin.node.setting.yarnRegistry" :default-value="null"  @change="onSwitchYarnRegistry" button-style="solid">
-            <a-radio-button :value="null">
+          <a-radio-group v-model="config.plugin.node.setting.yarnRegistry" :default-value="'null'" @change="onSwitchYarnRegistry" button-style="solid">
+            <a-radio-button :value="'null'" title="https://registry.yarnpkg.com">
               yarn原生
             </a-radio-button>
-            <a-radio-button value="https://registry.npmmirror.com">
+            <a-radio-button value="https://registry.npmmirror.com" title="https://registry.npmmirror.com">
               taobao镜像
             </a-radio-button>
           </a-radio-group>
-          <div class="form-help">设置后立即生效，即使关闭ds也会继续保持</div>
+          <div class="form-help">设置后立即生效，即使关闭 ds 也会继续保持</div>
         </a-form-item>
 
         <a-form-item label="镜像变量设置" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-checkbox v-model="config.plugin.node.startup.variables">
             自动设置，启动npm加速开关时将会设置如下环境变量
           </a-checkbox>
-          <div class="form-help">某些库需要自己设置镜像变量，才能下载，比如：electron</div>
-          <a-row :gutter="10" style="margin-top: 10px" v-for="(item,index) of npmVariables" :key='index'>
+          <div class="form-help">某些库需要自己设置镜像变量，才能下载，比如：<code>electron</code></div>
+          <a-row :gutter="10" style="margin-top: 2px" v-for="(item,index) of npmVariables" :key='index'>
             <a-col :span="10">
-              <a-input :disabled="item.key === false" v-model="item.key"></a-input>
+              <a-input v-model="item.key" :title="item.key" readOnly></a-input>
             </a-col>
             <a-col :span="10">
-              <a-input :disabled="item.value === false" v-model="item.value"></a-input>
+              <a-input v-model="item.value" :title="item.value" readOnly></a-input>
             </a-col>
             <a-col :span="4">
-              <a-icon v-if="item.exists&& item.hadSet" title="已设置" style="color:green" type="check"/>
+              <a-icon v-if="item.exists && item.hadSet" title="已设置" style="color:green" type="check"/>
               <a-icon v-else title="还未设置" style="color:red" type="exclamation-circle"/>
             </a-col>
           </a-row>

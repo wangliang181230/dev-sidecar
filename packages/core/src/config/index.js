@@ -6,31 +6,37 @@ function getUserBasePath () {
 }
 
 function getRootCaCertPath () {
-  return getUserBasePath() + '/dev-sidecar.ca.crt'
+  return path.join(getUserBasePath(), '/dev-sidecar.ca.crt')
 }
 
 function getRootCaKeyPath () {
-  return getUserBasePath() + '/dev-sidecar.ca.key.pem'
+  return path.join(getUserBasePath(), '/dev-sidecar.ca.key.pem')
 }
 
 module.exports = {
   app: {
-    mode: 'ow',
+    mode: 'default',
     autoStart: {
-      enabled: true
+      enabled: false
     },
     remoteConfig: {
       enabled: true,
-      url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/remote_config/packages/core/src/config/remote_config_myself.json'
+      // 共享远程配置地址
+      url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/docmirror/packages/core/src/config/remote_config.json5',
+      // 个人远程配置地址
+      personalUrl: 'https://gitee.com/wangliang181230/dev-sidecar/raw/remote_config/packages/core/src/config/remote_config_myself.json'
     },
+    startShowWindow: true, // 启动时是否打开窗口：true=打开窗口, false=隐藏窗口
+    showHideShortcut: 'Alt + S', // 显示/隐藏窗口快捷键
+    windowSize: { width: 900, height: 750 }, // 启动时，窗口的尺寸
     theme: 'dark', // 主题：light=亮色, dark=暗色
-    autoChecked: false, // 是否自动检查更新
+    autoChecked: true, // 是否自动检查更新
     skipPreRelease: true, // 是否忽略预发布版本
     dock: {
       hideWhenWinClose: false
     },
-    closeStrategy: 2,
-    showShutdownTip: false
+    closeStrategy: 0,
+    showShutdownTip: true
   },
   server: {
     enabled: true,
@@ -47,6 +53,18 @@ module.exports = {
       rootCaFile: {
         certPath: getRootCaCertPath(),
         keyPath: getRootCaKeyPath()
+      },
+
+      // 默认超时时间配置
+      defaultTimeout: 20000, // 请求超时时间
+      defaultKeepAliveTimeout: 30000, // 连接超时时间
+
+      // 指定域名超时时间配置
+      timeoutMapping: {
+        'github.com': {
+          timeout: 20000,
+          keepAliveTimeout: 30000
+        }
       }
     },
     intercept: {
@@ -59,9 +77,9 @@ module.exports = {
         },
         '^(/[\\w-.]+){2,}/?(\\?.*)?$': {
           // 篡改猴插件地址，以下是高速镜像地址
-          tampermonkeyScript: 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/docmirror/dev-sidecar/scripts/tampermonkey.js',
+          tampermonkeyScript: 'https://gitee.com/wangliang181230/dev-sidecar/raw/scripts/tampermonkey.js',
           // Github油猴脚本地址，以下是高速镜像地址
-          script: 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/docmirror/dev-sidecar/scripts/GithubEnhanced-High-Speed-Download.user.js',
+          script: 'https://gitee.com/wangliang181230/dev-sidecar/raw/scripts/GithubEnhanced-High-Speed-Download.user.js',
           remark: '注：上面所使用的脚本地址，为高速镜像地址。',
           desc: '油猴脚本：高速下载 Git Clone/SSH、Release、Raw、Code(ZIP) 等文件 (公益加速)、项目列表单文件快捷下载、添加 git clone 命令'
         },
@@ -83,17 +101,19 @@ module.exports = {
         },
         '^(/[^/]+){2}/pull/\\d+/open_with_menu.*$': {
           cacheDays: 7,
-          desc: 'PR详情页：标题右边那个Code按钮的HTML代理请求地址，感觉上应该可以缓存。暂时先设置为缓存7天'
+          desc: 'PR详情页：标题右边那个Code按钮的HTML代码请求地址，感觉上应该可以缓存。暂时先设置为缓存7天'
         },
         '^((/[^/]+){2,})/raw((/[^/]+)+\\.(jpg|jpeg|png|gif))(\\?.*)?$': {
           // eslint-disable-next-line no-template-curly-in-string
           proxy: 'https://raw.githubusercontent.com${m[1]}${m[3]}',
+          sni: 'baidu.com',
           cacheDays: 7,
           desc: '仓库内图片，重定向改为代理，并缓存7天。'
         },
         '^((/[^/]+){2,})/raw((/[^/]+)+\\.js)(\\?.*)?$': {
           // eslint-disable-next-line no-template-curly-in-string
           proxy: 'https://raw.githubusercontent.com${m[1]}${m[3]}',
+          sni: 'baidu.com',
           responseReplace: { headers: { 'content-type': 'application/javascript; charset=utf-8' } },
           desc: '仓库内脚本，重定向改为代理，并设置响应头Content-Type。作用：方便script拦截器直接使用，避免引起跨域问题和脚本内容限制问题。'
         }
@@ -260,6 +280,72 @@ module.exports = {
         }
       }
     },
+    // 预设置IP列表
+    preSetIpList: {
+      'github.com': [
+        '4.237.22.38',
+        '20.26.156.215',
+        '20.27.177.113',
+        '20.87.245.0',
+        '20.200.245.247',
+        '20.201.28.151',
+        '20.205.243.166',
+        '20.248.137.48',
+        '140.82.113.3',
+        '140.82.114.4',
+        '140.82.116.3',
+        '140.82.116.4',
+        '140.82.121.3',
+        '140.82.121.4'
+      ],
+      'api.github.com': [
+        '20.26.156.210',
+        '20.27.177.116',
+        '20.87.245.6',
+        '20.200.245.245',
+        '20.201.28.148',
+        '20.205.243.168',
+        '20.248.137.49',
+        '140.82.112.5',
+        '140.82.113.6',
+        '140.82.116.6',
+        '140.82.121.6'
+      ],
+      'codeload.github.com': [
+        '20.26.156.216',
+        '20.27.177.114',
+        '20.87.245.7',
+        '20.200.245.246',
+        '20.201.28.149',
+        '20.205.243.165',
+        '20.248.137.55',
+        '140.82.113.9',
+        '140.82.114.10',
+        '140.82.116.10',
+        '140.82.121.9'
+      ],
+      '*.githubusercontent.com': [
+        '185.199.108.133',
+        '185.199.109.133',
+        '185.199.110.133',
+        '185.199.111.133'
+      ],
+      'github.githubassets.com': [
+        '185.199.108.154',
+        '185.199.109.154',
+        '185.199.110.154',
+        '185.199.111.154'
+      ],
+      'github.io': [
+        '185.199.108.153',
+        '185.199.109.153',
+        '185.199.110.153',
+        '185.199.111.153'
+      ],
+      'collector.github.com': [
+        '0.0.0.0'
+      ]
+    },
     whiteList: {
       '*.cn': true,
       'cn.*': true,
@@ -269,7 +355,8 @@ module.exports = {
       '*.microsoft.com': true,
       '*.alipay.com': true,
       '*.qq.com': true,
-      '*.baidu.com': true
+      '*.baidu.com': true,
+      '192.168.*': true
     },
     sniList: {
     //   'github.com': 'abaidu.com'
@@ -281,7 +368,7 @@ module.exports = {
           server: 'https://dns.alidns.com/dns-query',
           cacheSize: 1000
         },
-        usa: {
+        cloudflare: {
           type: 'https',
           server: 'https://1.1.1.1/dns-query',
           cacheSize: 1000
@@ -289,6 +376,11 @@ module.exports = {
         quad9: {
           type: 'https',
           server: 'https://9.9.9.9/dns-query',
+          cacheSize: 1000
+        },
+        safe360: {
+          type: 'https',
+          server: 'https://doh.360.cn/dns-query',
           cacheSize: 1000
         },
         rubyfish: {
@@ -320,7 +412,7 @@ module.exports = {
         enabled: true,
         interval: 300000,
         hostnameList: ['github.com'],
-        dnsProviders: ['usa', 'quad9', 'rubyfish']
+        dnsProviders: ['cloudflare', 'safe360', 'rubyfish']
       }
     }
   },

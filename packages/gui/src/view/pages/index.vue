@@ -57,10 +57,9 @@
           </div>
         </div>
         <div :span="12">
-          <a-form style="margin-top:20px" :label-col="{ span: 12 }" :wrapper-col="{ span: 12 }">
-
+          <a-form style="margin-top:20px" :label-col="{ span: 15 }" :wrapper-col="{ span: 9 }">
             <a-form-item v-for=" (item, key) in switchBtns" :key="key" :label="item.label">
-              <a-tooltip placement="topLeft" :title="item.tip">
+              <a-tooltip placement="topLeft">
                 <a-switch style="margin-left:10px" :loading="item.loading" :checked="item.status()" default-checked
                           @change="item.doClick">
                   <a-icon slot="checkedChildren" type="check"/>
@@ -76,7 +75,7 @@
 
     <setup-ca title="安装证书" :visible.sync="setupCa.visible" @setup="handleCaSetuped"></setup-ca>
     <div slot="footer">
-      <div class="star" v-if="setting && !setting.overwall">
+      <div class="star" v-if="!setting.overwall">
         <div class="donate">
           <a-tooltip placement="topLeft" title="彩蛋，点我">
             <span style="display: block;width:100px;height:50px;" @click="wantOW()"></span>
@@ -84,6 +83,27 @@
         </div>
         <div class="right"></div>
       </div>
+      <div class="star" v-if="setting.development == null || !setting.development">
+        <div class="donate" @click="donateModal=true">
+          <a-icon type="like" theme="outlined"/>
+          捐赠
+        </div>
+        <div class="right">
+          <div>如果它解决了你的问题，请不要吝啬你的star哟！点这里
+            <a-icon style="margin-right:10px;" type="arrow-right" theme="outlined"/>
+          </div>
+          <a @click="openExternal('https://github.com/docmirror/dev-sidecar')"><img alt="GitHub stars"
+                                                                                    src="https://img.shields.io/github/stars/docmirror/dev-sidecar?logo=github"></a>
+        </div>
+      </div>
+
+      <a-modal title="捐赠" v-if="setting.development == null || !setting.development" v-model="donateModal" width="550px" cancelText="不了" okText="果断支持" @ok="goDonate">
+        <div>* 本应用完全免费，如果觉得好用，可以给予捐赠。</div>
+        <div>* 开源项目持续发展离不开您的支持，感谢</div>
+        <div class="payQrcode">
+          <img height="200px" src="/pay.jpg"/>
+        </div>
+      </a-modal>
     </div>
   </ds-container>
 
@@ -102,7 +122,7 @@ export default {
   },
   computed: {
     _rootCaSetuped () {
-      if (this.setting && this.setting.rootCa) {
+      if (this.setting.rootCa) {
         return this.setting.rootCa.setuped === true
       }
       return false
@@ -127,7 +147,7 @@ export default {
       },
       info: {},
       newVersionDownloading: false,
-      setting: undefined,
+      setting: {},
       server: {
         key: '代理服务',
         loading: false,
@@ -200,7 +220,7 @@ export default {
     async doCheckRootCa () {
       const setting = await this.$api.setting.load()
       console.log('setting', setting)
-      this.setting = setting
+      this.setting = setting || {}
       if (this.setting.rootCa && (this.setting.rootCa.setuped || this.setting.rootCa.noTip)) {
         return
       }
@@ -399,6 +419,6 @@ export default {
 }
 
 div.ant-form-item {
-  margin-bottom: 10px;
+  margin-bottom: 9px;
 }
 </style>

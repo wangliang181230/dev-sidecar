@@ -1,6 +1,6 @@
 module.exports = {
   name: '梯子',
-  enabled: true, // 默认开启梯子（和master分支不同）
+  enabled: false, // 默认关闭梯子
   server: {},
   serverDefault: {
     'ow-prod.docmirror.top': {
@@ -36,15 +36,13 @@ module.exports = {
     '*.intlify.dev': true,
     '*.segment.io': true,
     '*.shields.io': true,
-    '*.jsdelivr.net': true,
-    '*.openai.com': true,
-    '*.chatgpt.com': true
+    '*.jsdelivr.net': true
   },
   pac: {
     enabled: true,
-    // update: [
-    //   'https://gitlab.com/gfwlist/gfwlist/raw/master/gfwlist.txt'
-    // ],
-    pacFilePath: './extra/pac/pac.txt'
+    autoUpdate: true,
+    pacFileUpdateUrl: 'https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt',
+    pacFileAbsolutePath: null, // 自定义 pac.txt 文件位置，可以是本地文件路径
+    pacFilePath: './extra/pac/pac.txt' // 内置 pac.txt 文件路径
   }
 }

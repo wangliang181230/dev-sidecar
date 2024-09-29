@@ -7,12 +7,12 @@
     </template>
 
     <div style="height: 100%" class="json-wrapper">
-
       <a-tabs
         default-active-key="1"
         tab-position="left"
         :style="{ height: '100%' }"
         v-if="config"
+        @change="handleTabChange"
       >
         <a-tab-pane tab="基本设置" key="1">
           <div style="padding-right:10px">
@@ -30,12 +30,13 @@
             </a-form-item>
             <a-form-item label="绑定IP" :label-col="labelCol" :wrapper-col="wrapperCol">
               <a-input v-model="config.server.host"/>
-              <div class="form-help">你可以设置0.0.0.0，让其他电脑可以使用此代理服务</div>
+              <div class="form-help">你可以设置为<code>0.0.0.0</code>，让其他电脑可以使用此代理服务</div>
             </a-form-item>
             <a-form-item label="代理端口" :label-col="labelCol" :wrapper-col="wrapperCol">
-              <a-input v-model="config.server.port"/>
+              <a-input-number v-model="config.server.port" :min="0" :max="65535"/>
               <div class="form-help">修改后需要重启应用</div>
             </a-form-item>
+            <hr/>
             <a-form-item label="全局校验SSL" :label-col="labelCol" :wrapper-col="wrapperCol">
               <a-checkbox v-model="config.server.setting.NODE_TLS_REJECT_UNAUTHORIZED">
                 NODE_TLS_REJECT_UNAUTHORIZED
@@ -48,40 +49,55 @@
               </a-checkbox>
               <div class="form-help">如果目标网站证书有问题，但你想强行访问，可以临时关闭此项</div>
             </a-form-item>
-            <a-form-item label="根证书：" :label-col="labelCol" :wrapper-col="wrapperCol">
+            <a-form-item label="根证书" :label-col="labelCol" :wrapper-col="wrapperCol">
               <a-input-search addon-before="Cert" enter-button="选择" @search="onCrtSelect"
-                              v-model="config.server.setting.rootCaFile.certPath"/>
+                              v-model="config.server.setting.rootCaFile.certPath"
+                              :title="config.server.setting.rootCaFile.certPath"/>
               <a-input-search addon-before="Key" enter-button="选择" @search="onKeySelect"
-                              v-model="config.server.setting.rootCaFile.keyPath"/>
+                              v-model="config.server.setting.rootCaFile.keyPath"
+                              :title="config.server.setting.rootCaFile.keyPath"/>
             </a-form-item>
+            <hr/>
             <a-form-item label="启用拦截" :label-col="labelCol" :wrapper-col="wrapperCol">
                 <a-checkbox v-model="config.server.intercept.enabled">
                   启用拦截
                 </a-checkbox>
-              <div class="form-help">关闭拦截，且关闭功能增强的话，就不需要安装根证书，退化为安全模式</div>
+              <div class="form-help">关闭拦截，且关闭功能增强时，就不需要安装根证书，退化为安全模式</div>
             </a-form-item>
             <a-form-item label="启用脚本" :label-col="labelCol" :wrapper-col="wrapperCol">
                 <a-checkbox v-model="config.server.setting.script.enabled">
                   允许插入并运行脚本
                 </a-checkbox>
-              <div class="form-help">关闭后，github的clone加速链接复制也将关闭</div>
+              <div class="form-help">关闭后，<code>Github油猴脚本</code>也将关闭</div>
             </a-form-item>
           </div>
         </a-tab-pane>
         <a-tab-pane tab="拦截设置" key="2">
-          <vue-json-editor style="height:100%;" ref="editor" v-model="config.server.intercepts" mode="code"
+          <vue-json-editor style="height:100%" ref="editor" v-model="config.server.intercepts" mode="code"
                            :show-btns="false" :expandedOnStart="true"></vue-json-editor>
         </a-tab-pane>
-        <a-tab-pane tab="域名白名单" key="3">
+        <a-tab-pane tab="超时时间设置" key="3">
+          <div style="height:100%;display:flex;flex-direction:column;padding-right:10px">
+            <a-form-item label="默认超时时间" :label-col="labelCol" :wrapper-col="wrapperCol">
+              请求：<a-input-number v-model="config.server.setting.defaultTimeout" :step="1000" :min="1000"/> ms，对应<code>timeout</code>配置<br/>
+              连接：<a-input-number v-model="config.server.setting.defaultKeepAliveTimeout" :step="1000" :min="1000"/> ms，对应<code>keepAliveTimeout</code>配置
+            </a-form-item>
+            <hr style="margin-bottom:15px"/>
+            <div>这里指定域名的超时时间：<span class="form-help">（域名配置可使用通配符或正则）</span></div>
+            <vue-json-editor style="flex-grow:1;min-height:300px;margin-top:10px" ref="editor" v-model="config.server.setting.timeoutMapping" mode="code"
+                             :show-btns="false" :expandedOnStart="true"></vue-json-editor>
+          </div>
+        </a-tab-pane>
+        <a-tab-pane tab="域名白名单" key="4">
             <a-row style="margin-top:10px">
               <a-col span="19">
-                <div>这里配置哪些域名不需要通过代理</div>
+                <div>这里配置的域名不会通过代理</div>
               </a-col>
               <a-col span="3">
                 <a-button style="margin-left:8px" type="primary" icon="plus" @click="addWhiteList()"/>
               </a-col>
             </a-row>
-            <a-row :gutter="10" style="margin-top: 10px" v-for="(item,index) of whiteList" :key='index'>
+            <a-row :gutter="10" style="margin-top: 5px" v-for="(item,index) of whiteList" :key='index'>
               <a-col :span="19">
                 <a-input :disabled="item.value === false" v-model="item.key"></a-input>
               </a-col>
@@ -90,7 +106,21 @@
               </a-col>
             </a-row>
         </a-tab-pane>
-        <a-tab-pane tab="DNS设置" key="4">
+        <a-tab-pane tab="IP预设置" key="5">
+          <div style="height:100%;display:flex;flex-direction:column">
+            <div>
+              提示：<code>IP预设置</code>功能，优先级高于 <code>DNS设置</code>
+              <span class="form-help">（域名配置可使用通配符或正则）</span>
+            </div>
+            <vue-json-editor style="flex-grow:1;min-height:300px;margin-top:10px;" ref="editor" v-model="config.server.preSetIpList" mode="code"
+                             :show-btns="false" :expandedOnStart="true"></vue-json-editor>
+          </div>
+        </a-tab-pane>
+        <a-tab-pane tab="DNS服务管理" key="6">
+          <vue-json-editor style="height:100%" ref="editor" v-model="config.server.dns.providers" mode="code"
+                           :show-btns="false" :expandedOnStart="true"></vue-json-editor>
+        </a-tab-pane>
+        <a-tab-pane tab="DNS设置" key="7">
           <div>
             <a-row style="margin-top:10px">
               <a-col span="19">
@@ -100,7 +130,7 @@
                 <a-button style="margin-left:8px" type="primary" icon="plus" @click="addDnsMapping()"/>
               </a-col>
             </a-row>
-            <a-row :gutter="10" style="margin-top: 10px" v-for="(item,index) of dnsMappings" :key='index'>
+            <a-row :gutter="10" style="margin-top: 5px" v-for="(item,index) of dnsMappings" :key='index'>
               <a-col :span="14">
                 <a-input :disabled="item.value === false" v-model="item.key"></a-input>
               </a-col>
@@ -112,47 +142,24 @@
                 </a-select>
               </a-col>
               <a-col :span="3">
-                <a-button v-if="item.value !== false" type="danger" icon="minus" @click="deleteDnsMapping(item,index)"/>
-                <a-button v-if="item.value === false" type="primary" icon="checked"
-                          @click="restoreDefDnsMapping(item,index)"></a-button>
+                <a-button v-if="item.value !== false" type="danger"  icon="minus"   @click="deleteDnsMapping(item,index)"/>
+                <a-button v-if="item.value === false" type="primary" icon="checked" @click="restoreDefDnsMapping(item,index)"/>
               </a-col>
             </a-row>
           </div>
         </a-tab-pane>
-<!--        <a-tab-pane tab="SNI" key="5">-->
-<!--          <a-row style="margin-top:10px">-->
-<!--            <a-col span="19">-->
-<!--              <div>这里配置哪些域名要修改sni</div>-->
-<!--            </a-col>-->
-<!--            <a-col span="3">-->
-<!--              <a-button style="margin-left:8px" type="primary" icon="plus" @click="addSniList()"/>-->
-<!--            </a-col>-->
-<!--          </a-row>-->
-<!--          <a-row :gutter="10" style="margin-top: 10px" v-for="(item,index) of sniList" :key='index'>-->
-<!--            <a-col :span="14">-->
-<!--              <a-input  v-model="item.key"></a-input>-->
-<!--            </a-col>-->
-<!--            <a-col :span="5">-->
-<!--              <a-input  v-model="item.value"></a-input>-->
-<!--            </a-col>-->
-<!--            <a-col :span="3">-->
-<!--              <a-button  type="danger" icon="minus" @click="deleteSniList(item,index)"/>-->
-<!--            </a-col>-->
-<!--          </a-row>-->
-<!--        </a-tab-pane>-->
-        <a-tab-pane tab="IP测速" key="6">
-          <div style="padding-right: 10px">
-            <a-alert type="info" message="对从dns获取到的ip进行测速，使用速度最快的ip进行访问。（对使用增强功能的域名没啥用）"></a-alert>
-            <a-form-item label="开启dns测速" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-tab-pane tab="IP测速" key="8">
+          <div class="ip-tester" style="padding-right: 10px">
+            <a-alert type="info" message="对从DNS获取到的IP进行测速，使用速度最快的IP进行访问（注意：对使用了增强功能的域名没啥用）"></a-alert>
+            <a-form-item label="开启DNS测速" :label-col="labelCol" :wrapper-col="wrapperCol">
               <a-checkbox v-model="getSpeedTestConfig().enabled">
                 启用
               </a-checkbox>
             </a-form-item>
             <a-form-item label="自动测试间隔" :label-col="labelCol" :wrapper-col="wrapperCol">
-              <a-input-number id="inputNumber" v-model="getSpeedTestConfig().interval" :step="1000" :min="1"/>
-              ms
+              <a-input-number id="inputNumber" v-model="getSpeedTestConfig().interval" :step="1000" :min="1"/> ms
             </a-form-item>
-            <div>使用以下dns获取ip进行测速</div>
+            <div>使用以下DNS获取IP进行测速</div>
             <a-row style="margin-top:10px">
               <a-col span="24">
                 <a-checkbox-group
@@ -169,7 +176,7 @@
                 <a-button style="margin-left:10px" type="primary" icon="plus" @click="addSpeedHostname()"/>
               </a-col>
             </a-row>
-            <a-row :gutter="10" style="margin-top: 10px" v-for="(item,index) of getSpeedTestConfig().hostnameList"
+            <a-row :gutter="10" style="margin-top: 5px" v-for="(item,index) of getSpeedTestConfig().hostnameList"
                    :key='index'>
               <a-col :span="21">
                 <a-input v-model="getSpeedTestConfig().hostnameList[index]"/>
@@ -194,9 +201,9 @@
                     <a-icon v-if="item.alive.length>0" type="check"/>
                     <a-icon v-else type="info-circle"/>
                   </a>
-                  <a-tag style="margin:2px;" v-for="(element,index) of item.backupList"
-                         :color="element.time?'green':'red'" :key='index'>{{ element.host }}
-                    {{ element.time }}{{ element.time ? 'ms' : '' }}
+                  <a-tag style="margin:2px;" v-for="(element,index) of item.backupList" :title="element.dns"
+                         :color="element.time?'green':'red'" :key='index'>
+                    {{ element.host }} {{ element.time }}{{ element.time ? 'ms' : '' }} {{ element.dns }}
                   </a-tag>
                 </a-card>
               </a-col>
@@ -230,8 +237,8 @@ export default {
       key: 'server',
       dnsMappings: [],
       speedTestList: [],
-      whiteList: [],
-      sniList: []
+      whiteList: []
+      // sniList: []
     }
   },
   created () {
@@ -270,7 +277,7 @@ export default {
     ready () {
       this.initDnsMapping()
       this.initWhiteList()
-      this.initSniList()
+      // this.initSniList()
       if (this.config.server.dns.speedTest.dnsProviders) {
         this.speedDns = this.config.server.dns.speedTest.dnsProviders
       }
@@ -278,7 +285,7 @@ export default {
     async applyBefore () {
       this.submitDnsMapping()
       this.submitWhiteList()
-      this.submitSniList()
+      // this.submitSniList()
     },
     async applyAfter () {
       if (this.status.server.enabled) {
@@ -336,47 +343,13 @@ export default {
     deleteWhiteList (item, index) {
       this.whiteList.splice(index, 1)
     },
-    restoreDefWhiteList (item, index) {
-
-    },
     addWhiteList () {
       this.whiteList.unshift({ key: '', value: true })
     },
-
-    // sniList
-    initSniList () {
-      this.sniList = []
-      for (const key in this.config.server.sniList) {
-        const value = this.config.server.sniList[key]
-        this.sniList.push({
-          key, value
-        })
-      }
-    },
-    submitSniList () {
-      const sniList = {}
-      for (const item of this.sniList) {
-        if (item.key) {
-          sniList[item.key] = item.value
-        }
-      }
-      this.config.server.sniList = sniList
-    },
-    deleteSniList (item, index) {
-      this.sniList.splice(index, 1)
-    },
-    restoreDefSniList (item, index) {
-
-    },
-    addSniList () {
-      this.sniList.unshift({ key: '', value: true })
-    },
-
     async openLog () {
       const dir = await this.$api.info.getConfigDir()
       this.$api.ipc.openPath(dir + '/logs/')
     },
-
     getSpeedTestConfig () {
       return this.config.server.dns.speedTest
     },
@@ -412,6 +385,16 @@ export default {
       return setInterval(() => {
         this.reloadAllSpeedTester()
       }, 5000)
+    },
+    async handleTabChange (key) {
+      if (key !== '2' && key !== '3' && key !== '5' && key !== '6') {
+        return
+      }
+
+      // 规避 vue-json-editor 内容只填充输入框一半的问题
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'))
+      }, 10)
     }
   }
 }

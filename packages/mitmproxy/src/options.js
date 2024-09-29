@@ -3,9 +3,11 @@ const dnsUtil = require('./lib/dns')
 const log = require('./utils/util.log')
 const matchUtil = require('./utils/util.match')
 const path = require('path')
+const fs = require('fs')
+const lodash = require('lodash')
 const scriptInterceptor = require('./lib/interceptor/impl/res/script')
 
-const createOverwallMiddleware = require('./lib/proxy/middleware/overwall')
+const { getTmpPacFilePath, downloadPacAsync, createOverwallMiddleware } = require('./lib/proxy/middleware/overwall')
 
 // 处理拦截配置
 function buildIntercepts (intercepts) {
@@ -15,12 +17,31 @@ function buildIntercepts (intercepts) {
   return intercepts
 }
 
-module.exports = (config) => {
-  const intercepts = matchUtil.domainMapRegexply(buildIntercepts(config.intercepts))
-  const whiteList = matchUtil.domainMapRegexply(config.whiteList)
+// 从拦截器配置中，获取exclusions字段，返回数组类型
+function getExclusionArray (exclusions) {
+  let ret = null
+  if (Array.isArray(exclusions)) {
+    if (exclusions.length > 0) {
+      ret = exclusions
+    }
+  } else if (lodash.isObject(exclusions)) {
+    ret = []
+    for (const exclusion in exclusions) {
+      ret.push(exclusion)
+    }
+    if (ret.length === 0) {
+      return null
+    }
+  }
+  return ret
+}
 
-  const dnsMapping = config.dns.mapping
-  const serverConfig = config
+module.exports = (serverConfig) => {
+  const intercepts = matchUtil.domainMapRegexply(buildIntercepts(serverConfig.intercepts))
+  const whiteList = matchUtil.domainMapRegexply(serverConfig.whiteList)
+  const timeoutMapping = matchUtil.domainMapRegexply(serverConfig.setting.timeoutMapping)
+
+  const dnsMapping = serverConfig.dns.mapping
   const setting = serverConfig.setting
 
   if (!setting.script.dirAbsolutePath) {
@@ -29,28 +50,51 @@ module.exports = (config) => {
   if (setting.verifySsl !== false) {
     setting.verifySsl = true
   }
+  setting.timeoutMapping = timeoutMapping
 
-  const overwallConfig = serverConfig.plugin.overwall
-  if (!overwallConfig.pac.pacFileAbsolutePath) {
-    overwallConfig.pac.pacFileAbsolutePath = path.join(setting.rootDir, overwallConfig.pac.pacFilePath)
+  const overWallConfig = serverConfig.plugin.overwall
+  if (overWallConfig.pac && overWallConfig.pac.enabled) {
+    const pacConfig = overWallConfig.pac
+
+    // 自动更新 pac.txt
+    if (!pacConfig.pacFileAbsolutePath && pacConfig.autoUpdate) {
+      // 异步下载远程 pac.txt 文件，并保存到本地；下载成功后，需要重启代理服务才会生效
+      downloadPacAsync(pacConfig)
+    }
+
+    // 优先使用本地已下载的 pac.txt 文件
+    if (!pacConfig.pacFileAbsolutePath && fs.existsSync(getTmpPacFilePath())) {
+      pacConfig.pacFileAbsolutePath = getTmpPacFilePath()
+      log.info('读取已下载的 pac.txt 文件:', pacConfig.pacFileAbsolutePath)
+    }
+
+    if (!pacConfig.pacFileAbsolutePath) {
+      pacConfig.pacFileAbsolutePath = path.join(setting.rootDir, pacConfig.pacFilePath)
+      if (pacConfig.autoUpdate) {
+        log.warn('远程 pac.txt 文件下载失败或还在下载中，现使用内置 pac.txt 文件:', pacConfig.pacFileAbsolutePath)
+      }
+    }
   }
 
   // 插件列表
   const middlewares = []
 
   // 梯子插件：如果启用了，则添加到插件列表中
-  const overwallMiddleware = createOverwallMiddleware(overwallConfig)
+  const overwallMiddleware = createOverwallMiddleware(overWallConfig)
   if (overwallMiddleware) {
     middlewares.push(overwallMiddleware)
   }
+
+  const preSetIpList = matchUtil.domainMapRegexply(serverConfig.preSetIpList)
 
   const options = {
     host: serverConfig.host,
     port: serverConfig.port,
     dnsConfig: {
-      providers: dnsUtil.initDNS(serverConfig.dns.providers),
+      preSetIpList,
+      providers: dnsUtil.initDNS(serverConfig.dns.providers, preSetIpList),
       mapping: matchUtil.domainMapRegexply(dnsMapping),
-      speedTest: config.dns.speedTest
+      speedTest: serverConfig.dns.speedTest
     },
     setting,
     sniConfig: serverConfig.sniList,
@@ -59,11 +103,7 @@ module.exports = (config) => {
       const hostname = req.url.split(':')[0]
       const inWhiteList = matchUtil.matchHostname(whiteList, hostname, 'in whiteList') != null
       if (inWhiteList) {
-        log.info('为白名单域名:', hostname,
-          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\treferer:', req.headers.Referer || req.headers.referer,
-          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\torigin:', req.headers.Origin || req.headers.origin,
-          '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tuserAgent:', req.headers['User-Agent'] || req.headers['user-agent']
-        )
+        log.info(`为白名单域名，不拦截: ${hostname}, headers:`, req.headers)
         return false // 所有都不拦截
       }
       // 配置了拦截的域名，将会被代理
@@ -84,17 +124,38 @@ module.exports = (config) => {
       const matchInterceptsOpts = {}
       for (const regexp in interceptOpts) { // 遍历拦截配置
         // 判断是否匹配拦截器
-        let matched
-        if (regexp !== true && regexp !== 'true') {
-          matched = matchUtil.isMatched(rOptions.path, regexp)
-          if (matched == null) { // 拦截器匹配失败
-            continue
-          }
+        const matched = matchUtil.isMatched(rOptions.path, regexp)
+        if (matched == null) { // 拦截器匹配失败
+          continue
         }
 
         // 获取拦截器
         const interceptOpt = interceptOpts[regexp]
         // interceptOpt.key = regexp
+
+        // 添加exclusions字段，用于排除某些路径
+        // @since 1.8.5
+        if (interceptOpt.exclusions) {
+          let isExcluded = false
+          try {
+            const exclusions = getExclusionArray(interceptOpt.exclusions)
+            if (exclusions) {
+              for (const exclusion of exclusions) {
+                if (matchUtil.isMatched(rOptions.path, exclusion)) {
+                  log.debug(`拦截器配置排除了path：${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}, exclusion: '${exclusion}', interceptOpt:`, interceptOpt)
+                  isExcluded = true
+                }
+              }
+            }
+          } catch (e) {
+            log.error(`判断拦截器是否排除当前path时出现异常, path: ${rOptions.path}, interceptOpt:`, interceptOpt, ', error:', e)
+          }
+          if (isExcluded) {
+            continue
+          }
+        }
+
+        log.debug(`拦截器匹配path成功：${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}, regexp: ${regexp}, interceptOpt:`, interceptOpt)
 
         // log.info(`interceptor matched, regexp: '${regexp}' =>`, JSON.stringify(interceptOpt), ', url:', url)
         for (const impl of interceptorImpls) {
@@ -105,8 +166,8 @@ module.exports = (config) => {
             // 如果存在同名拦截器，则order值越大，优先级越高
             const matchedInterceptOpt = matchInterceptsOpts[impl.name]
             if (matchedInterceptOpt) {
-              if (matchedInterceptOpt.order >= interceptOpt.order) {
-                // log.warn(`duplicate interceptor: ${impl.name}, hostname: ${rOptions.hostname}`)
+              if (matchedInterceptOpt.order >= (interceptOpt.order || 0)) {
+                log.warn(`duplicate interceptor: ${impl.name}, hostname: ${rOptions.hostname}`)
                 continue
               }
               action = 'replace'

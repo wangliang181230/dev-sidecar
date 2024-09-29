@@ -6,11 +6,12 @@ module.exports = {
     variables: true
   },
   setting: {
+    command: 'npm',
     'strict-ssl': true,
     cafile: false,
     NODE_EXTRA_CA_CERTS: false,
     NODE_TLS_REJECT_UNAUTHORIZED: false,
-    yarnRegistry: undefined,
+    yarnRegistry: 'null',
     registry: 'https://registry.npmjs.org'// 可以选择切换官方或者淘宝镜像
   },
   // intercepts: {
