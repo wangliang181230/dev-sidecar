@@ -13,11 +13,11 @@ jobs:
       matrix:
         os: [
           windows,
-          ubuntu,
-          macos
+#          ubuntu,
+#          macos
         ]
         node: [
-          16,
+#          16,
           17
         ]
     steps:
@@ -136,31 +136,31 @@ jobs:
           cd ../../../;
           dir || ls -lah;
 
-      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-node${{ matrix.node }}.exe - Windows"
+      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.myself-node${{ matrix.node }}.exe - Windows"
         uses: actions/upload-artifact@v4.4.0
         if: ${{ matrix.os == 'windows' }}
         with:
-          path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.exe
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-node${{ matrix.node }}.exe"
+          path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.myself.exe
+          name: "DevSidecar-${{ steps.package-info.outputs.version }}.myself-node${{ matrix.node }}.exe"
           if-no-files-found: error
-      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-node${{ matrix.node }}.deb - Ubuntu"
+      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.myself-node${{ matrix.node }}.deb - Ubuntu"
         uses: actions/upload-artifact@v4.4.0
         if: ${{ matrix.os == 'ubuntu' }}
         with:
-          path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.deb
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-node${{ matrix.node }}.deb"
+          path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.myself.deb
+          name: "DevSidecar-${{ steps.package-info.outputs.version }}.myself-node${{ matrix.node }}.deb"
           if-no-files-found: error
-      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-node${{ matrix.node }}.AppImage - Ubuntu"
+      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.myself-node${{ matrix.node }}.AppImage - Ubuntu"
         uses: actions/upload-artifact@v4.4.0
         if: ${{ matrix.os == 'ubuntu' }}
         with:
-          path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.AppImage
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-node${{ matrix.node }}.AppImage"
+          path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.myself.AppImage
+          name: "DevSidecar-${{ steps.package-info.outputs.version }}.myself-node${{ matrix.node }}.AppImage"
           if-no-files-found: error
-      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-node${{ matrix.node }}.dmg - Mac"
+      - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}.myself-node${{ matrix.node }}.dmg - Mac"
         uses: actions/upload-artifact@v4.4.0
         if: ${{ matrix.os == 'macos' }}
         with:
-          path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.dmg
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-node${{ matrix.node }}.dmg"
+          path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}.myself.dmg
+          name: "DevSidecar-${{ steps.package-info.outputs.version }}.myself-node${{ matrix.node }}.dmg"
           if-no-files-found: error
