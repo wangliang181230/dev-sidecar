@@ -106,17 +106,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
         function onFree () {
           url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
           const start = new Date()
-
-          if (url.indexOf('github') > -1 ||
-              url.indexOf('docker') > -1) {
-            log.info('发起代理请求:', url, (rOptions.servername ? ', sni: ' + rOptions.servername : ''))
-          } else {
-            log.info('发起代理请求:', url, (rOptions.servername ? ', sni: ' + rOptions.servername : ''),
-              '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\treferer:', rOptions.headers.referer,
-              '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\torigin:', rOptions.headers.origin,
-              '\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tuserAgent:', rOptions.headers['user-agent']
-            )
-          }
+          log.info('发起代理请求:', url, (rOptions.servername ? ', sni: ' + rOptions.servername : ''), ', headers:', rOptions.headers)
 
           const isDnsIntercept = {}
           if (dnsConfig && dnsConfig.providers) {
