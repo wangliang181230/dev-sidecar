@@ -177,7 +177,7 @@ function getDomesticDomainAllowList () {
   try {
     return fs.readFileSync(fileAbsolutePath).toString()
   } catch (e) {
-    log.error('读取 domestic-domain-allowlist.txt 文件失败:', fileAbsolutePath)
+    log.error(`读取 domestic-domain-allowlist.txt 文件失败: ${fileAbsolutePath}, error:`, e)
     return null
   }
 }
