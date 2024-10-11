@@ -108,24 +108,26 @@ module.exports = {
       })
 
       // 其他事件：仅记录debug日志
-      server.on('close', () => {
-        log.debug('【server close】no arguments...')
-      })
-      server.on('connection', (cltSocket) => {
-        log.debug('【server connection】\r\n----- cltSocket -----\r\n', cltSocket)
-      })
-      server.on('listening', () => {
-        log.debug('【server listening】no arguments...')
-      })
-      server.on('checkContinue', (req, res) => {
-        log.debug('【server checkContinue】\r\n----- req -----\r\n', req, '\r\n----- res -----\r\n', res)
-      })
-      server.on('checkExpectation', (req, res) => {
-        log.debug('【server checkExpectation】\r\n----- req -----\r\n', req, '\r\n----- res -----\r\n', res)
-      })
-      server.on('dropRequest', (req, cltSocket) => {
-        log.debug('【server checkExpectation】\r\n----- req -----\r\n', req, '\r\n----- cltSocket -----\r\n', cltSocket)
-      })
+      if (process.env.NODE_ENV === 'development') {
+        server.on('close', () => {
+          log.debug('【server close】no arguments...')
+        })
+        server.on('connection', (cltSocket) => {
+          log.debug('【server connection】\r\n----- cltSocket -----\r\n', cltSocket)
+        })
+        server.on('listening', () => {
+          log.debug('【server listening】no arguments...')
+        })
+        server.on('checkContinue', (req, res) => {
+          log.debug('【server checkContinue】\r\n----- req -----\r\n', req, '\r\n----- res -----\r\n', res)
+        })
+        server.on('checkExpectation', (req, res) => {
+          log.debug('【server checkExpectation】\r\n----- req -----\r\n', req, '\r\n----- res -----\r\n', res)
+        })
+        server.on('dropRequest', (req, cltSocket) => {
+          log.debug('【server checkExpectation】\r\n----- req -----\r\n', req, '\r\n----- cltSocket -----\r\n', cltSocket)
+        })
+      }
 
       if (callback) {
         callback(server)
