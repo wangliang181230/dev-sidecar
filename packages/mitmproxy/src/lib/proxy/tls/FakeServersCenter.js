@@ -52,7 +52,7 @@ module.exports = class FakeServersCenter {
 
   getServerPromise (hostname, port) {
     const ssl = getSsl(hostname, port)
-    log.debug(`${hostname}:${port} ssl: ${ssl}`)
+    log.info(`getServerPromise: ${hostname}:${port} ssl: ${ssl}`)
 
     for (let i = 0; i < this.queue.length; i++) {
       const serverPromiseObj = this.queue[i]
