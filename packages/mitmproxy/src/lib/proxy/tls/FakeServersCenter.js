@@ -141,11 +141,13 @@ module.exports = class FakeServersCenter {
             removeSsl(hostname, port)
           }
 
-          log.error(`【fakeServer clientError - ${hostname}:${port}】\r\n----- error -----\r\n`, err, '\r\n----- socket -----\r\n', socket)
+          // log.error(`【fakeServer clientError - ${hostname}:${port}】\r\n----- error -----\r\n`, err, '\r\n----- socket -----\r\n', socket)
+          log.error(`【fakeServer clientError - ${hostname}:${port}】\r\n`, err)
         })
         if (ssl) {
           fakeServer.on('tlsClientError', (err, tlsSocket) => {
-            log.error(`【fakeServer tlsClientError - ${hostname}:${port}】\r\n----- error -----\r\n`, err, '\r\n----- tlsSocket -----\r\n', tlsSocket)
+            // log.error(`【fakeServer tlsClientError - ${hostname}:${port}】\r\n----- error -----\r\n`, err, '\r\n----- tlsSocket -----\r\n', tlsSocket)
+            log.error(`【fakeServer tlsClientError - ${hostname}:${port}】\r\n`, err)
           })
         }
 
