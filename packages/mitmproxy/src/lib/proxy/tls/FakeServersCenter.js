@@ -78,25 +78,72 @@ module.exports = class FakeServersCenter {
           port: 0 // if prot === 0 ,should listen server's `listening` event.
         }
         serverPromiseObj.serverObj = serverObj
+
         fakeServer.listen(0, () => {
           const address = fakeServer.address()
           serverObj.port = address.port
         })
         fakeServer.on('request', (req, res) => {
           const ssl = true
+          log.debug('【fakeServer request】\r\n----- req -----\r\n', req, '\r\n----- res -----\r\n', res)
           this.requestHandler(req, res, ssl)
         })
-        fakeServer.on('error', (e) => {
-          log.error('fakeServer error:', e)
-        })
         fakeServer.on('listening', () => {
+          log.debug('【fakeServer listening】no arguments...')
           const mappingHostNames = tlsUtils.getMappingHostNamesFromCert(certObj.cert)
           serverPromiseObj.mappingHostNames = mappingHostNames
           resolve(serverObj)
         })
         fakeServer.on('upgrade', (req, socket, head) => {
           const ssl = true
+          log.debug('【fakeServer upgrade】\r\n----- req -----\r\n', req, '\r\n----- socket -----\r\n', socket, '\r\n----- head -----\r\n', head)
           this.upgradeHandler(req, socket, head, ssl)
+        })
+
+        // 三个 error 事件
+        fakeServer.on('error', (e) => {
+          log.error('【fakeServer error】\r\n----- error -----\r\n', e)
+        })
+        fakeServer.on('clientError', (err, socket) => {
+          log.error('【fakeServer clientError】\r\n ----- error -----\r\n', err, '\r\n----- socket -----\r\n', socket)
+        })
+        fakeServer.on('tlsClientError', (err, tlsSocket) => {
+          log.error('【fakeServer tlsClientError】\r\n----- error -----\r\n', err, '\r\n----- tlsSocket -----\r\n', tlsSocket)
+        })
+
+        // 其他监听事件，只打印debug日志
+        fakeServer.on('keylog', (line, tlsSocket) => {
+          log.debug('【fakeServer keylog】\r\n----- line -----\r\n', line, '\r\n----- tlsSocket -----\r\n', tlsSocket)
+        })
+        fakeServer.on('newSession', (sessionId, sessionData, callback) => {
+          log.debug('【fakeServer newSession】\r\n----- sessionId -----\r\n', sessionId, '\r\n----- sessionData -----\r\n', sessionData, '\r\n----- callback -----\r\n', callback)
+        })
+        fakeServer.on('OCSPRequest', (certificate, issuer, callback) => {
+          log.debug('【fakeServer OCSPRequest】\r\n----- certificate -----\r\n', certificate, '\r\n----- issuer -----\r\n', issuer, '\r\n----- callback -----\r\n', callback)
+        })
+        fakeServer.on('resumeSession', (sessionId, callback) => {
+          log.debug('【fakeServer resumeSession】\r\n----- sessionId -----\r\n', sessionId, '\r\n----- callback -----\r\n', callback)
+        })
+        fakeServer.on('secureConnection', (tlsSocket) => {
+          log.debug('【fakeServer secureConnection】\r\n----- tlsSocket -----\r\n', tlsSocket)
+        })
+        fakeServer.on('tlsClientError', (err, tlsSocket) => {
+          log.debug('【fakeServer tlsClientError】\r\n----- error -----\r\n', err, '\r\n----- tlsSocket -----\r\n', tlsSocket)
+        })
+        fakeServer.on('close', () => {
+          log.debug('【fakeServer close】no arguments...')
+        })
+        fakeServer.on('connection', (socket) => {
+          log.debug('【fakeServer connection】\r\n----- socket -----\r\n', socket)
+        })
+        fakeServer.on('checkContinue', (req, res) => {
+          log.debug('【fakeServer checkContinue】\r\n----- req -----\r\n', req, '\r\n----- res -----\r\n', res)
+        })
+        fakeServer.on('checkExpectation', (req, res) => {
+          log.debug('【fakeServer checkExpectation】\r\n----- req -----\r\n', req, '\r\n----- res -----\r\n', res)
+        })
+        fakeServer.on('connect', (req, socket, head) => {
+          log.debug('【fakeServer resumeSession】\r\n----- req -----\r\n', req, '\r\n----- socket -----\r\n', socket, '\r\n----- head -----\r\n', head)
         })
       })()
     })

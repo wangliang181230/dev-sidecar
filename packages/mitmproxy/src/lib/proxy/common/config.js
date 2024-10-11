@@ -2,16 +2,14 @@ const path = require('path')
 const config = exports
 
 config.caCertFileName = 'dev-sidecar.ca.crt'
-
 config.caKeyFileName = 'dev-sidecar.ca.key.pem'
 
-config.defaultHost = '127.0.0.1'
-
-config.defaultPort = 31181
-
 config.caName = 'DevSidecar - This certificate is generated locally'
-
 config.caBasePath = buildDefaultCABasePath()
+
+config.defaultHost = '127.0.0.1'
+config.defaultPort = 31181
+config.defaultMaxLength = 100
 
 config.getDefaultCABasePath = function () {
   return config.caBasePath
