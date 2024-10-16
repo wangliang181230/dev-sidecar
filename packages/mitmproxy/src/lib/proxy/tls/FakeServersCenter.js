@@ -49,7 +49,7 @@ module.exports = class FakeServersCenter {
     if (port === 443 || port === 80) {
       ssl = port === 443
     } else {
-      // 读取兼容程序配置
+      // 兼容程序：1
       const compatibleConfig = compatible.getConnectCompatibleConfig(hostname, port, manualCompatibleConfig)
       if (compatibleConfig && compatibleConfig.ssl != null) {
         ssl = compatibleConfig.ssl
@@ -154,6 +154,7 @@ module.exports = class FakeServersCenter {
           // log.error(`【fakeServer clientError - ${hostname}:${port}】\r\n----- error -----\r\n`, err, '\r\n----- socket -----\r\n', socket)
           log.error(`【fakeServer clientError - ${hostname}:${port}】\r\n`, err)
 
+          // 兼容程序：1
           if (port !== 443 && port !== 80) {
             if (ssl === true && err.code.indexOf('ERR_SSL_') === 0) {
               compatible.setConnectSsl(hostname, port, false)

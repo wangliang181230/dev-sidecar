@@ -132,7 +132,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           // log.debug('agent.options:', rOptions.agent.options)
           res.setHeader('DS-Proxy-Request', rOptions.hostname)
 
-          // 读取兼容程序配置
+          // 兼容程序：2
           if (rOptions.agent) {
             const compatibleConfig = compatible.getRequestCompatibleConfig(rOptions, rOptions.compatibleConfig)
             if (compatibleConfig && compatibleConfig.rejectUnauthorized != null && rOptions.agent.options.rejectUnauthorized !== compatibleConfig.rejectUnauthorized) {
@@ -190,7 +190,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             countSlow(isDnsIntercept, '代理请求错误: ' + e.message)
             reject(e)
 
-            // 兼容程序
+            // 兼容程序：2
             if (e.code === 'DEPTH_ZERO_SELF_SIGNED_CERT') {
               compatible.setRequestRejectUnauthorized(rOptions, false)
             }
