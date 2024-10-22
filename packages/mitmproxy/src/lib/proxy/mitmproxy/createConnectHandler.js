@@ -66,7 +66,7 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig = null, isDire
       log.error(`cltSocket error:   ${hostport}, errorMsg: ${e.message}`)
     })
     // 开发过程中，如有需要可以将此参数临时改为true，打印所有事件的日志
-    const printDebugLog = true && process.env.NODE_ENV === 'development'
+    const printDebugLog = false && process.env.NODE_ENV === 'development'
     if (printDebugLog) {
       cltSocket.on('close', (hadError) => {
         log.debug('【cltSocket close】', hadError)
