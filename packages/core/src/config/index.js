@@ -65,6 +65,28 @@ module.exports = {
           timeout: 20000,
           keepAliveTimeout: 30000
         }
+      },
+
+      // 慢速IP延迟时间：测速超过该值时，则视为延迟高，显示为橙色
+      lowSpeedDelay: 150
+    },
+    compatible: {
+      // **** 自定义兼容配置 **** //
+      // connect阶段所需的兼容性配置
+      connect: {
+        // 参考配置（无path）
+        // 'xxx.xxx.xxx.xxx:443': {
+        //   ssl: false
+        // }
+      },
+      // request阶段所需的兼容性配置
+      request: {
+        // 参考配置（配置方式同 `拦截配置`）
+        // 'xxx.xxx.xxx.xxx:443': {
+        //   '.*': {
+        //     rejectUnauthorized: false
+        //   }
+        // }
       }
     },
     intercept: {
@@ -118,11 +140,6 @@ module.exports = {
           desc: '仓库内脚本，重定向改为代理，并设置响应头Content-Type。作用：方便script拦截器直接使用，避免引起跨域问题和脚本内容限制问题。'
         }
       },
-      '*.github.com': {
-        '.*': {
-          sni: 'baidu.com'
-        }
-      },
       'github-releases.githubusercontent.com': {
         '.*': {
           sni: 'baidu.com'
@@ -138,6 +155,11 @@ module.exports = {
           cacheDays: 365,
           desc: '图片，缓存1年'
         },
+        '.*': {
+          sni: 'baidu.com'
+        }
+      },
+      'collector.github.com': {
         '.*': {
           sni: 'baidu.com'
         }
@@ -181,6 +203,9 @@ module.exports = {
         '^/_private/browser/stats$': {
           success: true,
           desc: 'github的访问速度分析上传，没有必要，直接返回成功'
+        },
+        '.*': {
+          sni: 'baidu.com'
         }
       },
       '*.docker.com': {
@@ -261,13 +286,6 @@ module.exports = {
           abort: true,
           desc: '广告拦截'
         }
-      },
-      '*': {
-        '^.*\\?DS_DOWNLOAD$': {
-          requestReplace: { doDownload: true },
-          responseReplace: { doDownload: true },
-          desc: '下载请求拦截：移除请求地址中的 `?DS_DOWNLOAD`，并设置响应头 `Content-Disposition: attachment; filename=xxxx`，使浏览器强制执行下载逻辑，而不是在浏览器中浏览。'
-        }
       }
     },
     // 预设置IP列表
@@ -343,9 +361,6 @@ module.exports = {
       '*.qq.com': true,
       '*.baidu.com': true,
       '192.168.*': true
-    },
-    sniList: {
-    //   'github.com': 'abaidu.com'
     },
     dns: {
       providers: {

@@ -11,12 +11,18 @@ module.exports = {
   stringify (obj) {
     return JSON.stringify(obj, null, '\t')
   },
+
+  // 仅用于记录日志时使用
   stringify2 (obj) {
     try {
-      return JSON5.stringify(obj)
+      return JSON.stringify(obj)
     } catch (e) {
-      log.warn('转换为JSON字符串失败, error:', e, ', obj:', obj)
-      return obj.toString()
+      try {
+        return JSON5.stringify(obj)
+      } catch (e2) {
+        log.debug('转换为JSON字符串失败, error:', e, ', obj:', obj)
+        return obj
+      }
     }
   }
 }

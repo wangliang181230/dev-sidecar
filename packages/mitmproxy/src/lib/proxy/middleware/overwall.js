@@ -10,20 +10,26 @@ const { Buffer } = require('buffer')
 let pacClient = null
 
 function matched (hostname, overWallTargetMap) {
+  // 匹配配置文件
   const ret1 = matchUtil.matchHostname(overWallTargetMap, hostname, 'matched overwall')
   if (ret1) {
-    return 'overwall config'
+    return 'in config'
+  } else if (ret1 === false || ret1 === 'false') {
+    log.debug(`域名 ${hostname} 的overwall配置为 false，跳过增强功能，即使它在 pac.txt 里`)
+    return null
   }
+
+  // 匹配 pac.txt
   if (pacClient == null) {
-    return false
+    return null
   }
   const ret = pacClient.FindProxyForURL('https://' + hostname, hostname)
   if (ret && ret.indexOf('PROXY ') === 0) {
     log.info(`matchHostname: matched overwall: '${hostname}' -> '${ret}' in pac.txt`)
-    return 'overwall pac'
+    return 'in pac.txt'
   } else {
     log.debug(`matchHostname: matched overwall: Not-Matched '${hostname}' -> '${ret}' in pac.txt`)
-    return false
+    return null
   }
 }
 
@@ -157,7 +163,7 @@ function createOverwallMiddleware (overWallConfig) {
       }
       const hostname = rOptions.hostname
       const matchedResult = matched(hostname, overWallTargetMap)
-      if (!matchedResult) {
+      if (matchedResult == null || matchedResult === false || matchedResult === 'false') {
         return
       }
       const cacheKey = '__over_wall_proxy__'

@@ -8,15 +8,16 @@ const log = require('../../../utils/util.log')
 const RequestCounter = require('../../choice/RequestCounter')
 const InsertScriptMiddleware = require('../middleware/InsertScriptMiddleware')
 const dnsLookup = require('./dnsLookup')
+const compatible = require('../compatible/compatible')
 const MAX_SLOW_TIME = 8000 // 超过此时间 则认为太慢了
 
 // create requestHandler function
-module.exports = function createRequestHandler (createIntercepts, middlewares, externalProxy, dnsConfig, setting) {
+module.exports = function createRequestHandler (createIntercepts, middlewares, externalProxy, dnsConfig, setting, compatibleConfig) {
   // return
   return function requestHandler (req, res, ssl) {
     let proxyReq
 
-    const rOptions = commonUtil.getOptionsFromRequest(req, ssl, externalProxy, setting)
+    const rOptions = commonUtil.getOptionsFromRequest(req, ssl, externalProxy, setting, compatibleConfig)
     let url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
 
     if (rOptions.headers.connection === 'close') {
@@ -106,20 +107,26 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
         function onFree () {
           url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
           const start = new Date()
-          log.info('发起代理请求:', url, (rOptions.servername ? ', sni: ' + rOptions.servername : ''), ', headers:', rOptions.headers)
+          log.info('发起代理请求:', url, (rOptions.servername ? ', sni: ' + rOptions.servername : ''), ', headers:', jsonApi.stringify2(rOptions.headers))
 
           const isDnsIntercept = {}
-          if (dnsConfig && dnsConfig.providers) {
+          if (dnsConfig && dnsConfig.dnsMap) {
             let dns = DnsUtil.hasDnsLookup(dnsConfig, rOptions.hostname)
             if (!dns && rOptions.servername) {
-              dns = dnsConfig.providers.quad9
+              dns = dnsConfig.dnsMap.quad9
               if (dns) {
                 log.info(`域名 ${rOptions.hostname} 在dns中未配置，但使用了 sni: ${rOptions.servername}, 必须使用dns，现默认使用 'quad9' DNS.`)
               }
             }
             if (dns) {
               rOptions.lookup = dnsLookup.createLookupFunc(res, dns, 'request url', url, isDnsIntercept)
+              log.debug(`域名 ${rOptions.hostname} DNS: ${dns.name}`)
+              res.setHeader('DS-DNS', dns.name)
+            } else {
+              log.info(`域名 ${rOptions.hostname} 在DNS中未配置`)
             }
+          } else {
+            log.info(`域名 ${rOptions.hostname} DNS配置不存在`)
           }
 
           // rOptions.sigalgs = 'RSA-PSS+SHA256:RSA-PSS+SHA512:ECDSA+SHA256'
@@ -130,12 +137,25 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           // log.debug('agent:', rOptions.agent)
           // log.debug('agent.options:', rOptions.agent.options)
           res.setHeader('DS-Proxy-Request', rOptions.hostname)
+
+          // 自动兼容程序：2
+          if (rOptions.agent) {
+            const compatibleConfig = compatible.getRequestCompatibleConfig(rOptions, rOptions.compatibleConfig)
+            if (compatibleConfig && compatibleConfig.rejectUnauthorized != null && rOptions.agent.options.rejectUnauthorized !== compatibleConfig.rejectUnauthorized) {
+              if (compatibleConfig.rejectUnauthorized === false && rOptions.agent.unVerifySslAgent) {
+                log.info(`【自动兼容程序】${rOptions.hostname}:${rOptions.port}: 设置 'rOptions.agent.options.rejectUnauthorized = ${compatibleConfig.rejectUnauthorized}'`)
+                rOptions.agent = rOptions.agent.unVerifySslAgent
+                res.setHeader('DS-Compatible', 'unVerifySsl')
+              }
+            }
+          }
+
           proxyReq = (rOptions.protocol === 'https:' ? https : http).request(rOptions, (proxyRes) => {
             const cost = new Date() - start
             if (rOptions.protocol === 'https:') {
-              log.info(`代理请求返回: ${url}, cost: ${cost} ms`)
+              log.info(`代理请求返回: 【${proxyRes.statusCode}】${url}, cost: ${cost} ms`)
             } else {
-              log.info(`请求返回: ${url}, cost: ${cost} ms`)
+              log.info(`请求返回: 【${proxyRes.statusCode}】${url}, cost: ${cost} ms`)
             }
             // console.log('request:', proxyReq, proxyReq.socket)
 
@@ -175,6 +195,11 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             log.error(`代理请求错误: ${url}, cost: ${cost} ms, error:`, e, ', rOptions:', jsonApi.stringify2(rOptions))
             countSlow(isDnsIntercept, '代理请求错误: ' + e.message)
             reject(e)
+
+            // 自动兼容程序：2
+            if (e.code === 'DEPTH_ZERO_SELF_SIGNED_CERT') {
+              compatible.setRequestRejectUnauthorized(rOptions, false)
+            }
           })
           proxyReq.on('aborted', () => {
             const cost = new Date() - start
