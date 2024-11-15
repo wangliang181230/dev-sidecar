@@ -1,11 +1,11 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import DevSidecar from '@docmirror/dev-sidecar'
 import { ipcMain } from 'electron'
 import lodash from 'lodash'
 
-const pk = require('../../../package.json')
 const jsonApi = require('@docmirror/mitmproxy/src/json')
+const pk = require('../../../package.json')
 const log = require('../../utils/util.log')
 
 const mitmproxyPath = path.join(__dirname, 'mitmproxy.js')
@@ -44,7 +44,7 @@ const localApi = {
   info: {
     get () {
       return {
-        version: pk.version
+        version: pk.version,
       }
     },
     getConfigDir () {
@@ -52,7 +52,7 @@ const localApi = {
     },
     getSystemPlatform () {
       return DevSidecar.api.shell.getSystemPlatform()
-    }
+    },
   },
   /**
    * 软件设置
@@ -85,7 +85,7 @@ const localApi = {
         if (setting.rootCa == null) {
           setting.rootCa = {
             setuped: false,
-            desc: '根证书未安装'
+            desc: '根证书未安装',
           }
         }
 
@@ -98,7 +98,7 @@ const localApi = {
       const settingPath = _getSettingsPath()
       fs.writeFileSync(settingPath, jsonApi.stringify(setting))
       log.info('保存 setting.json 配置文件成功:', settingPath)
-    }
+    },
   },
   /**
    * 启动所有
@@ -121,8 +121,8 @@ const localApi = {
      */
     restart () {
       return DevSidecar.api.server.restart({ mitmproxyPath })
-    }
-  }
+    },
+  },
 }
 
 function _deepFindFunction (list, parent, parentKey) {
@@ -208,5 +208,5 @@ export default {
   },
   devSidecar: DevSidecar,
   invoke,
-  getDateTimeStr
+  getDateTimeStr,
 }

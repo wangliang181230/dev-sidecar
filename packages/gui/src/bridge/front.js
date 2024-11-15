@@ -13,7 +13,7 @@ const modules = {
   tongji, // 统计模块
   update, // 自动更新
   autoStart,
-  onClose
+  onClose,
 }
 export default {
   install (app, api, router) {
@@ -21,5 +21,5 @@ export default {
       modules[module].install(app, api, router)
     }
   },
-  ...modules
+  ...modules,
 }

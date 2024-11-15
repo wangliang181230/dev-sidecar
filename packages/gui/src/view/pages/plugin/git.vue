@@ -8,7 +8,7 @@ export default {
     return {
       key: 'plugin.git',
       noProxyUrls: [],
-      needRestart: false
+      needRestart: false,
     }
   },
   created () {
@@ -39,7 +39,8 @@ export default {
       for (const key in this.config.plugin.git.setting.noProxyUrls) {
         const value = this.config.plugin.git.setting.noProxyUrls[key]
         this.noProxyUrls.push({
-          key, value
+          key,
+          value,
         })
       }
     },
@@ -57,8 +58,8 @@ export default {
         }
       }
       this.config.plugin.git.setting.noProxyUrls = noProxyUrls
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -114,8 +115,12 @@ export default {
     </div>
     <template slot="footer">
       <div class="footer-bar">
-        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">恢复默认</a-button>
-        <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">应用</a-button>
+        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">
+          恢复默认
+        </a-button>
+        <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">
+          应用
+        </a-button>
       </div>
     </template>
   </ds-container>

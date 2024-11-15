@@ -1,5 +1,5 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import DevSidecar from '@docmirror/dev-sidecar'
 import AdmZip from 'adm-zip'
 import { ipcMain } from 'electron'
@@ -46,7 +46,7 @@ function parseVersion (version) {
     major: Number.parseInt(versionArr[0]),
     minor: Number.parseInt(versionArr[1]),
     patch: Number.parseInt(versionArr[2]),
-    suffix: matched[2]
+    suffix: matched[2],
   }
 }
 
@@ -114,7 +114,7 @@ function updateHandle (app, api, win, beforeQuit, quit, log) {
     error: '更新失败',
     checking: '检查更新中',
     updateAva: '发现新版本',
-    updateNotAva: '当前为最新版本，无需更新'
+    updateNotAva: '当前为最新版本，无需更新',
   }
   // 本地开发环境，改变app-update.yml地址
   if (process.env.NODE_ENV === 'development') {
@@ -203,8 +203,8 @@ function updateHandle (app, api, win, beforeQuit, quit, log) {
                   version,
                   releaseNotes: versionData.body
                     ? (versionData.body.replace(/\r\n/g, '\n').replace(/https:\/\/github.com\/docmirror\/dev-sidecar/g, '').replace(/(?<=(^|\n))[ \t]*(?:#[ #]*)?#\s*/g, '') || '无')
-                    : '无'
-                }
+                    : '无',
+                },
               })
             } else {
               log.info(`检查更新：没有新版本，最近发布的版本号为 '${version}'，而当前版本号为 '${curVersion}'`)
@@ -262,7 +262,7 @@ function updateHandle (app, api, win, beforeQuit, quit, log) {
       partPackagePath = filePath
       win.webContents.send('update', {
         key: 'downloaded',
-        value
+        value,
       })
     }, (error) => {
       sendUpdateMessage({ key: 'error', value: error, error })
@@ -320,7 +320,7 @@ function updateHandle (app, api, win, beforeQuit, quit, log) {
     log.info('download complete, version:', info.version)
     win.webContents.send('update', {
       key: 'downloaded',
-      value: info
+      value: info,
     })
   })
 
@@ -373,9 +373,9 @@ export default {
       Object.defineProperty(app, 'isPackaged', {
         get () {
           return true
-        }
+        },
       })
     }
     updateHandle(app, api, win, beforeQuit, quit, log)
-  }
+  },
 }

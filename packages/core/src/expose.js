@@ -11,7 +11,7 @@ const context = {
   shell,
   status,
   event,
-  log
+  log,
 }
 
 function setupPlugin (key, plugin, context, config) {
@@ -127,7 +127,7 @@ const api = {
   status: {
     get () {
       return status
-    }
+    },
   },
   config,
   event,
@@ -135,9 +135,9 @@ const api = {
   server,
   proxy,
   plugin,
-  log
+  log,
 }
 module.exports = {
   status,
-  api
+  api,
 }

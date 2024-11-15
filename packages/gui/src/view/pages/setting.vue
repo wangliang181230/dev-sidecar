@@ -12,7 +12,7 @@ export default {
       reloadLoading: false,
       themeBackup: null,
       urlBackup: null,
-      personalUrlBackup: null
+      personalUrlBackup: null,
     }
   },
   created () {
@@ -235,11 +235,19 @@ export default {
       try {
         const remoteConfig = {}
 
-        await this.$api.config.readRemoteConfigStr().then((ret) => { remoteConfig.old1 = ret })
-        await this.$api.config.readRemoteConfigStr('_personal').then((ret) => { remoteConfig.old2 = ret })
+        await this.$api.config.readRemoteConfigStr().then((ret) => {
+          remoteConfig.old1 = ret
+        })
+        await this.$api.config.readRemoteConfigStr('_personal').then((ret) => {
+          remoteConfig.old2 = ret
+        })
         await this.$api.config.downloadRemoteConfig()
-        await this.$api.config.readRemoteConfigStr().then((ret) => { remoteConfig.new1 = ret })
-        await this.$api.config.readRemoteConfigStr('_personal').then((ret) => { remoteConfig.new2 = ret })
+        await this.$api.config.readRemoteConfigStr().then((ret) => {
+          remoteConfig.new1 = ret
+        })
+        await this.$api.config.readRemoteConfigStr('_personal').then((ret) => {
+          remoteConfig.new2 = ret
+        })
 
         if (remoteConfig.old1 === remoteConfig.new1 && remoteConfig.old2 === remoteConfig.new2) {
           this.$message.info('远程配置没有变化，不做任何处理。')
@@ -258,19 +266,27 @@ export default {
         width: 610,
         content: (h) => (
           <div class="restore-factory-settings">
-            <hr/>
+            <hr />
             <p>
               <h3>操作警告：</h3>
               <div>
-                该功能将备份您的所有页面的个性化配置，并重载<span>默认配置</span>及<span>远程配置</span>，请谨慎操作！！！
+                该功能将备份您的所有页面的个性化配置，并重载
+                <span>默认配置</span>
+                及
+                <span>远程配置</span>
+                ，请谨慎操作！！！
               </div>
             </p>
-            <hr/>
+            <hr />
             <p>
               <h3>找回个性化配置的方法：</h3>
               <div>
-                1. 找到备份文件，路径：<span>~/.dev-sidecar/config.json.时间戳.bak.json</span><br/>
-                2. 将该备份文件重命名为<span>config.json</span>，再重启软件即可恢复个性化配置。
+                1. 找到备份文件，路径：
+                <span>~/.dev-sidecar/config.json.时间戳.bak.json</span>
+                <br />
+                2. 将该备份文件重命名为
+                <span>config.json</span>
+                ，再重启软件即可恢复个性化配置。
               </div>
             </p>
           </div>
@@ -292,10 +308,10 @@ export default {
             this.removeUserConfigLoading = false
           }
         },
-        onCancel () {}
+        onCancel () {},
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -310,7 +326,9 @@ export default {
         <a-checkbox v-model="config.app.autoStart.enabled" @change="onAutoStartChange">
           本应用开机自启
         </a-checkbox>
-        <a-button class="md-mr-10" icon="profile" @click="openLog()">日志</a-button>
+        <a-button class="md-mr-10" icon="profile" @click="openLog()">
+          日志
+        </a-button>
         <div class="form-help">
           windows下建议开启开机自启。<a @click="openExternal('https://github.com/docmirror/dev-sidecar/blob/master/doc/recover.md')">更多说明参考</a>
         </div>
@@ -323,14 +341,14 @@ export default {
           修改后需要重启应用
         </div>
       </a-form-item>
-      <hr/>
+      <hr>
       <a-form-item label="远程配置" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-checkbox v-model="config.app.remoteConfig.enabled" @change="onRemoteConfigEnabledChange">
           启用远程配置
         </a-checkbox>
         <div class="form-help">
-          应用启动时会向下面的地址请求配置补丁，获得最新的优化后的github访问体验。<br/>
-          如果您觉得远程配置有安全风险，请关闭此功能，或删除共享远程配置，仅使用个人远程配置。<br/>
+          应用启动时会向下面的地址请求配置补丁，获得最新的优化后的github访问体验。<br>
+          如果您觉得远程配置有安全风险，请关闭此功能，或删除共享远程配置，仅使用个人远程配置。<br>
           配置优先级：本地修改配置  >  个人远程配置  >  共享远程配置 > 默认配置
         </div>
       </a-form-item>
@@ -341,13 +359,15 @@ export default {
         <a-input v-model="config.app.remoteConfig.personalUrl" :title="config.app.remoteConfig.personalUrl" />
       </a-form-item>
       <a-form-item label="重载远程配置" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-button :disabled="config.app.remoteConfig.enabled === false" :loading="reloadLoading" icon="sync" @click="reloadRemoteConfig()">重载远程配置</a-button>
+        <a-button :disabled="config.app.remoteConfig.enabled === false" :loading="reloadLoading" icon="sync" @click="reloadRemoteConfig()">
+          重载远程配置
+        </a-button>
         <div class="form-help">
-          注意，部分远程配置文件所在站点，修改内容后可能需要等待一段时间才能生效。<br/>
+          注意，部分远程配置文件所在站点，修改内容后可能需要等待一段时间才能生效。<br>
           如果重载远程配置后发现下载的还是修改前的内容，请稍等片刻再重试。
         </div>
       </a-form-item>
-      <hr/>
+      <hr>
       <a-form-item label="主题设置" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-radio-group v-model="config.app.theme" default-value="light" button-style="solid">
           <a-radio-button value="light" title="light">
@@ -387,7 +407,7 @@ export default {
           点击窗口右上角关闭按钮的效果
         </div>
       </a-form-item>
-      <hr/>
+      <hr>
       <a-form-item label="打开窗口快捷键" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input v-model="config.app.showHideShortcut" @change="shortcutChange" @keydown="shortcutKeyDown" @keyup="shortcutKeyUp" />
         <div class="form-help">
@@ -411,7 +431,7 @@ export default {
         <a-input-number v-model="config.app.windowSize.width" :step="50" :min="600" :max="2400" />&nbsp;×
         <a-input-number v-model="config.app.windowSize.height" :step="50" :min="500" :max="2000" />
       </a-form-item>
-      <hr/>
+      <hr>
       <a-form-item label="自动检查更新" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-radio-group v-model="config.app.autoChecked" default-value="light" button-style="solid">
           <a-radio-button :value="true">
@@ -441,9 +461,15 @@ export default {
     </div>
     <template slot="footer">
       <div class="footer-bar">
-        <a-button :loading="removeUserConfigLoading" class="md-mr-10" icon="sync" @click="restoreFactorySettings()">恢复出厂设置</a-button>
-        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">恢复默认</a-button>
-        <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">应用</a-button>
+        <a-button :loading="removeUserConfigLoading" class="md-mr-10" icon="sync" @click="restoreFactorySettings()">
+          恢复出厂设置
+        </a-button>
+        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">
+          恢复默认
+        </a-button>
+        <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">
+          应用
+        </a-button>
       </div>
     </template>
   </ds-container>

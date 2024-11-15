@@ -54,7 +54,7 @@ function testRequest () {
   // process.env.NODE_EXTRA_CA_CERTS='C:\\Users\\Administrator\\.dev-sidecar\\dev-sidecar.ca.crt'
   console.log(process.env.NODE_EXTRA_CA_CERTS)
   const request = require('request').defaults({
-    proxy: 'http://127.0.0.1:31181'
+    proxy: 'http://127.0.0.1:31181',
   })
   request('https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js', (error, response, body) => {
     if (error) {

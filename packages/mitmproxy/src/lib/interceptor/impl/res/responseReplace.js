@@ -112,5 +112,5 @@ module.exports = {
   },
   is (interceptOpt) {
     return !!interceptOpt.responseReplace
-  }
+  },
 }

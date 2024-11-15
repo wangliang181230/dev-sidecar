@@ -1,8 +1,8 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const server = require('@docmirror/mitmproxy')
 const jsonApi = require('@docmirror/mitmproxy/src/json')
-const log = require('../src/utils/util.log')
+const log = require('@docmirror/mitmproxy/src/utils/util.log')
 
 const home = process.env.USER_HOME || process.env.HOME || 'C:/Users/Administrator/'
 

@@ -7,7 +7,7 @@ describe('test', () => {
     const reg = new RegExp(test)
 
     const ret = reg.test('/docmirror/dev-sidecar/releases/tag')
-    // eslint-disable-next-line no-unused-expressions
+
     expect(ret).be.ok
   })
 })

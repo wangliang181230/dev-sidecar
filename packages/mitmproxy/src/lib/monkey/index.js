@@ -1,5 +1,5 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const log = require('../../utils/util.log')
 
 let scripts
@@ -20,7 +20,7 @@ function buildScript (sc, content, scriptName) {
   const options = {
     name: sc.name,
     version: sc.version,
-    icon: sc.icon
+    icon: sc.icon,
   }
   const initStr = `
 const DS_init = (window.__ds_global__ || {})['DS_init']
@@ -53,14 +53,14 @@ if (!((window.__ds_global__ || {}).GM_getValue || (() => true))("ds_enabled", tr
   }
 
   // 拼接脚本
-  return eventStr + ', () => {' +
-    initStr + '\r\n' +
-    checkEnabledStr + '\r\n\r\n' +
-    (grantStr ? (grantStr + '\r\n\r\n') : '') +
-    content +
-    `\r\nconsole.log("${scriptKey} completed")` +
-    '\r\n})' +
-    `\r\nconsole.log("${scriptKey} loaded")`
+  return `${eventStr}, () => {${
+    initStr}\r\n${
+    checkEnabledStr}\r\n\r\n${
+    grantStr ? (`${grantStr}\r\n\r\n`) : ''
+  }${content
+  }\r\nconsole.log("${scriptKey} completed")`
+  + `\r\n})`
+  + `\r\nconsole.log("${scriptKey} loaded")`
 }
 
 function loadScript (content, scriptName) {
@@ -79,7 +79,7 @@ function loadScript (content, scriptName) {
   const sc = {
     grant: [],
     match: [],
-    script: ''
+    script: '',
   }
   for (const string of confItemArr) {
     const reg = new RegExp('.*@(\\S+)\\s(.+)')
@@ -124,7 +124,7 @@ const api = {
     scripts.tampermonkey = { script: readFile(rootDir, 'tampermonkey.script') }
     return scripts
   },
-  loadScript
+  loadScript,
 }
 
 module.exports = api

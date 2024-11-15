@@ -18,8 +18,8 @@ function ebtMain (ipcMain) {
       url: `https://hm.baidu.com/hm.js?${arg}`,
       method: 'GET',
       headers: {
-        Referer: 'https://hm.baidu.com/'
-      }
+        Referer: 'https://hm.baidu.com/',
+      },
     }, (err, response, body) => {
       if (err) {
         console.error('百度统计请求出错', err)
@@ -49,5 +49,5 @@ function ebtMain (ipcMain) {
 export default {
   install (context) {
     ebtMain(context.ipcMain)
-  }
+  },
 }

@@ -37,11 +37,11 @@ const Plugin = function (context) {
         serverConfig.intercepts[key] = {
           '.*': {
             proxy: `${main}/\${host}`,
-            backup
-          }
+            backup,
+          },
         }
       }
-    }
+    },
   }
   return api
 }
@@ -49,5 +49,5 @@ const Plugin = function (context) {
 module.exports = {
   key: 'overwall',
   config: pluginConfig,
-  plugin: Plugin
+  plugin: Plugin,
 }

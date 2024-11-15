@@ -45,8 +45,8 @@ export default {
             openAsHidden: true,
             args: [
               '--hideWindow',
-              '"true"'
-            ]
+              '"true"',
+            ],
           })
         }
 
@@ -58,12 +58,12 @@ export default {
           app.setLoginItemSettings({
             openAtLogin: false,
             openAsHidden: false,
-            args: []
+            args: [],
           })
         }
 
         event.sender.send('auto-start', { key: 'enabled', value: false })
       }
     })
-  }
+  },
 }

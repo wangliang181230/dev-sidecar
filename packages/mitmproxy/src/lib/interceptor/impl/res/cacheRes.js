@@ -41,7 +41,7 @@ module.exports = {
       cacheControl: null,
       lastModified: null,
       expires: null,
-      etag: null
+      etag: null,
     }
     for (let i = 0; i < proxyRes.rawHeaders.length; i += 2) {
       // 尝试修改rawHeaders中的cache-control、last-modified、expires
@@ -85,7 +85,7 @@ module.exports = {
     const replaceHeaders = {
       cacheControl: `${cacheControlType}max-age=${maxAge + 1}${cacheImmutable}`,
       lastModified: now.toUTCString(),
-      expires: new Date(now.getTime() + maxAge * 1000).toUTCString()
+      expires: new Date(now.getTime() + maxAge * 1000).toUTCString(),
     }
     // 开始替换
     // 替换cache-control
@@ -134,5 +134,5 @@ module.exports = {
   is (interceptOpt) {
     const maxAge = cacheReq.getMaxAge(interceptOpt)
     return maxAge != null && maxAge > 0
-  }
+  },
 }

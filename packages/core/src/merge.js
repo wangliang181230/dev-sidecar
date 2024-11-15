@@ -83,5 +83,5 @@ module.exports = {
     })
   },
   doDiff,
-  deleteNullItems
+  deleteNullItems,
 }

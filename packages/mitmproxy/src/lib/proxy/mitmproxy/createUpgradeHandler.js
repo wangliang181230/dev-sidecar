@@ -1,5 +1,5 @@
-const http = require('http')
-const https = require('https')
+const http = require('node:http')
+const https = require('node:https')
 const log = require('../../../utils/util.log')
 const util = require('../common/util')
 
@@ -53,7 +53,7 @@ module.exports = function createUpgradeHandler (serverSetting) {
             head.push(`${key}: ${value[i]}`)
           }
           return head
-        }, ['HTTP/1.1 101 Switching Protocols']).join('\r\n')}\r\n\r\n`
+        }, ['HTTP/1.1 101 Switching Protocols']).join('\r\n')}\r\n\r\n`,
       )
 
       proxySocket.pipe(cltSocket).pipe(proxySocket)

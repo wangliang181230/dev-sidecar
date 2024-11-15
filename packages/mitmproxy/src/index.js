@@ -116,12 +116,12 @@ const api = {
         resolve()
       }
     })
-  }
+  },
 }
 
 module.exports = {
   ...api,
   config: proxyConfig,
   log,
-  speedTest
+  speedTest,
 }

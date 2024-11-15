@@ -16,7 +16,7 @@ const executor = {
   async mac (exec, { port }) {
     await exec(`kill \`lsof -i:${port} |grep 'dev-side\\|Elect' |awk '{print $2}'\``)
     return true
-  }
+  },
 }
 
 module.exports = async function (args) {

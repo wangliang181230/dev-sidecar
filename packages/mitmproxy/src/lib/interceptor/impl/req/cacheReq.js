@@ -184,7 +184,7 @@ module.exports = {
 
     // 缓存未过期，直接拦截请求并响应304
     res.writeHead(304, {
-      'DS-Interceptor': `cache: ${lastModifiedTimeFrom}`
+      'DS-Interceptor': `cache: ${lastModifiedTimeFrom}`,
     })
     res.end()
 
@@ -195,5 +195,5 @@ module.exports = {
     const maxAge = getMaxAge(interceptOpt)
     return maxAge != null && maxAge > 0
   },
-  getMaxAge
+  getMaxAge,
 }

@@ -7,7 +7,7 @@ export default {
   name: 'Index',
   components: {
     DsContainer,
-    SetupCa
+    SetupCa,
   },
   data () {
     return {
@@ -24,7 +24,7 @@ export default {
           } else {
             this.apiCall(this.startup, this.$api.startup)
           }
-        }
+        },
       },
       info: {},
       newVersionDownloading: false,
@@ -34,14 +34,14 @@ export default {
         loading: false,
         doClick: (checked) => {
           this.onServerClick(checked)
-        }
+        },
       },
       switchBtns: undefined,
       config: undefined,
       setupCa: {
-        visible: false
+        visible: false,
       },
-      update: { checking: false, downloading: false, progress: 0, newVersion: false }
+      update: { checking: false, downloading: false, progress: 0, newVersion: false },
     }
   },
   computed: {
@@ -50,7 +50,7 @@ export default {
         return this.setting.rootCa.setuped === true
       }
       return false
-    }
+    },
   },
   async created () {
     await this.doCheckRootCa()
@@ -103,7 +103,7 @@ export default {
           <div>
             我把它藏在了源码里，感兴趣的话可以找一找它（线索提示 // TODO）
           </div>
-        )
+        ),
       })
     },
     async doCheckRootCa () {
@@ -126,7 +126,7 @@ export default {
           // const rootCa = this.setting.rootCa
           // rootCa.noTip = true
           // this.$api.setting.save(this.setting)
-        }
+        },
       })
     },
     openSetupCa () {
@@ -192,7 +192,7 @@ export default {
         },
         doClick: (checked) => {
           this.onSwitchClick(this.switchBtns[key], apiTarget.start, apiTarget.close, checked)
-        }
+        },
       }
     },
     async apiCall (btn, api, param) {
@@ -249,10 +249,10 @@ export default {
         cancelText: '下次还显示',
         onOk: () => {
           this.$api.config.update({ app: { showShutdownTip: false } })
-        }
+        },
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -367,7 +367,7 @@ export default {
         <div>* 本应用完全免费，如果觉得好用，可以给予捐赠。</div>
         <div>* 开源项目持续发展离不开您的支持，感谢</div>
         <div class="payQrcode">
-          <img height="200px" src="/pay.jpg"/>
+          <img height="200px" src="/pay.jpg">
         </div>
       </a-modal>
     </div>
@@ -386,7 +386,7 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding:10px;
+    padding: 10px;
     .donate {
       cursor: pointer;
     }

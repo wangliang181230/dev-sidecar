@@ -50,5 +50,5 @@ module.exports = {
   },
   is (interceptOpt) {
     return !!interceptOpt.requestReplace
-  }
+  },
 }

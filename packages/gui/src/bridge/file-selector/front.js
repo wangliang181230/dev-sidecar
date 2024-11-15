@@ -13,10 +13,10 @@ function install (app, api) {
           api.ipc.on('file-selector', () => {})
         })
       })
-    }
+    },
   }
 }
 
 export default {
-  install
+  install,
 }

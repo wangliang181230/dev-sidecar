@@ -1,5 +1,5 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const jsonApi = require('@docmirror/mitmproxy/src/json')
 const lodash = require('lodash')
 const request = require('request')
@@ -86,7 +86,7 @@ const configApi = {
 
       const headers = {
         'Cache-Control': 'no-cache', // 禁止使用缓存
-        Pragma: 'no-cache' // 禁止使用缓存
+        'Pragma': 'no-cache', // 禁止使用缓存
       }
       if (remoteConfigUrl.startsWith('https://raw.githubusercontent.com/')) {
         headers['Server-Name'] = 'baidu.com'
@@ -205,7 +205,7 @@ const configApi = {
 
     return {
       diffConfig,
-      allConfig
+      allConfig,
     }
   },
   doMerge: mergeApi.doMerge,
@@ -330,7 +330,7 @@ const configApi = {
       list.push({
         key,
         value: map[key],
-        exists
+        exists,
       })
     }
     return list
@@ -342,7 +342,7 @@ const configApi = {
     })
     if (list.length > 0) {
       const context = {
-        root_ca_cert_path: configApi.get().server.setting.rootCaFile.certPath
+        root_ca_cert_path: configApi.get().server.setting.rootCaFile.certPath,
       }
       for (const item of noSetList) {
         if (item.value.includes('${')) {
@@ -354,7 +354,7 @@ const configApi = {
       const method = type === 'npm' ? Shell.setNpmEnv : Shell.setSystemEnv
       return method({ list: noSetList })
     }
-  }
+  },
 }
 
 module.exports = configApi

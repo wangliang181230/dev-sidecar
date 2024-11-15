@@ -6,7 +6,7 @@ import Plugin from '../mixins/plugin'
 export default {
   name: 'Server',
   components: {
-    VueJsonEditor
+    VueJsonEditor,
   },
   mixins: [Plugin],
   data () {
@@ -14,7 +14,7 @@ export default {
       key: 'server',
       dnsMappings: [],
       speedTestList: [],
-      whiteList: []
+      whiteList: [],
     }
   },
   computed: {
@@ -26,11 +26,11 @@ export default {
       _.forEach(this.config.server.dns.providers, (dnsConfig, key) => {
         options.push({
           value: key,
-          label: key
+          label: key,
         })
       })
       return options
-    }
+    },
   },
   created () {
   },
@@ -72,7 +72,8 @@ export default {
       for (const key in this.config.server.dns.mapping) {
         const value = this.config.server.dns.mapping[key]
         this.dnsMappings.push({
-          key, value
+          key,
+          value,
         })
       }
     },
@@ -101,7 +102,8 @@ export default {
       for (const key in this.config.server.whiteList) {
         const value = this.config.server.whiteList[key]
         this.whiteList.push({
-          key, value
+          key,
+          value,
         })
       }
     },
@@ -169,8 +171,8 @@ export default {
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'))
       }, 10)
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -200,7 +202,9 @@ export default {
               <a-tag v-else color="red">
                 当前未启动
               </a-tag>
-              <a-button class="md-mr-10" icon="profile" @click="openLog()">日志</a-button>
+              <a-button class="md-mr-10" icon="profile" @click="openLog()">
+                日志
+              </a-button>
             </a-form-item>
             <a-form-item label="绑定IP" :label-col="labelCol" :wrapper-col="wrapperCol">
               <a-input v-model="config.server.host" />
@@ -214,7 +218,7 @@ export default {
                 修改后需要重启应用
               </div>
             </a-form-item>
-            <hr/>
+            <hr>
             <a-form-item label="全局校验SSL" :label-col="labelCol" :wrapper-col="wrapperCol">
               <a-checkbox v-model="config.server.setting.NODE_TLS_REJECT_UNAUTHORIZED">
                 NODE_TLS_REJECT_UNAUTHORIZED
@@ -243,7 +247,7 @@ export default {
                 @search="onKeySelect"
               />
             </a-form-item>
-            <hr/>
+            <hr>
             <a-form-item label="启用拦截" :label-col="labelCol" :wrapper-col="wrapperCol">
               <a-checkbox v-model="config.server.intercept.enabled">
                 启用拦截
@@ -274,7 +278,7 @@ export default {
               请求：<a-input-number v-model="config.server.setting.defaultTimeout" :step="1000" :min="1000" /> ms，对应<code>timeout</code>配置<br>
               连接：<a-input-number v-model="config.server.setting.defaultKeepAliveTimeout" :step="1000" :min="1000" /> ms，对应<code>keepAliveTimeout</code>配置
             </a-form-item>
-            <hr style="margin-bottom:15px"/>
+            <hr style="margin-bottom:15px">
             <div>这里指定域名的超时时间：<span class="form-help">（域名配置可使用通配符或正则）</span></div>
             <VueJsonEditor
               ref="editor" v-model="config.server.setting.timeoutMapping" style="flex-grow:1;min-height:300px;margin-top:10px" mode="code"
@@ -403,8 +407,12 @@ export default {
             <a-divider />
             <a-row :gutter="10" class="mt10">
               <a-col span="24">
-                <a-button type="primary" icon="plus" @click="reSpeedTest()">立即重新测速</a-button>
-                <a-button class="md-ml-10" type="primary" icon="reload" @click="reloadAllSpeedTester()">刷新</a-button>
+                <a-button type="primary" icon="plus" @click="reSpeedTest()">
+                  立即重新测速
+                </a-button>
+                <a-button class="md-ml-10" type="primary" icon="reload" @click="reloadAllSpeedTester()">
+                  刷新
+                </a-button>
               </a-col>
             </a-row>
 
@@ -430,8 +438,12 @@ export default {
     </div>
     <template slot="footer">
       <div class="footer-bar">
-        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">恢复默认</a-button>
-        <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">应用</a-button>
+        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">
+          恢复默认
+        </a-button>
+        <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">
+          应用
+        </a-button>
       </div>
     </template>
   </ds-container>
@@ -450,7 +462,7 @@ export default {
   }
 
   .jsoneditor-vue {
-    height: 100%
+    height: 100%;
   }
 
   .ant-tabs {

@@ -78,7 +78,7 @@ module.exports = {
       res.setHeader('DS-Script-Interceptor', 'true')
       log.info(`script response intercept: insert script ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`, ', head:', tags)
       return {
-        head: `${tags}\r\n`
+        head: `${tags}\r\n`,
       }
     } catch (err) {
       try {
@@ -156,19 +156,19 @@ module.exports = {
                 headers: {
                   host: REMOVE,
                   referer: REMOVE,
-                  cookie: REMOVE
-                }
+                  cookie: REMOVE,
+                },
               },
               // 替换和移除部分响应头，避免触发目标站点的阻止脚本加载策略
               responseReplace: {
                 headers: {
                   'content-type': 'application/javascript; charset=utf-8',
                   'set-cookie': REMOVE,
-                  server: REMOVE
-                }
+                  'server': REMOVE,
+                },
               },
               cacheDays: 7,
-              desc: "为伪脚本文件设置代理地址，并设置响应头 `content-type: 'application/javascript; charset=utf-8'`，同时缓存7天。"
+              desc: '为伪脚本文件设置代理地址，并设置响应头 `content-type: \'application/javascript; charset=utf-8\'`，同时缓存7天。',
             }
 
             const obj = {}
@@ -183,11 +183,11 @@ module.exports = {
             hostnameConfig[scriptKey] = {
               responseReplace: {
                 headers: {
-                  'content-type': 'application/javascript; charset=utf-8'
-                }
+                  'content-type': 'application/javascript; charset=utf-8',
+                },
               },
               cacheDays: 7,
-              desc: "为脚本设置响应头 `content-type: 'application/javascript; charset=utf-8'`，同时缓存7天。"
+              desc: '为脚本设置响应头 `content-type: \'application/javascript; charset=utf-8\'`，同时缓存7天。',
             }
 
             const obj = {}
@@ -197,5 +197,5 @@ module.exports = {
         }
       }
     }
-  }
+  },
 }

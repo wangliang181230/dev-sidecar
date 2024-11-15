@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('node:fs')
 const forge = require('node-forge')
 const log = require('../../../utils/util.log')
 const FakeServersCenter = require('../tls/FakeServersCenter')
@@ -9,7 +9,7 @@ module.exports = function createFakeServerCenter ({
   caKeyPath,
   requestHandler,
   upgradeHandler,
-  getCertSocketTimeout
+  getCertSocketTimeout,
 }) {
   let caCert
   let caKey
@@ -31,6 +31,6 @@ module.exports = function createFakeServerCenter ({
     maxLength,
     requestHandler,
     upgradeHandler,
-    getCertSocketTimeout
+    getCertSocketTimeout,
   })
 }

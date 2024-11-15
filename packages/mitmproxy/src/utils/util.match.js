@@ -178,5 +178,5 @@ module.exports = {
   domainRegexply,
   domainMapRegexply,
   matchHostname,
-  matchHostnameAll
+  matchHostnameAll,
 }

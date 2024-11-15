@@ -9,7 +9,7 @@ const modules = {
   fileSelector, // 文件选择模块
   tongji, // 统计模块
   update, // 自动更新
-  autoStart
+  autoStart,
 }
 export default {
   install (context) {
@@ -18,5 +18,5 @@ export default {
       modules[module].install(context)
     }
   },
-  ...modules
+  ...modules,
 }

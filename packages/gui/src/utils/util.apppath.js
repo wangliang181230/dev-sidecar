@@ -1,5 +1,5 @@
-import os from 'os'
-import path from 'path'
+import os from 'node:os'
+import path from 'node:path'
 
 function getSystemPlatform () {
   switch (os.platform()) {
@@ -23,5 +23,5 @@ export default {
       return path.join(exePath, '../../')
     }
     return path.join(exePath, '../')
-  }
+  },
 }

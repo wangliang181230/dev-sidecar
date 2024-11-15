@@ -27,7 +27,7 @@ const AipOcrClientMap = {}
 const apis = [
   'accurateBasic', // 调用通用文字识别（高精度版）
   'accurate', // 调用通用文字识别（含位置高精度版）
-  'handwriting' // 手写文字识别
+  'handwriting', // 手写文字识别
 ]
 const limitMap = {}
 
@@ -116,7 +116,7 @@ module.exports = {
 
     const headers = {
       'Content-Type': 'application/json; charset=utf-8',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
     }
 
     // 获取配置
@@ -153,7 +153,7 @@ module.exports = {
       detect_direction: 'false',
       paragraph: 'false',
       probability: 'false',
-      ...(config.options || {})
+      ...(config.options || {}),
     }
     log.info('发起百度ocr请求', req.hostname)
     client[config.api || apis[0]](imageBase64, options).then((result) => {
@@ -190,5 +190,5 @@ module.exports = {
   },
   is (interceptOpt) {
     return !!interceptOpt.baiduOcr
-  }
+  },
 }

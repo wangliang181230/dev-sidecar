@@ -1,4 +1,4 @@
-const url = require('url')
+const url = require('node:url')
 const lodash = require('lodash')
 
 // 替换占位符
@@ -15,7 +15,7 @@ function replacePlaceholder (url, rOptions, matched) {
 
     // 移除多余的占位符
     if (url.includes('${')) {
-      url = url.replace(/\$\{[^}]+}/g, '')
+      url = url.replace(/\$\{[^}]+\}/g, '')
     }
   }
 
@@ -101,7 +101,7 @@ module.exports = {
         context.requestCount = {
           key,
           value: count.value,
-          count
+          count,
         }
       }
     }
@@ -133,5 +133,5 @@ module.exports = {
   },
   is (interceptOpt) {
     return !!interceptOpt.proxy
-  }
+  },
 }

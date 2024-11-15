@@ -22,7 +22,7 @@ function install (app, api) {
     },
     doUpdateNow () {
       api.ipc.send('update', { key: 'doUpdateNow' })
-    }
+    },
   }
 
   function handleUpdateMessage (message) {
@@ -75,7 +75,6 @@ function install (app, api) {
   function goManualUpdate (value) {
     updateParams.newVersion = false
     app.$confirm({
-      // title: '暂不支持自动升级',
       title: '暂不提供自动升级',
       cancelText: '取消',
       okText: '打开链接',
@@ -83,14 +82,18 @@ function install (app, api) {
       content: (h) => {
         return (
           <div>
-            <div>请前往 <a onClick={openGithubUrl}>github项目release页面</a> 下载新版本手动安装</div>
+            <div>
+              请前往
+              <a onClick={openGithubUrl}>github项目release页面</a>
+              下载新版本手动安装
+            </div>
             <div><a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a></div>
           </div>
         )
       },
       onOk () {
         openGithubUrl()
-      }
+      },
     })
   }
 
@@ -154,8 +157,11 @@ function install (app, api) {
             const releaseNotes = value.releaseNotes.replace(/\r\n/g, '\n')
             return (
               <div>
-                <div>发布公告：<a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a></div>
-                <hr/>
+                <div>
+                  发布公告：
+                  <a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a>
+                </div>
+                <hr />
                 <pre style="max-height:350px;font-family:auto">
                   {releaseNotes}
                 </pre>
@@ -167,7 +173,10 @@ function install (app, api) {
             }
             return (
               <div>
-                <div>发布公告：<a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a></div>
+                <div>
+                  发布公告：
+                  <a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a>
+                </div>
                 <div>更新内容：</div>
                 <ol>{notes}</ol>
               </div>
@@ -181,7 +190,7 @@ function install (app, api) {
       },
       onCancel () {
         console.log('Cancel')
-      }
+      },
     })
   }
 
@@ -200,8 +209,11 @@ function install (app, api) {
             const releaseNotes = value.releaseNotes.replace(/\r\n/g, '\n')
             return (
               <div>
-                <div>发布公告：<a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a></div>
-                <hr/>
+                <div>
+                  发布公告：
+                  <a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a>
+                </div>
+                <hr />
                 <pre style="max-height:350px;font-family:auto">
                   {releaseNotes}
                 </pre>
@@ -213,7 +225,10 @@ function install (app, api) {
             }
             return (
               <div>
-                <div>发布公告：<a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a></div>
+                <div>
+                  发布公告：
+                  <a onClick={openGithubUrl}>https://github.com/docmirror/dev-sidecar/releases</a>
+                </div>
                 <div>更新内容：</div>
                 <ol>{notes}</ol>
               </div>
@@ -223,11 +238,11 @@ function install (app, api) {
       },
       onOk () {
         api.update.doUpdateNow()
-      }
+      },
     })
   }
 }
 
 export default {
-  install
+  install,
 }

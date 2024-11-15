@@ -1,4 +1,4 @@
-const url = require('url')
+const url = require('node:url')
 const tunnelAgent = require('tunnel-agent')
 const log = require('../../../utils/util.log')
 const matchUtil = require('../../../utils/util.match')
@@ -21,7 +21,7 @@ function getTimeoutConfig (hostname, serverSetting) {
 
   return {
     timeout: timeoutConfig.timeout || serverSetting.defaultTimeout || 20000,
-    keepAliveTimeout: timeoutConfig.keepAliveTimeout || serverSetting.defaultKeepAliveTimeout || 30000
+    keepAliveTimeout: timeoutConfig.keepAliveTimeout || serverSetting.defaultKeepAliveTimeout || 30000,
   }
 }
 
@@ -40,7 +40,7 @@ function createHttpsAgent (timeoutConfig, verifySsl) {
       timeout: timeoutConfig.timeout,
       keepAliveTimeout: timeoutConfig.keepAliveTimeout,
       checkServerIdentity,
-      rejectUnauthorized: verifySsl
+      rejectUnauthorized: verifySsl,
     })
 
     agent.unVerifySslAgent = new HttpsAgent({
@@ -48,7 +48,7 @@ function createHttpsAgent (timeoutConfig, verifySsl) {
       timeout: timeoutConfig.timeout,
       keepAliveTimeout: timeoutConfig.keepAliveTimeout,
       checkServerIdentity,
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
     })
 
     httpsAgentCache[key] = agent
@@ -63,7 +63,7 @@ function createHttpAgent (timeoutConfig) {
     httpAgentCache[key] = new Agent({
       keepAlive: true,
       timeout: timeoutConfig.timeout,
-      keepAliveTimeout: timeoutConfig.keepAliveTimeout
+      keepAliveTimeout: timeoutConfig.keepAliveTimeout,
     })
     log.info('创建 HttpAgent 成功, timeoutConfig:', timeoutConfig)
   }
@@ -150,7 +150,7 @@ util.getOptionsFromRequest = (req, ssl, externalProxy = null, serverSetting, com
     path: urlObject.path,
     headers: req.headers,
     agent,
-    compatibleConfig
+    compatibleConfig,
   }
 
   // eslint-disable-next-line node/no-deprecated-api
@@ -189,8 +189,8 @@ util.getTunnelAgent = (requestIsSSL, externalProxyUrl) => {
         httpsOverHttpAgent = tunnelAgent.httpsOverHttp({
           proxy: {
             host: hostname,
-            port
-          }
+            port,
+          },
         })
       }
       return httpsOverHttpAgent
@@ -199,8 +199,8 @@ util.getTunnelAgent = (requestIsSSL, externalProxyUrl) => {
         httpsOverHttpsAgent = tunnelAgent.httpsOverHttps({
           proxy: {
             host: hostname,
-            port
-          }
+            port,
+          },
         })
       }
       return httpsOverHttpsAgent
@@ -221,8 +221,8 @@ util.getTunnelAgent = (requestIsSSL, externalProxyUrl) => {
         httpOverHttpsAgent = tunnelAgent.httpOverHttps({
           proxy: {
             host: hostname,
-            port
-          }
+            port,
+          },
         })
       }
       return httpOverHttpsAgent

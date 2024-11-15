@@ -17,7 +17,7 @@ const executor = {
     const cmds = [`open "${certPath}"`]
     await exec(cmds, { type: 'cmd' })
     return true
-  }
+  },
 }
 
 module.exports = async function (args) {

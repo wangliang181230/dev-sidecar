@@ -170,7 +170,7 @@ module.exports = function extractSNI (data) {
             sniName,
             start: n,
             end: n + nameLength,
-            length: nameLength
+            length: nameLength,
           }
         } else {
           n += nameLength

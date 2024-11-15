@@ -5,7 +5,7 @@ export default {
       if (message.key === 'open') {
         dialog.showOpenDialog({
           properties: ['openFile'],
-          ...message
+          ...message,
         }).then((result) => {
           if (result.canceled) {
             event.sender.send('file-selector', { key: 'canceled' })
@@ -17,5 +17,5 @@ export default {
         })
       }
     })
-  }
+  },
 }

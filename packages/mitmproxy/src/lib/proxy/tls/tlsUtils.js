@@ -1,7 +1,6 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const _ = require('lodash')
-const mkdirp = require('mkdirp')
 const forge = require('node-forge')
 const log = require('../../../utils/util.log')
 const config = require('../common/config')
@@ -29,35 +28,35 @@ utils.createCA = function (CN) {
   cert.validity.notAfter.setFullYear(cert.validity.notAfter.getFullYear() + 20)
   const attrs = [{
     name: 'commonName',
-    value: CN
+    value: CN,
   }, {
     name: 'countryName',
-    value: 'CN'
+    value: 'CN',
   }, {
     shortName: 'ST',
-    value: 'GuangDong'
+    value: 'GuangDong',
   }, {
     name: 'localityName',
-    value: 'ShenZhen'
+    value: 'ShenZhen',
   }, {
     name: 'organizationName',
-    value: 'dev-sidecar'
+    value: 'dev-sidecar',
   }, {
     shortName: 'OU',
-    value: 'https://github.com/docmirror/dev-sidecar'
+    value: 'https://github.com/docmirror/dev-sidecar',
   }]
   cert.setSubject(attrs)
   cert.setIssuer(attrs)
   cert.setExtensions([{
     name: 'basicConstraints',
     critical: true,
-    cA: true
+    cA: true,
   }, {
     name: 'keyUsage',
     critical: true,
-    keyCertSign: true
+    keyCertSign: true,
   }, {
-    name: 'subjectKeyIdentifier'
+    name: 'subjectKeyIdentifier',
   }])
 
   // self-sign certificate
@@ -65,7 +64,7 @@ utils.createCA = function (CN) {
 
   return {
     key: keys.privateKey,
-    cert
+    cert,
   }
 }
 
@@ -79,29 +78,29 @@ utils.createFakeCertificateByDomain = function (caKey, caCert, domain) {
   const cert = pki.createCertificate()
   cert.publicKey = keys.publicKey
 
-  cert.serialNumber = `${Date.now()}`
+  cert.serialNumber = `${(new Date()).getTime()}`
   cert.validity.notBefore = new Date()
   cert.validity.notBefore.setFullYear(cert.validity.notBefore.getFullYear() - 1)
   cert.validity.notAfter = new Date()
   cert.validity.notAfter.setFullYear(cert.validity.notAfter.getFullYear() + 1)
   const attrs = [{
     name: 'commonName',
-    value: domain
+    value: domain,
   }, {
     name: 'countryName',
-    value: 'CN'
+    value: 'CN',
   }, {
     shortName: 'ST',
-    value: 'GuangDong'
+    value: 'GuangDong',
   }, {
     name: 'localityName',
-    value: 'ShenZhen'
+    value: 'ShenZhen',
   }, {
     name: 'organizationName',
-    value: 'dev-sidecar'
+    value: 'dev-sidecar',
   }, {
     shortName: 'OU',
-    value: 'https://github.com/docmirror/dev-sidecar'
+    value: 'https://github.com/docmirror/dev-sidecar',
   }]
 
   cert.setIssuer(caCert.subject.attributes)
@@ -110,7 +109,7 @@ utils.createFakeCertificateByDomain = function (caKey, caCert, domain) {
   cert.setExtensions([{
     name: 'basicConstraints',
     critical: true,
-    cA: false
+    cA: false,
   },
   // {
   //   name: 'keyUsage',
@@ -129,25 +128,25 @@ utils.createFakeCertificateByDomain = function (caKey, caCert, domain) {
     name: 'subjectAltName',
     altNames: [{
       type: 2,
-      value: domain
-    }]
+      value: domain,
+    }],
   }, {
-    name: 'subjectKeyIdentifier'
+    name: 'subjectKeyIdentifier',
   }, {
     name: 'extKeyUsage',
     serverAuth: true,
     clientAuth: true,
     codeSigning: true,
     emailProtection: true,
-    timeStamping: true
+    timeStamping: true,
   }, {
-    name: 'authorityKeyIdentifier'
+    name: 'authorityKeyIdentifier',
   }])
   cert.sign(caKey, forge.md.sha256.create())
 
   return {
     key: keys.privateKey,
-    cert
+    cert,
   }
 }
 
@@ -173,7 +172,7 @@ utils.createFakeCertificateByCA = function (caKey, caCert, originCertificate) {
   cert.setExtensions([{
     name: 'basicConstraints',
     critical: true,
-    cA: false
+    cA: false,
   }, {
     name: 'keyUsage',
     critical: true,
@@ -185,27 +184,27 @@ utils.createFakeCertificateByCA = function (caKey, caCert, originCertificate) {
     keyCertSign: true,
     cRLSign: true,
     encipherOnly: true,
-    decipherOnly: true
+    decipherOnly: true,
   }, {
     name: 'subjectAltName',
-    altNames: subjectAltName.altNames
+    altNames: subjectAltName.altNames,
   }, {
-    name: 'subjectKeyIdentifier'
+    name: 'subjectKeyIdentifier',
   }, {
     name: 'extKeyUsage',
     serverAuth: true,
     clientAuth: true,
     codeSigning: true,
     emailProtection: true,
-    timeStamping: true
+    timeStamping: true,
   }, {
-    name: 'authorityKeyIdentifier'
+    name: 'authorityKeyIdentifier',
   }])
   cert.sign(caKey, forge.md.sha256.create())
 
   return {
     key: keys.privateKey,
-    cert
+    cert,
   }
 }
 
@@ -243,7 +242,7 @@ utils.initCA = function ({ caCertPath, caKeyPath }) {
     return {
       caCertPath,
       caKeyPath,
-      create: false
+      create: false,
     }
   } catch (e) {
     const caObj = utils.createCA(config.caName)
@@ -253,8 +252,7 @@ utils.initCA = function ({ caCertPath, caKeyPath }) {
 
     const certPem = pki.certificateToPem(caCert)
     const keyPem = pki.privateKeyToPem(cakey)
-
-    mkdirp.sync(path.dirname(caCertPath))
+    fs.mkdirSync(path.dirname(caCertPath), { recursive: true })
     fs.writeFileSync(caCertPath, certPem)
     fs.writeFileSync(caKeyPath, keyPem)
     log.info('生成证书文件成功，共2个文件:', caCertPath, caKeyPath)
@@ -262,6 +260,6 @@ utils.initCA = function ({ caCertPath, caKeyPath }) {
   return {
     caCertPath,
     caKeyPath,
-    create: true
+    create: true,
   }
 }

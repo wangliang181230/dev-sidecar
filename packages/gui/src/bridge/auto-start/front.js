@@ -9,10 +9,10 @@ function install (app, api) {
   api.autoStart = {
     async enabled (value) {
       api.ipc.send('auto-start', { key: 'enabled', value })
-    }
+    },
   }
 }
 
 export default {
-  install
+  install,
 }

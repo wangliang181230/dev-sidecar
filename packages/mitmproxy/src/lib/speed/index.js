@@ -28,7 +28,7 @@ function getAllSpeedTester () {
     allSpeed[key] = {
       hostname: key,
       alive: item.alive,
-      backupList: item.backupList
+      backupList: item.backupList,
     }
   })
   return allSpeed
@@ -71,5 +71,5 @@ module.exports = {
   getAllSpeedTester,
   registerNotify,
   reSpeedTest,
-  action
+  action,
 }

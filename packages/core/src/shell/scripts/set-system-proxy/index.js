@@ -1,12 +1,12 @@
 /**
  * 获取环境变量
  */
-const Registry = require('winreg')
-const Shell = require('../../shell')
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const request = require('request')
+const Registry = require('winreg')
 const log = require('../../../utils/util.log')
+const Shell = require('../../shell')
 const extraPath = require('../extra-path/index')
 
 const execute = Shell.execute
@@ -27,7 +27,7 @@ async function _winUnsetProxy (exec, setEnv) {
     await exec('echo \'删除环境变量 HTTPS_PROXY、HTTP_PROXY\'')
     const regKey = new Registry({ // new operator is optional
       hive: Registry.HKCU, // open registry hive HKEY_CURRENT_USER
-      key: '\\Environment' // key containing autostart programs
+      key: '\\Environment', // key containing autostart programs
     })
     regKey.get('HTTPS_PROXY', (err) => {
       if (!err) {
@@ -275,7 +275,7 @@ const executor = {
       const setProxyCmd = [
         'gsettings set org.gnome.system.proxy mode manual',
         `gsettings set org.gnome.system.proxy.https host ${ip}`,
-        `gsettings set org.gnome.system.proxy.https port ${port}`
+        `gsettings set org.gnome.system.proxy.https port ${port}`,
       ]
       // http
       if (config.get().proxy.proxyHttp) {
@@ -293,7 +293,7 @@ const executor = {
       await exec(setProxyCmd)
     } else { // 关闭代理
       const setProxyCmd = [
-        'gsettings set org.gnome.system.proxy mode none'
+        'gsettings set org.gnome.system.proxy mode none',
       ]
       await exec(setProxyCmd)
     }
@@ -341,7 +341,7 @@ const executor = {
       // `
       // await exec(removeEnv)
     }
-  }
+  },
 }
 
 module.exports = async function (args) {

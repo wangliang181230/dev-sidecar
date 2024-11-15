@@ -8,7 +8,7 @@ export function apiInit (app) {
     return ipcRenderer.invoke('apiInvoke', [api, args]).catch((e) => {
       app.$notification.error({
         message: 'Api invoke error',
-        description: e.message
+        description: e.message,
       })
     })
   }
@@ -32,8 +32,8 @@ export function apiInit (app) {
       },
       openPath (file) {
         shell.openPath(file)
-      }
-    }
+      },
+    },
   }
 
   const bindApi = (api, param1) => {

@@ -8,7 +8,7 @@ export default {
     const exeFile = DevSidecar.api.shell.extraPath.getEnableLoopbackPath()
     await sudoer.exec(
       exeFile,
-      { env: { PARAM: 'VALUE' } }
+      { env: { PARAM: 'VALUE' } },
     )
-  }
+  },
 }

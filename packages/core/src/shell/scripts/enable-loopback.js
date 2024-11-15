@@ -16,7 +16,7 @@ const executor = {
   },
   async mac (exec, { port }) {
     throw new Error('不支持此操作')
-  }
+  },
 }
 
 module.exports = async function (args) {

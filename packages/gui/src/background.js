@@ -1,11 +1,12 @@
 'use strict'
 /* global __static */
-import path from 'path'
+import path from 'node:path'
 import DevSidecar from '@docmirror/dev-sidecar'
 import { app, BrowserWindow, dialog, globalShortcut, ipcMain, Menu, nativeImage, nativeTheme, powerMonitor, protocol, Tray } from 'electron'
 import minimist from 'minimist'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import backend from './bridge/backend'
+import jsonApi from '@docmirror/mitmproxy/src/json'
 import log from './utils/util.log'
 
 const isWindows = process.platform === 'win32'
@@ -26,7 +27,7 @@ DevSidecar.api.config.reload()
 let hideDockWhenWinClose = DevSidecar.api.config.get().app.dock.hideWhenWinClose || false
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'app', privileges: { secure: true, standard: true } }
+  { scheme: 'app', privileges: { secure: true, standard: true } },
 ])
 
 function openDevTools () {
@@ -71,7 +72,7 @@ function setTray () {
     {
       // 系统托盘图标目录
       label: 'DevTools (F12)',
-      click: switchDevTools
+      click: switchDevTools,
     },
     {
       // 系统托盘图标目录
@@ -80,8 +81,8 @@ function setTray () {
         log.info('force quit')
         forceClose = true
         quit()
-      }
-    }
+      },
+    },
   ]
   // 设置系统托盘图标
   const iconRootPath = path.join(__dirname, '../extra/icons/tray')
@@ -179,10 +180,10 @@ function createWindow (startHideWindow) {
       // preload: path.join(__dirname, 'preload.js'),
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: true // process.env.ELECTRON_NODE_INTEGRATION
+      nodeIntegration: true, // process.env.ELECTRON_NODE_INTEGRATION
     },
     show: !startHideWindow,
-    icon: path.join(__static, 'icon.png')
+    icon: path.join(__static, 'icon.png'),
   })
   winIsHidden = !!startHideWindow
 
@@ -260,7 +261,6 @@ function createWindow (startHideWindow) {
       event.preventDefault()
       // 切换开发者工具显示状态
       switchDevTools()
-      // eslint-disable-next-line brace-style
     }
     // 按 F5，刷新页面
     else if (input.key === 'F5') {
@@ -372,7 +372,7 @@ if (app.getLoginItemSettings().wasOpenedAsHidden) {
     startHideWindow = false
   }
 }
-log.info('start hide window:', startHideWindow, app.getLoginItemSettings())
+log.info('startHideWindow = ', startHideWindow, ', app.getLoginItemSettings() = ', jsonApi.stringify2(app.getLoginItemSettings()))
 
 // 禁止双开
 const isFirstInstance = app.requestSingleInstanceLock()

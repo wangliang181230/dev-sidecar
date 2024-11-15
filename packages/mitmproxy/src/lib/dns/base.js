@@ -1,4 +1,4 @@
-const LRU = require('lru-cache')
+const LRUCache = require('lru-cache')
 const log = require('../../utils/util.log')
 const { DynamicChoice } = require('../choice/index')
 
@@ -23,7 +23,12 @@ class IpCache extends DynamicChoice {
 
 module.exports = class BaseDNS {
   constructor () {
-    this.cache = new LRU(cacheSize)
+    this.cache = new LRUCache({
+      maxSize: cacheSize,
+      sizeCalculation: () => {
+        return 1
+      },
+    })
   }
 
   count (hostname, ip, isError = true) {
@@ -59,7 +64,7 @@ module.exports = class BaseDNS {
 
       return ipCache.value
     } catch (error) {
-      log.error(`[DNS] cannot resolve hostname ${hostname} (${error})`, error)
+      log.error(`[DNS] cannot resolve hostname ${hostname}, error:`, error)
       return hostname
     }
   }

@@ -11,8 +11,8 @@ const dnsMap = dns.initDNS({
   cloudflare: {
     type: 'https',
     server: 'https://1.1.1.1/dns-query',
-    cacheSize: 1000
-  }
+    cacheSize: 1000,
+  },
   // py233: { //污染
   //   type: 'https',
   //   server: ' https://i.233py.com/dns-query',

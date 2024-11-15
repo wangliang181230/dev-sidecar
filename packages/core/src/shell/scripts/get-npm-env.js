@@ -20,7 +20,7 @@ const executor = {
   },
   async mac (exec, { port }) {
     throw new Error('暂未实现此功能')
-  }
+  },
 }
 
 module.exports = async function (args) {

@@ -30,7 +30,7 @@ const Plugin = function (context) {
     async setProxy (ip, port) {
       const cmds = [
         `git config --global http.proxy  http://${ip}:${port} `,
-        `git config --global https.proxy http://${ip}:${port} `
+        `git config --global https.proxy http://${ip}:${port} `,
       ]
 
       if (config.get().plugin.git.setting.sslVerify === true) {
@@ -77,7 +77,7 @@ const Plugin = function (context) {
       event.fire('status', { key: 'plugin.git.enabled', value: false })
       log.info('关闭【Git】代理成功')
       return ret
-    }
+    },
   }
   return pluginApi
 }
@@ -86,7 +86,7 @@ module.exports = {
   key: 'git',
   config: pluginConfig,
   status: {
-    enabled: false
+    enabled: false,
   },
-  plugin: Plugin
+  plugin: Plugin,
 }

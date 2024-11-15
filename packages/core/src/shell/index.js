@@ -22,5 +22,5 @@ module.exports = {
   async exec (cmds, args) {
     return shell.getSystemShell().exec(cmds, args)
   },
-  getSystemPlatform: shell.getSystemPlatform
+  getSystemPlatform: shell.getSystemPlatform,
 }

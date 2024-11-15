@@ -50,5 +50,5 @@ module.exports = {
     if (providerName) {
       return dnsConfig.dnsMap[providerName]
     }
-  }
+  },
 }

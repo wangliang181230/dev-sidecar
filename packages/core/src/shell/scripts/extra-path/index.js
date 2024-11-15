@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('node:path')
 const log = require('../../../utils/util.log')
 
 function getExtraPath () {
@@ -27,5 +27,5 @@ function getEnableLoopbackPath () {
 module.exports = {
   getProxyExePath,
   getEnableLoopbackPath,
-  getClearBatPath
+  getClearBatPath,
 }

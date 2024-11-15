@@ -9,7 +9,7 @@ export default {
       key: 'plugin.pip',
       npmVariables: undefined,
       registry: false,
-      trustedHostList: []
+      trustedHostList: [],
     }
   },
   created () {
@@ -36,8 +36,8 @@ export default {
       const domain = registry.substring(registry.indexOf('//') + 2, registry.indexOf('/', 8))
       this.config.plugin.pip.setting.trustedHost = domain
       await this.apply()
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -112,7 +112,7 @@ export default {
         <a-form-item label="信任仓库域名" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input v-model="config.plugin.pip.setting.trustedHost" />
           <div class="form-help">
-            使用以上域名安装包时，不会进行SSL证书验证，多个域名用空格隔开<br/>
+            使用以上域名安装包时，不会进行SSL证书验证，多个域名用空格隔开<br>
             注意：切换仓库镜像同时会修改<code>pip.ini</code>中的<code>trusted-host</code>配置，即使关闭 ds 也会继续保持
           </div>
         </a-form-item>
@@ -120,8 +120,12 @@ export default {
     </div>
     <template slot="footer">
       <div class="footer-bar">
-        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">恢复默认</a-button>
-        <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">应用</a-button>
+        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">
+          恢复默认
+        </a-button>
+        <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">
+          应用
+        </a-button>
       </div>
     </template>
   </ds-container>

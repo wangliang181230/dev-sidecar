@@ -36,11 +36,11 @@ function install (app, api) {
       },
       onCancel () {
         console.log('Cancel. closeType=', closeType)
-      }
+      },
     })
   })
 }
 
 export default {
-  install
+  install,
 }

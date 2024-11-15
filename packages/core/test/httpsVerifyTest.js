@@ -1,4 +1,4 @@
-const https = require('https')
+const https = require('node:https')
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1'
 
@@ -9,7 +9,7 @@ function request () {
       port: 443,
       path: '/ssltest.php',
       method: 'GET',
-      rejectUnauthorized: true
+      rejectUnauthorized: true,
     }
     console.log('ssl test: gagedigital')
     const req = https.request(options, (res) => {

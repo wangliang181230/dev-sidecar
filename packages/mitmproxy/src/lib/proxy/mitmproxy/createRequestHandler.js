@@ -1,5 +1,5 @@
-const http = require('http')
-const https = require('https')
+const http = require('node:http')
+const https = require('node:https')
 const jsonApi = require('../../../json')
 const log = require('../../../utils/util.log')
 const RequestCounter = require('../../choice/RequestCounter')
@@ -32,16 +32,16 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
       rOptions,
       log,
       RequestCounter,
-      setting
+      setting,
     }
     let interceptors = createIntercepts(context)
     if (interceptors == null) {
       interceptors = []
     }
-    const reqIncpts = interceptors.filter(item => {
+    const reqIncpts = interceptors.filter((item) => {
       return item.requestIntercept != null
     })
-    const resIncpts = interceptors.filter(item => {
+    const resIncpts = interceptors.filter((item) => {
       return item.responseIntercept != null
     })
 
@@ -302,7 +302,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             }
             InsertScriptMiddleware.responseInterceptor(req, res, proxyReq, proxyRes, ssl, next, {
               head,
-              body
+              body,
             })
           } else {
             next()
@@ -341,7 +341,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           res.writeHead(status, { 'Content-Type': 'text/html;charset=UTF8' })
           res.write(`DevSidecar Error:<br/>
 目标网站请求错误：【${e.code}】 ${e.message}<br/>
-目标地址：${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`
+目标地址：${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${rOptions.path}`,
           )
         } catch (e) {
           // do nothing
@@ -358,7 +358,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           const ignoreErrors = [
             '代理请求错误: ',
             '代理请求超时: ',
-            '代理请求被取消: '
+            '代理请求被取消: ',
           ]
           for (const ignoreError of ignoreErrors) {
             if (e.message.startsWith(ignoreError)) {
