@@ -1,7 +1,7 @@
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const AdmZip = require('adm-zip')
 const pkg = require('../package.json')
-const fs = require('fs')
 
 function writeAppUpdateYmlForLinux () {
   const publishUrl = process.env.VUE_APP_PUBLISH_URL

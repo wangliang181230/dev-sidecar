@@ -1,5 +1,5 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const log = require('../../../../utils/util.log')
 
 function createPacClient (pacFilePath) {
@@ -20,7 +20,7 @@ function createPacClient (pacFilePath) {
 
   const getRules = function (pacFilePath) {
     let text = readFile(pacFilePath)
-    if (text.indexOf('!---------------------EOF') < 0) {
+    if (!text.includes('!---------------------EOF')) {
       text = Buffer.from(text, 'base64').toString()
     }
     const rules = []

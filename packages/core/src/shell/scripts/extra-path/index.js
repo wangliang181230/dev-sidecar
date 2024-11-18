@@ -1,5 +1,5 @@
+const path = require('node:path')
 const log = require('../../../utils/util.log')
-const path = require('path')
 
 function getExtraPath () {
   let extraPath = process.env.DS_EXTRA_PATH
@@ -27,5 +27,5 @@ function getEnableLoopbackPath () {
 module.exports = {
   getProxyExePath,
   getEnableLoopbackPath,
-  getClearBatPath
+  getClearBatPath,
 }

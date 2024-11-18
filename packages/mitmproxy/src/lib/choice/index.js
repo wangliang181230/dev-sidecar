@@ -1,9 +1,16 @@
-const LRU = require('lru-cache')
-const cacheSize = 1024
+const LRUCache = require('lru-cache')
 const log = require('../../utils/util.log')
+
+const cacheSize = 1024
+
 class ChoiceCache {
   constructor () {
-    this.cache = new LRU(cacheSize)
+    this.cache = new LRUCache({
+      maxSize: cacheSize,
+      sizeCalculation: () => {
+        return 1
+      },
+    })
   }
 
   get (key) {

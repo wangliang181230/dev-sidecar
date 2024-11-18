@@ -1,10 +1,11 @@
-const net = require('net')
-const url = require('url')
+const net = require('node:net')
+const url = require('node:url')
+const jsonApi = require('../../../json')
 const log = require('../../../utils/util.log')
 const DnsUtil = require('../../dns/index')
-const localIP = '127.0.0.1'
 const dnsLookup = require('./dnsLookup')
-const jsonApi = require('../../../json')
+
+const localIP = '127.0.0.1'
 
 function isSslConnect (sslConnectInterceptors, req, cltSocket, head) {
   for (const intercept of sslConnectInterceptors) {
@@ -32,7 +33,7 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
   return function connectHandler (req, cltSocket, head, ssl) {
     // eslint-disable-next-line node/no-deprecated-api
     let { hostname, port } = url.parse(`${ssl ? 'https' : 'http'}://${req.url}`)
-    port = parseInt(port)
+    port = Number.parseInt(port)
 
     if (isSslConnect(sslConnectInterceptors, req, cltSocket, head)) {
       // 需要拦截，代替目标服务器，让客户端连接DS在本地启动的代理服务
@@ -104,7 +105,7 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig = null, isDire
     const options = {
       port,
       host: hostname,
-      connectTimeout: 10000
+      connectTimeout: 10000,
     }
     if (dnsConfig && dnsConfig.dnsMap) {
       const dns = DnsUtil.hasDnsLookup(dnsConfig, hostname)
@@ -114,12 +115,15 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig = null, isDire
     }
     // 代理连接事件监听
     const proxySocket = net.connect(options, () => {
-      if (!isDirect) log.info('Proxy connect start:', hostport)
-      else log.debug('Direct connect start:', hostport)
+      if (!isDirect) {
+        log.info('Proxy connect start:', hostport)
+      } else {
+        log.debug('Direct connect start:', hostport)
+      }
 
-      cltSocket.write('HTTP/1.1 200 Connection Established\r\n' +
-                'Proxy-agent: dev-sidecar\r\n' +
-                '\r\n')
+      cltSocket.write('HTTP/1.1 200 Connection Established\r\n'
+        + 'Proxy-agent: dev-sidecar\r\n'
+        + '\r\n')
       proxySocket.write(head)
       proxySocket.pipe(cltSocket)
 
@@ -130,9 +134,9 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig = null, isDire
       const errorMsg = `${isDirect ? '直连' : '代理连接'}超时: ${hostport}, cost: ${cost} ms`
       log.error(errorMsg)
 
-      cltSocket.write('HTTP/1.1 408 Proxy connect timeout\r\n' +
-          'Proxy-agent: dev-sidecar\r\n' +
-          '\r\n')
+      cltSocket.write('HTTP/1.1 408 Proxy connect timeout\r\n'
+        + 'Proxy-agent: dev-sidecar\r\n'
+        + '\r\n')
       cltSocket.end()
       cltSocket.destroy()
 
@@ -148,9 +152,9 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig = null, isDire
       const errorMsg = `${isDirect ? '直连' : '代理连接'}失败: ${hostport}, cost: ${cost} ms, errorMsg: ${e.message}`
       log.error(`${errorMsg}\r\n`, e)
 
-      cltSocket.write(`HTTP/1.1 400 Proxy connect error: ${e.message}\r\n` +
-          'Proxy-agent: dev-sidecar\r\n' +
-          '\r\n')
+      cltSocket.write(`HTTP/1.1 400 Proxy connect error: ${e.message}\r\n`
+        + 'Proxy-agent: dev-sidecar\r\n'
+        + '\r\n')
       cltSocket.end()
       cltSocket.destroy()
 

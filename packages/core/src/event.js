@@ -6,7 +6,9 @@ function register (channel, handle, order = 10) {
     handles = listener[channel] = []
   }
   handles.push({ id: index, handle, order })
-  handles.sort((a, b) => { return a.order - b.order })
+  handles.sort((a, b) => {
+    return a.order - b.order
+  })
   return index++
 }
 function fire (channel, event) {
@@ -34,6 +36,6 @@ function unregister (id) {
 const EventHub = {
   register,
   fire,
-  unregister
+  unregister,
 }
 module.exports = EventHub

@@ -1,12 +1,8 @@
-const LRU = require('lru-cache')
-// const { isIP } = require('validator')
+const LRUCache = require('lru-cache')
 const log = require('../../utils/util.log')
 const { DynamicChoice } = require('../choice/index')
+
 const cacheSize = 1024
-// eslint-disable-next-line no-unused-vars
-// function _isIP (v) {
-//   return v && isIP(v)
-// }
 
 class IpCache extends DynamicChoice {
   constructor (hostname) {
@@ -27,7 +23,12 @@ class IpCache extends DynamicChoice {
 
 module.exports = class BaseDNS {
   constructor () {
-    this.cache = new LRU(cacheSize)
+    this.cache = new LRUCache({
+      maxSize: cacheSize,
+      sizeCalculation: () => {
+        return 1
+      },
+    })
   }
 
   count (hostname, ip, isError = true) {
@@ -63,7 +64,7 @@ module.exports = class BaseDNS {
 
       return ipCache.value
     } catch (error) {
-      log.error(`[DNS] cannot resolve hostname ${hostname} (${error})`, error)
+      log.error(`[DNS] cannot resolve hostname ${hostname}, error:`, error)
       return hostname
     }
   }

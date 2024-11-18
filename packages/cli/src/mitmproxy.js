@@ -1,8 +1,10 @@
+const fs = require('node:fs')
+const path = require('node:path')
 const server = require('@docmirror/mitmproxy')
 const jsonApi = require('@docmirror/mitmproxy/src/json')
-const path = require('path')
+const log = require('@docmirror/mitmproxy/src/utils/util.log')
+
 const home = process.env.USER_HOME || process.env.HOME || 'C:/Users/Administrator/'
-const log = require('../src/utils/util.log')
 
 let configPath
 if (process.argv && process.argv.length > 3) {
@@ -11,7 +13,6 @@ if (process.argv && process.argv.length > 3) {
   configPath = path.join(home, '.dev-sidecar/running.json')
 }
 
-const fs = require('fs')
 const configJson = fs.readFileSync(configPath)
 log.info('读取 running.json by core 成功:', configPath)
 const config = jsonApi.parse(configJson.toString())

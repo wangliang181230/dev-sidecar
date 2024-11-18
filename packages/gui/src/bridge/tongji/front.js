@@ -1,11 +1,10 @@
-
 /**
  * second step
  * @param {*} ipcRenderer
  * @param {*} siteId
  * @param {*} router
  */
-const ebtRenderer = (ipcRenderer, siteId, router) => {
+function ebtRenderer (ipcRenderer, siteId, router) {
   /* istanbul ignore else */
   if (!(ipcRenderer && ipcRenderer.on && ipcRenderer.send)) {
     throw new TypeError('require ipcRenderer')
@@ -20,7 +19,9 @@ const ebtRenderer = (ipcRenderer, siteId, router) => {
   ipcRenderer.on('electron-baidu-tongji-reply', (_, { text, isDevelopment }) => {
     console.log('electron-baidu-tongji-reply')
     /* istanbul ignore else */
-    if (isDevelopment) { document.body.classList.add('electron-baidu-tongji_dev') }
+    if (isDevelopment) {
+      document.body.classList.add('electron-baidu-tongji_dev')
+    }
 
     window._hmt = window._hmt || []
 
@@ -38,7 +39,7 @@ const ebtRenderer = (ipcRenderer, siteId, router) => {
       router.beforeEach((to, _, next) => {
         /* istanbul ignore else */
         if (to.path) {
-          window._hmt.push(['_trackPageview', '/#' + to.fullPath])
+          window._hmt.push(['_trackPageview', `/#${to.fullPath}`])
           console.log('baidu trace', to.fullPath)
         }
 
@@ -58,5 +59,5 @@ export default {
     const { ipcRenderer } = require('electron')
     ebtRenderer(ipcRenderer, BAIDU_SITE_ID, router)
   },
-  ebtRenderer
+  ebtRenderer,
 }
