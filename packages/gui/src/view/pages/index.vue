@@ -345,18 +345,6 @@ export default {
         </div>
         <div class="right" />
       </div>
-      <div v-if="setting.development == null || !setting.development" class="star">
-        <div class="right">
-          <div>
-            如果它解决了你的问题，请不要吝啬你的star哟！点这里
-            <a-icon style="margin-right:10px;" type="arrow-right" theme="outlined" />
-          </div>
-          <a @click="openExternal('https://github.com/docmirror/dev-sidecar')"><img
-            alt="GitHub stars"
-            src="https://img.shields.io/github/stars/docmirror/dev-sidecar?logo=github"
-          ></a>
-        </div>
-      </div>
     </div>
   </DsContainer>
 </template>
