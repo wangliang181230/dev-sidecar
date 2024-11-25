@@ -78,6 +78,25 @@ jobs:
           echo "--------------------";
           pnpm install;
 
+      - name: setup x11
+        if: matrix.os == 'ubuntu'
+        run: |
+          echo "======================================================================";
+          echo "sudo apt-get update";
+          echo "--------------------";
+          sudo apt-get update;
+          
+          echo "======================================================================";
+          echo "sudo apt-get install xvfb";
+          echo "--------------------";
+          sudo apt-get install xvfb;
+
+          echo "======================================================================";
+          echo "start Xvfb";
+          echo "--------------------";
+          Xvfb :99 -screen 0 1024x768x24 &
+          export DISPLAY=:99
+
       - name: 'npm run electron'
         run: |
           echo "======================================================================";
