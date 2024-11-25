@@ -92,9 +92,14 @@ jobs:
           sudo apt-get install xvfb;
 
           echo "======================================================================";
+          echo "sudo netstat -tuln";
+          echo "--------------------";
+          sudo netstat -tuln;
+
+          echo "======================================================================";
           echo "start Xvfb";
           echo "--------------------";
-          Xvfb :99 -screen 0 1024x768x24 & export DISPLAY=:99;
+          export DISPLAY=:99;
 
       - name: 'npm run electron'
         run: |
