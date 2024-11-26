@@ -70,7 +70,7 @@ module.exports = {
       const maxAgeMatch = originalHeaders.cacheControl.value.match(/max-age=(\d+)/)
       if (maxAgeMatch && maxAgeMatch[1] > maxAge) {
         if (interceptOpt.cacheImmutable !== false && !originalHeaders.cacheControl.value.includes('immutable')) {
-          maxAge = maxAgeMatch[1]
+          maxAge = Number.parseInt(maxAgeMatch[1])
           action = 'success2'
         } else {
           res.setHeader('DS-Cache-Response-Interceptor', `skip: ${maxAgeMatch[1]} > ${maxAge}`)
