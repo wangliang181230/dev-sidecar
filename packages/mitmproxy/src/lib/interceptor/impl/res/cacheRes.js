@@ -113,7 +113,7 @@ module.exports = {
       cacheReq.setEtagLastModifiedTimeCache(cacheKey, originalHeaders.etag.value, now.getTime())
     }
 
-    res.setHeader('DS-Cache-Response-Interceptor', action + ',' + maxAge)
+    res.setHeader('DS-Cache-Response-Interceptor', `${action},${maxAge}`)
 
     // 原值
     const originalCacheControl = originalHeaders.cacheControl ? originalHeaders.cacheControl.value : null
