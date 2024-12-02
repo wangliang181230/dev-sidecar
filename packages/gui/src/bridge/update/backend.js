@@ -180,6 +180,9 @@ function updateHandle (app, api, win, beforeQuit, quit, log) {
             if (!versionData.assets || versionData.assets.length === 0) {
               continue // 跳过空版本，即未上传过安装包
             }
+            if (!versionData.name.match(/^v\d+(\.\d+)*(-.+)?$/g)) {
+              continue // 跳过即不是正式版本，又不是预发布版本的版本
+            }
             if (!isPreRelease && DevSidecar.api.config.get().app.skipPreRelease && versionData.name.includes('-')) {
               continue // 跳过预发布版本
             }
