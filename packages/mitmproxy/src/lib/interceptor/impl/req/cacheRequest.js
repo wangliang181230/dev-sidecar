@@ -135,7 +135,7 @@ function getLastModifiedTimeFromEtagCache (url, rOptions, interceptOpt, log) {
 // endregion
 
 module.exports = {
-  name: 'cacheReq',
+  name: 'cacheRequest',
   priority: 104,
   generateUrl,
   setEtagLastModifiedTimeCache,
