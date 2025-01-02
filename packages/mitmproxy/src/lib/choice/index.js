@@ -163,7 +163,7 @@ class DynamicChoice {
       count.keepErrorCount = 0
     }
     // 计算成功率
-    count.successRate = parseFloat((count.success / count.total).toFixed(2)) // 保留两位小数
+    count.successRate = Number.parseFloat((count.success / count.total).toFixed(2)) // 保留两位小数
 
     // 如果出错了，且当前使用的就是这个地址，才校验切换策略
     if (isError && this.value === count.value) {
@@ -187,5 +187,5 @@ class DynamicChoice {
 
 module.exports = {
   DynamicChoice,
-  ChoiceCache
+  ChoiceCache,
 }
