@@ -71,8 +71,8 @@ module.exports = {
       lowSpeedDelay: 200,
 
       // 日志相关配置
-      keepLogFileCount: 15, // 保留日志文件数
       logFileSavePath: path.join(getUserBasePath(), '/logs'), // 日志文件保存路径
+      keepLogFileCount: 15, // 保留日志文件数
     },
     compatible: {
       // **** 自定义兼容配置 **** //

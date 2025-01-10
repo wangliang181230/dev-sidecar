@@ -451,11 +451,11 @@ export default {
         </div>
       </a-form-item>
       <hr>
-      <a-form-item label="保留日志文件数" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input-number v-model="config.server.setting.keepLogFileCount" :step="1" :min="0" />
-      </a-form-item>
       <a-form-item label="日志文件保存路径" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input v-model="config.server.setting.logFileSavePath" />
+      </a-form-item>
+      <a-form-item label="保留日志文件数" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-input-number v-model="config.server.setting.keepLogFileCount" :step="1" :min="0" />
       </a-form-item>
     </div>
     <template slot="footer">
