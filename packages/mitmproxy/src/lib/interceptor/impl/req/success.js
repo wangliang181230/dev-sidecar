@@ -7,8 +7,8 @@ module.exports = {
 
     const status = response.status || 200
 
-    const body = response.html || response.json || response.script || response.css || response.text || response.body ||
-      `DevSidecar ${status}: Request success.\n\n`
+    const body = response.html || response.json || response.script || response.css || response.text || response.body
+      || `DevSidecar ${status}: Request success.\n\n`
       + '  This request is matched by success intercept.\n\n'
       + '  因配置success拦截器，本请求直接返回200成功。'
 
@@ -32,12 +32,12 @@ module.exports = {
         }
       }
       // （2）如果Content-Type没有charset，自动设置为utf-8
-      if (headers['Content-Type'] != null && headers['Content-Type'].indexOf('charset') < 0) {
+      if (headers['Content-Type'] != null && !headers['Content-Type'].includes('charset')) {
         headers['Content-Type'] += '; charset=utf-8'
       }
     }
     // headers.Access-Control-Allow-*：避免跨域问题
-    if (rOptions.headers.origin) {
+    if (rOptions.headers.origin && !headers['Access-Control-Allow-Origin']) {
       headers['Access-Control-Allow-Credentials'] = 'true'
       headers['Access-Control-Allow-Origin'] = rOptions.headers.origin
     }
