@@ -31,74 +31,7 @@ function getMaxAge (interceptOpt) {
   return null
 }
 
-// region etag缓存相关
-
-const etagLastModifiedTimeCache = {}
-
-function generateUrl (rOptions, log) {
-  // if (rOptions.origional) {
-  //   log.debug('proxy或overwall的请求参数:', rOptions)
-  // }
-  const options = rOptions.origional || rOptions
-  if (options.url.indexOf('http:') === 0 || options.url.indexOf('https:') === 0) {
-    return options.url
-  } else {
-    return `${options.protocol}//${options.hostname}:${options.port}${options.url}`
-  }
-}
-
-function generateCacheKey (url, rOptions, interceptOpt, log) {
-  let cacheKey = url
-
-  // 除了URL，还要根据缓存键生成策略，组装缓存键
-  let generationStrategy = interceptOpt.etagCacheKeyGenerationStrategy
-  if (generationStrategy) {
-    if (typeof generationStrategy === 'string') {
-      generationStrategy = { headers: [generationStrategy] }
-    } else if (Array.isArray(generationStrategy)) {
-      generationStrategy = { headers: generationStrategy }
-    }
-
-    // 头信息拼装策略
-    if (generationStrategy.headers && generationStrategy.headers.length > 0) {
-      for (let header of generationStrategy.headers) {
-        header = header.toLowerCase()
-        const value = rOptions.headers[header]
-        if (value != null) {
-          cacheKey += `|${header}=${value}`
-        }
-      }
-    }
-  }
-
-  log.info('---------- cacheKey:', cacheKey)
-
-  return cacheKey
-}
-
-function setEtagLastModifiedTimeCache (key, etag, lastModifiedTime) {
-  const cache = etagLastModifiedTimeCache[key]
-  if (cache) {
-    cache.etag = etag
-    cache.lastModifiedTime = lastModifiedTime
-  } else {
-    etagLastModifiedTimeCache[key] = { etag, lastModifiedTime }
-  }
-}
-
-function getEtagLastModifiedTimeCache (key, etag) {
-  const cache = etagLastModifiedTimeCache[key]
-  if (!cache || cache.etag !== etag) {
-    return null
-  }
-
-  return cache.lastModifiedTime
-}
-
-// endregion
-
-// region 获取 lastModifiedTime 的方法
-
+// 获取 lastModifiedTime 的方法
 function getLastModifiedTimeFromIfModifiedSince (rOptions, log) {
   // 获取 If-Modified-Since 和 If-None-Match 用于判断是否命中缓存
   const lastModified = rOptions.headers['if-modified-since']
@@ -121,25 +54,9 @@ function getLastModifiedTimeFromIfModifiedSince (rOptions, log) {
   return null
 }
 
-function getLastModifiedTimeFromEtagCache (url, rOptions, interceptOpt, log) {
-  const etag = rOptions.headers['if-none-match']
-  if (etag != null && etag.length > 0) {
-    const cacheKey = generateCacheKey(url, rOptions, interceptOpt, log)
-    const lastModifiedTime = getEtagLastModifiedTimeCache(cacheKey, etag)
-    if (lastModifiedTime != null) {
-      return lastModifiedTime
-    }
-  }
-}
-
-// endregion
-
 module.exports = {
   name: 'cacheRequest',
   priority: 104,
-  generateUrl,
-  setEtagLastModifiedTimeCache,
-  generateCacheKey,
   requestIntercept (context, interceptOpt, req, res, ssl, next) {
     const { rOptions, log } = context
 
@@ -158,20 +75,10 @@ module.exports = {
       return // 当前请求指定要禁用缓存，跳过当前拦截器
     }
 
-    const url = generateUrl(rOptions, log)
-
     // 最近编辑时间
-    let lastModifiedTimeFrom = ''
-    // 先从 if-modified-since 中获取最近编辑时间
-    let lastModifiedTime = getLastModifiedTimeFromIfModifiedSince(rOptions, log)
+    const lastModifiedTime = getLastModifiedTimeFromIfModifiedSince(rOptions, log)
     if (lastModifiedTime == null) {
-      // 从 etag缓存 中获取最近编辑时间
-      lastModifiedTime = getLastModifiedTimeFromEtagCache(url, rOptions, interceptOpt, log)
-      if (lastModifiedTime > 0) {
-        lastModifiedTimeFrom = ':etagCache'
-      } else {
-        return // 没有 lastModified，不拦截
-      }
+      return // 没有 lastModified，不拦截
     }
 
     // 获取maxAge配置
@@ -184,10 +91,11 @@ module.exports = {
 
     // 缓存未过期，直接拦截请求并响应304
     res.writeHead(304, {
-      'DS-Interceptor': `cache: ${lastModifiedTimeFrom}`,
+      'DS-Interceptor': `cache: ${maxAge}`,
     })
     res.end()
 
+    const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${req.url}`
     log.info('cache intercept:', url)
     return true
   },

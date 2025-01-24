@@ -61,18 +61,14 @@ module.exports = {
       }
     }
 
-    const url = cacheReq.generateUrl(rOptions, log)
-
-    let action = 'success'
-
     // 判断原max-age是否大于新max-age
     if (originalHeaders.cacheControl) {
       const maxAgeMatch = originalHeaders.cacheControl.value.match(/max-age=(\d+)/i)
       if (maxAgeMatch && Number.parseInt(maxAgeMatch[1]) > maxAge) {
         if (interceptOpt.cacheImmutable !== false && !originalHeaders.cacheControl.value.includes('immutable')) {
           maxAge = Number.parseInt(maxAgeMatch[1])
-          action = 'success2'
         } else {
+          const url = `${rOptions.method} ➜ ${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${req.url}`
           res.setHeader('DS-Cache-Response-Interceptor', `skip: ${maxAgeMatch[1]} > ${maxAge}`)
           log.info(`cache response intercept: skip: ${maxAgeMatch[1]} > ${maxAge}, url: ${url}`)
           return
@@ -107,29 +103,7 @@ module.exports = {
       res.setHeader('Expires', replaceHeaders.expires)
     }
 
-    // 如果有etag，则缓存etag的最近更新时间
-    if (originalHeaders.etag && originalHeaders.etag.value) {
-      const cacheKey = cacheReq.generateCacheKey(url, rOptions, interceptOpt, log)
-      cacheReq.setEtagLastModifiedTimeCache(cacheKey, originalHeaders.etag.value, now.getTime())
-    }
-
-    res.setHeader('DS-Cache-Response-Interceptor', `${action},${maxAge}`)
-
-    // 原值
-    const originalCacheControl = originalHeaders.cacheControl ? originalHeaders.cacheControl.value : null
-    const originalLastModified = originalHeaders.lastModified ? originalHeaders.lastModified.value : null
-    const originalExpires = originalHeaders.expires ? originalHeaders.expires.value : null
-    // 替换值
-    const cacheControl = replaceHeaders.cacheControl
-    const lastModified = replaceHeaders.lastModified
-    const expires = replaceHeaders.expires
-
-    // 打印日志
-    log.info('cache response intercept: set response head {' +
-      ' Cache-Control: ' + (originalCacheControl ? `'${originalCacheControl}' -> ` : '') + `'${cacheControl}',` +
-      ' Last-Modified: ' + (originalLastModified ? `'${originalLastModified}' -> ` : '') + `'${lastModified}',` +
-      ' Expires: ' + (originalExpires ? `'${originalExpires}' -> ` : '') + `'${expires}' ` +
-      `}, url: ${url}`)
+    res.setHeader('DS-Cache-Response-Interceptor', maxAge)
   },
   is (interceptOpt) {
     const maxAge = cacheReq.getMaxAge(interceptOpt)
