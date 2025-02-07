@@ -8,8 +8,9 @@ const hostMap = matchUtil.domainMapRegexply({
   '^.{1,3}ddd.com$': true,
   '*.cn': true,
   '.github.com': true,
+
   '*.eee.com': true,
-  '.eee.com': false,
+  '.eee.com': false, // 此配置将被忽略，因为有 '*.eee.com' 了，优先级更高
 })
 
 console.log(hostMap)
