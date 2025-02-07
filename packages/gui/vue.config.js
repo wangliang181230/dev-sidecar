@@ -74,7 +74,7 @@ module.exports = defineConfig({
         appId: 'dev-sidecar',
         productName: 'dev-sidecar',
         // eslint-disable-next-line no-template-curly-in-string
-        artifactName: 'DevSidecar-${version}-${arch}.myself.${ext}',
+        artifactName: 'DevSidecar-${version}.myself-${arch}.${ext}',
         copyright: 'Copyright © 2020-2025 Greper, WangLiang',
         nsis: {
           oneClick: false,
