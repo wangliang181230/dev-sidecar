@@ -13,7 +13,7 @@ import log from '../../utils/util.log'
 const isMac = process.platform === 'darwin'
 const isLinux = process.platform === 'linux'
 
-const curVersion = `${pkg.version}-myself`
+const curVersion = pkg.version
 const isPreRelease = curVersion.includes('-')
 
 function downloadFile (uri, filePath, onProgress, onSuccess, onError) {
