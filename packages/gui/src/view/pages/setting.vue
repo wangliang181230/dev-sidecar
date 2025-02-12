@@ -317,7 +317,7 @@ export default {
       if (value === 'MB') {
         this.config.app.maxLogFileSize = (this.config.app.maxLogFileSize || 1) * 1024
       } else {
-        this.config.app.maxLogFileSize = (this.config.app.maxLogFileSize || 1024) / 1024
+        this.config.app.maxLogFileSize = ((this.config.app.maxLogFileSize || 1024) / 1024).toFixed(2) - 0
       }
       this.$refs.maxLogFileSize.focus()
     },
