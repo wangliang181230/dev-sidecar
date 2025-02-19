@@ -178,6 +178,11 @@ export default {
       // 拼接键值
       shortcut += key
 
+      // 如果是 Ctrl + F，则设置为 '无'
+      if (shortcut === 'Ctrl + F') {
+        shortcut = '无'
+      }
+
       this.config.app.showHideShortcut = shortcut
     },
     async applyBefore () {
@@ -430,7 +435,7 @@ export default {
       <a-form-item label="打开窗口快捷键" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input v-model="config.app.showHideShortcut" @change="shortcutChange" @keydown="shortcutKeyDown" @keyup="shortcutKeyUp" />
         <div class="form-help">
-          部分快捷键已被占用：F5=刷新页面，F12=开发者工具（DevTools）
+          部分快捷键已被占用：F5=刷新页面，F12=开发者工具（DevTools），Ctrl+F=全文检索
         </div>
       </a-form-item>
       <a-form-item label="启动时窗口状态" :label-col="labelCol" :wrapper-col="wrapperCol">
