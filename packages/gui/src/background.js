@@ -306,22 +306,25 @@ function createWindow (startHideWindow, autoQuitIfError = true) {
       // 按 F5，刷新页面
       event.preventDefault()
       win.webContents.reload()
-    } else if ((input.key === 'F' || input.key === 'f') && input.type === 'keyDown' && input.control && !input.shift && !input.alt && !input.meta) {
-      // 按 Ctrl + F，显示或隐藏全文检索框（SearchBar）
-      event.preventDefault()
-      win.webContents.send('search-bar', { key: 'show-hide' })
-    } else if (input.key === 'Escape' && input.type === 'keyUp' && !input.control && !input.shift && !input.alt && !input.meta) {
-      // 按 ESC，隐藏全文检索框（SearchBar）
-      event.preventDefault()
-      win.webContents.send('search-bar', { key: 'show-hide', hideSearchBar: true })
-    } else if (input.key === 'F3' && input.type === 'keyDown' && !input.control && !input.shift && !input.alt && !input.meta) {
-      // 按 F3，全文检索框（SearchBar）定位到下一个
-      event.preventDefault()
-      win.webContents.send('search-bar', { key: 'next' })
-    } else if (input.key === 'F3' && input.type === 'keyDown' && !input.control && input.shift && !input.alt && !input.meta) {
-      // 按 Shift +F3，全文检索框（SearchBar）定位到上一个
-      event.preventDefault()
-      win.webContents.send('search-bar', { key: 'previous' })
+    } else {
+      // 全文检索框（SearchBar）相关快捷键
+      if ((input.key === 'F' || input.key === 'f') && input.type === 'keyDown' && input.control && !input.shift && !input.alt && !input.meta) {
+        // 按 Ctrl + F，显示或隐藏全文检索框（SearchBar）
+        event.preventDefault()
+        win.webContents.send('search-bar', { key: 'show-hide' })
+      } else if (input.key === 'Escape' && input.type === 'keyUp' && !input.control && !input.shift && !input.alt && !input.meta) {
+        // 按 ESC，隐藏全文检索框（SearchBar）
+        event.preventDefault()
+        win.webContents.send('search-bar', { key: 'show-hide', hideSearchBar: true })
+      } else if (input.key === 'F3' && input.type === 'keyDown' && !input.control && !input.shift && !input.alt && !input.meta) {
+        // 按 F3，全文检索框（SearchBar）定位到下一个
+        event.preventDefault()
+        win.webContents.send('search-bar', { key: 'next' })
+      } else if (input.key === 'F3' && input.type === 'keyDown' && !input.control && input.shift && !input.alt && !input.meta) {
+        // 按 Shift + F3，全文检索框（SearchBar）定位到上一个
+        event.preventDefault()
+        win.webContents.send('search-bar', { key: 'previous' })
+      }
     }
   }
 

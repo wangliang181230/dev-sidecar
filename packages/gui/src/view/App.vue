@@ -61,10 +61,18 @@ export default {
             }
           }, 100)
         }
-      } else if (message.key === 'next' && !this.hideSearchBar) {
-        this.$refs.searchBar.next()
-      } else if (message.key === 'previous' && !this.hideSearchBar) {
-        this.$refs.searchBar.previous()
+      } else {
+        // 如果还未显示检索框，先显示出来
+        if (this.hideSearchBar) {
+          this.hideSearchBar = false
+          return
+        }
+
+        if (message.key === 'next' && !this.hideSearchBar) {
+          this.$refs.searchBar.next()
+        } else if (message.key === 'previous' && !this.hideSearchBar) {
+          this.$refs.searchBar.previous()
+        }
       }
     })
   },
