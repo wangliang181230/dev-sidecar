@@ -102,7 +102,6 @@ export default {
     },
     onSearchBarInputKeydown () {
       clearTimeout(this.searchBarInputKeyupTimeout)
-      this.searchBarInputKeyupTimeout = null
     },
     onSearchBarInputKeyup (e) {
       if (!this.$refs.searchBar || e.key === 'Enter' || e.key === 'F3') {
