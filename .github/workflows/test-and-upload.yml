@@ -94,7 +94,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-electron-builder-cache-
 
-      - name: "'pnpm install --force' Because we need to install optional dependencies"
+      - name: "'pnpm install' Because we need to install optional dependencies"
         run: |
           echo "======================================================================";
           dir || ls -lah;
@@ -113,6 +113,15 @@ jobs:
         run: |
           cd packages/mitmproxy;
           pnpm run test;
+
+      - name: install maker-flatpak dependencies
+        if: ${{ matrix.os == 'linux' }}
+        run: |
+          sudo apt-get install flatpak -y
+          sudo apt-get install flatpak-builder -y
+          sudo apt-get install elfutils -y
+          sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak install flathub org.freedesktop.Platform/x86_64/19.08 org.freedesktop.Sdk/x86_64/19.08 org.electronjs.Electron2.BaseApp/x86_64/stable -y
 
       - name: 'npm run electron:build'
         run: |

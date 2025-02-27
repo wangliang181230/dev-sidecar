@@ -104,6 +104,10 @@ module.exports = defineConfig({
               arch: ['x64', 'arm64', 'armv7l'],
             },
             {
+              target: 'flatpak',
+              arch: ['x64', 'arm64', 'armv7l'],
+            },
+            {
               target: 'tar.gz',
               arch: ['x64', 'arm64', 'armv7l'],
             },
