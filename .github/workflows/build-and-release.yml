@@ -154,12 +154,17 @@ jobs:
           mv DevSidecar-${{ steps.package-info.outputs.version }}-amd64.deb       DevSidecar-${{ steps.package-info.outputs.version }}-linux-amd64.deb;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-x86_64.AppImage DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.AppImage;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-x64.tar.gz      DevSidecar-${{ steps.package-info.outputs.version }}-linux-x64.tar.gz;
+          mv DevSidecar-${{ steps.package-info.outputs.version }}-x86_64.flatpak  DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak;
+          #-------------------------------------------------------------------------------------------------------------------------
           mv DevSidecar-${{ steps.package-info.outputs.version }}-arm64.deb       DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-arm64.AppImage  DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.AppImage;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-arm64.tar.gz    DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.tar.gz;
+          mv DevSidecar-${{ steps.package-info.outputs.version }}-aarch64.flatpak DevSidecar-${{ steps.package-info.outputs.version }}-linux-aarch64.flatpak;
+          #-------------------------------------------------------------------------------------------------------------------------
           mv DevSidecar-${{ steps.package-info.outputs.version }}-armv7l.deb      DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.deb;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-armv7l.AppImage DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.AppImage;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-armv7l.tar.gz   DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.tar.gz;
+          mv DevSidecar-${{ steps.package-info.outputs.version }}-arm.flatpak     DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm.flatpak;
           ls -lah;
       - name: 'Rename artifacts - macOS'
         if: ${{ matrix.os == 'macos' }}
@@ -223,6 +228,14 @@ jobs:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x64.tar.gz
           name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-x64.tar.gz'
           if-no-files-found: error
+      - name: 'Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak'
+        uses: actions/upload-artifact@v4.4.0
+        if: ${{ matrix.os == 'ubuntu' }}
+        with:
+          path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak
+          name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak'
+          if-no-files-found: error
+      #-------------------------------------------------------------------------------------------------------------------------
       - name: 'Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb'
         uses: actions/upload-artifact@v4.4.0
         if: ${{ matrix.os == 'ubuntu' }}
@@ -244,6 +257,14 @@ jobs:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.tar.gz
           name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.tar.gz'
           if-no-files-found: error
+      - name: 'Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-aarch64.flatpak'
+        uses: actions/upload-artifact@v4.4.0
+        if: ${{ matrix.os == 'ubuntu' }}
+        with:
+          path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-aarch64.flatpak
+          name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-aarch64.flatpak'
+          if-no-files-found: error
+      #-------------------------------------------------------------------------------------------------------------------------
       - name: 'Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.deb'
         uses: actions/upload-artifact@v4.4.0
         if: ${{ matrix.os == 'ubuntu' }}
@@ -264,6 +285,13 @@ jobs:
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.tar.gz
           name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.tar.gz'
+          if-no-files-found: error
+      - name: 'Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm.flatpak'
+        uses: actions/upload-artifact@v4.4.0
+        if: ${{ matrix.os == 'ubuntu' }}
+        with:
+          path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm.flatpak
+          name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm.flatpak'
           if-no-files-found: error
       #endregion Upload artifacts - Linux
 
@@ -296,11 +324,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build-and-upload
-    strategy:
-      fail-fast: false
-      matrix:
-        preReleaseVersion:
-          - ''
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.7
@@ -351,6 +374,12 @@ jobs:
         with:
           name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-x64.tar.gz'
           path: release
+      - name: 'Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak'
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak'
+          path: release
+      #-------------------------------------------------------------------------------------------------------------------------
       - name: 'Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb'
         uses: actions/download-artifact@v4.1.8
         with:
@@ -366,6 +395,12 @@ jobs:
         with:
           name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.tar.gz'
           path: release
+      - name: 'Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-aarch64.flatpak'
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-aarch64.flatpak'
+          path: release
+      #-------------------------------------------------------------------------------------------------------------------------
       - name: 'Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.deb'
         uses: actions/download-artifact@v4.1.8
         with:
@@ -380,6 +415,11 @@ jobs:
         uses: actions/download-artifact@v4.1.8
         with:
           name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.tar.gz'
+          path: release
+      - name: 'Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm.flatpak'
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: 'DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm.flatpak'
           path: release
 
       - name: 'Download DevSidecar-${{ steps.package-info.outputs.version }}-macos-x64.dmg'
