@@ -108,7 +108,7 @@ jobs:
           pnpm run test;
 
       - name: install maker-flatpak dependencies
-        if: ${{ matrix.os == 'linux' }}
+        if: ${{ matrix.os == 'ubuntu' }}
         run: |
           sudo apt-get install flatpak -y
           sudo apt-get install flatpak-builder -y
