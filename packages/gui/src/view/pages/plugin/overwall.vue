@@ -239,7 +239,7 @@ export default {
 .fine-tuning2 .ant-btn-danger {
   margin-top: 2px !important;
 }
-.ant-input-group-addon {
-  padding: 0 6px !important;
+.ant-input-group-addon:first-child {
+  padding: 0 5px !important;
 }
 </style>
