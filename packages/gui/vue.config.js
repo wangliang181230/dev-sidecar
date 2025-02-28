@@ -97,7 +97,7 @@ module.exports = defineConfig({
           target: [
             {
               target: 'flatpak',
-              arch: ['x64'],
+              arch: ['arm64'],
             },
           ],
           category: 'System',
