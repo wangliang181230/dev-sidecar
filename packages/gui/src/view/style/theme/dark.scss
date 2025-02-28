@@ -118,7 +118,8 @@ $dark-input: #777; //输入框：背景色
   }
 
   /* 选中的下拉框 */
-  .ant-select-open {
+  .ant-select-open,
+  .ant-select-focused {
     .ant-select-selection {
       box-shadow: 0 0 0 2px rgb(255 255 255 / 35%);
     }
