@@ -14,11 +14,12 @@ module.exports = class DNSOverTLS extends BaseDNS {
   async _doDnsQuery (hostname) {
     const options = {
       host: this.dnsServer,
-      servername: this.dnsServerName,
+      port: this.dnsServerPort,
+      servername: this.dnsServerName || this.dnsServer,
+
       name: hostname,
       klass: 'IN',
       type: 'A',
-      port: this.dnsServerPort,
     }
 
     return await dnstls.query(options)

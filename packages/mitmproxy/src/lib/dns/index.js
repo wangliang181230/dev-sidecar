@@ -13,20 +13,25 @@ module.exports = {
     // 创建普通的DNS
     for (const provider in dnsProviders) {
       const conf = dnsProviders[provider]
-      const server = conf.server || conf.host
 
+      let server = conf.server || conf.host
+      if (server != null) {
+        server = server.replace(/\s+/, '')
+      }
       if (!server) {
         continue
       }
 
       // 获取DNS类型
       if (conf.type == null) {
-        if (conf.server.startsWith('https://')) {
+        if (server.startsWith('https://')) {
           conf.type = 'https'
-        } else if (conf.server.startsWith('tls://')) {
+        } else if (server.startsWith('tls://')) {
           conf.type = 'tls'
-        } else if (conf.server.startsWith('tcp://')) {
+        } else if (server.startsWith('tcp://')) {
           conf.type = 'tcp'
+        } else if (server.includes('://') && !server.startsWith('udp://')) {
+          throw new Error(`Unknown type DNS: ${server}, provider: ${provider}`)
         } else {
           conf.type = 'udp'
         }
@@ -39,10 +44,19 @@ module.exports = {
       } else if (conf.type === 'https') {
         dnsMap[provider] = new DNSOverHTTPS(provider, conf.cacheSize, preSetIpList, server)
       } else if (conf.type === 'tls') {
+        if (server.startsWith('tls://')) {
+          server = server.substring(6)
+        }
         dnsMap[provider] = new DNSOverTLS(provider, conf.cacheSize, preSetIpList, server, conf.port, conf.servername)
       } else if (conf.type === 'tcp') {
+        if (server.startsWith('tcp://')) {
+          server = server.substring(6)
+        }
         dnsMap[provider] = new DNSOverTCP(provider, conf.cacheSize, preSetIpList, server, conf.port)
       } else { // udp
+        if (server.startsWith('udp://')) {
+          server = server.substring(6)
+        }
         dnsMap[provider] = new DNSOverUDP(provider, conf.cacheSize, preSetIpList, server, conf.port)
       }
 

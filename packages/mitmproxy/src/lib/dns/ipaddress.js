@@ -3,7 +3,6 @@ const log = require('../../utils/util.log.server')
 const BaseDNS = require('./base')
 
 module.exports = class DNSOverIpAddress extends BaseDNS {
-
   async _lookup (hostname) {
     const url = `https://${hostname}.ipaddress.com`
 

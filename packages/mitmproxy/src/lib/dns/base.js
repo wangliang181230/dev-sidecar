@@ -115,11 +115,11 @@ module.exports = class BaseDNS {
       if (ret.length === 0) {
         log.info(`DNS '${this.dnsName}' 没有该域名的IPv4地址: ${hostname}, cost: ${cost} ms`)
       } else {
-        log.info(`DNS '${this.dnsName}' 获取到该域名的IPv4地址： ${hostname} ${JSON.stringify(ret)}, cost: ${cost} ms`)
+        log.info(`DNS '${this.dnsName}' 获取到该域名的IPv4地址： ${hostname} - ${JSON.stringify(ret)}, cost: ${cost} ms`)
       }
       return ret
     } catch (e) {
-      log.error(`DNS query error: ${hostname}, dns: ${this.dnsName}, dnsServer: ${this.dnsServer}, cost: ${Date.now() - start} ms, error:`, e)
+      log.error(`DNS query error: ${hostname}, dns: ${this.dnsName}${this.dnsServer ? (`, dnsServer: ${this.dnsServer}`) : ''}, cost: ${Date.now() - start} ms, error:`, e)
       return []
     }
   }
