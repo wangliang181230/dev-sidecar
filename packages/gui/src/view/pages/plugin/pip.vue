@@ -63,7 +63,7 @@ export default {
         <!--          </a-tag> -->
         <!--        </a-form-item> -->
         <a-form-item label="pip命令名" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input v-model="config.plugin.pip.setting.command" />
+          <a-input v-model="config.plugin.pip.setting.command" spellcheck="false" />
           <div class="form-help">
             如果你的<code>pip</code>命令改成了其他名字（如<code>pip3</code>），或想设置绿色版<code>pip</code>程序路径，可在此处修改
           </div>
@@ -112,7 +112,7 @@ export default {
           </div>
         </a-form-item>
         <a-form-item label="信任仓库域名" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input v-model="config.plugin.pip.setting.trustedHost" />
+          <a-input v-model="config.plugin.pip.setting.trustedHost" spellcheck="false" />
           <div class="form-help">
             使用以上域名安装包时，不会进行SSL证书验证，多个域名用空格隔开<br>
             注意：切换仓库镜像同时会修改<code>pip.ini</code>中的<code>trusted-host</code>配置，即使关闭 ds 也会继续保持
@@ -122,7 +122,7 @@ export default {
     </div>
     <template slot="footer">
       <div class="footer-bar">
-        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">
+        <a-button :loading="resetDefaultLoading" class="mr10" icon="sync" @click="resetDefault()">
           恢复默认
         </a-button>
         <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">

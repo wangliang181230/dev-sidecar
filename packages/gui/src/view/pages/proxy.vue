@@ -151,7 +151,7 @@ export default {
         </div>
       </a-form-item>
       <a-form-item label="远程国内域名地址" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input v-model="config.proxy.remoteDomesticDomainAllowListFileUrl" :title="config.proxy.remoteDomesticDomainAllowListFileUrl" />
+        <a-input v-model="config.proxy.remoteDomesticDomainAllowListFileUrl" :title="config.proxy.remoteDomesticDomainAllowListFileUrl" spellcheck="false" />
         <div class="form-help">
           远程国内域名白名单文件内容可以是<code>base64</code>编码格式，也可以是未经过编码的
         </div>
@@ -168,7 +168,7 @@ export default {
         </a-row>
         <a-row v-for="(item, index) of excludeIpList" :key="index" :gutter="10" class="fine-tuning">
           <a-col :span="17">
-            <MockInput v-model="item.key" />
+            <MockInput v-model="item.key" class="mt-1" />
           </a-col>
           <a-col :span="5">
             <a-select v-model="item.value" style="width:100%">
@@ -185,7 +185,7 @@ export default {
     </div>
     <template slot="footer">
       <div class="footer-bar">
-        <a-button :loading="resetDefaultLoading" class="md-mr-10" icon="sync" @click="resetDefault()">
+        <a-button :loading="resetDefaultLoading" class="mr10" icon="sync" @click="resetDefault()">
           恢复默认
         </a-button>
         <a-button :loading="applyLoading" icon="check" type="primary" @click="apply()">
@@ -222,6 +222,6 @@ export default {
 <style lang="scss">
 /*样式微调*/
 .fine-tuning .ant-btn-danger {
-  margin-top: 3px;
+  margin-top: 3px !important;
 }
 </style>
