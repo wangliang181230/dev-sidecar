@@ -13,6 +13,7 @@ module.exports = {
     for (const provider in dnsProviders) {
       const conf = dnsProviders[provider]
 
+      // 获取DNS服务器
       let server = conf.server || conf.host
       if (server != null) {
         server = server.replace(/\s+/, '')
@@ -22,44 +23,54 @@ module.exports = {
       }
 
       // 获取DNS类型
-      if (conf.type == null) {
+      let type = conf.type
+      if (type == null) {
         if (server.startsWith('https://') || server.startsWith('http://')) {
-          conf.type = 'https'
+          type = 'https'
         } else if (server.startsWith('tls://')) {
-          conf.type = 'tls'
+          type = 'tls'
         } else if (server.startsWith('tcp://')) {
-          conf.type = 'tcp'
+          type = 'tcp'
         } else if (server.includes('://') && !server.startsWith('udp://')) {
           throw new Error(`Unknown type DNS: ${server}, provider: ${provider}`)
         } else {
-          conf.type = 'udp'
+          type = 'udp'
         }
       } else {
-        conf.type = conf.type.toLowerCase()
+        type = type.toLowerCase()
       }
 
-      if (conf.type === 'https') {
-        dnsMap[provider] = new DNSOverHTTPS(provider, conf.cacheSize, preSetIpList, server)
-      } else if (conf.type === 'tls') {
+      // 创建DNS对象
+      let dnsObj
+      if (type === 'https' || type === 'doh' || type === 'dns-over-https') {
+        type = 'https'
+        dnsObj = new DNSOverHTTPS(provider, conf.cacheSize, preSetIpList, server)
+      } else if (type === 'tls' || type === 'dot' || type === 'dns-over-tls') {
+        type = 'tls'
         if (server.startsWith('tls://')) {
           server = server.substring(6)
         }
-        dnsMap[provider] = new DNSOverTLS(provider, conf.cacheSize, preSetIpList, server, conf.port, conf.servername)
-      } else if (conf.type === 'tcp') {
+        dnsObj = new DNSOverTLS(provider, conf.cacheSize, preSetIpList, server, conf.port, conf.servername)
+      } else if (type === 'tcp' || type === 'dns-over-tcp') {
+        type = 'tcp'
         if (server.startsWith('tcp://')) {
           server = server.substring(6)
         }
-        dnsMap[provider] = new DNSOverTCP(provider, conf.cacheSize, preSetIpList, server, conf.port)
+        dnsObj = new DNSOverTCP(provider, conf.cacheSize, preSetIpList, server, conf.port)
       } else { // udp
+        type = 'udp'
         if (server.startsWith('udp://')) {
           server = server.substring(6)
         }
-        dnsMap[provider] = new DNSOverUDP(provider, conf.cacheSize, preSetIpList, server, conf.port)
+        dnsObj = new DNSOverUDP(provider, conf.cacheSize, preSetIpList, server, conf.port)
       }
 
-      // 设置DNS名称到name属性中
-      dnsMap[provider].name = provider
-      dnsMap[provider].type = conf.type
+      // 设置DNS的名称和类型
+      dnsObj.name = provider
+      dnsObj.type = type
+
+      // 添加到DNS对象池中
+      dnsMap[provider] = dnsObj
     }
 
     // 创建预设IP的DNS
