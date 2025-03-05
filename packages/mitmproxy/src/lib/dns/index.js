@@ -37,7 +37,7 @@ module.exports = {
           type = 'udp'
         }
       } else {
-        type = type.toLowerCase()
+        type = type.replace(/\s+/, '').toLowerCase()
       }
 
       // 创建DNS对象
