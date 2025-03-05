@@ -42,6 +42,10 @@ module.exports = {
 
       // 创建DNS对象
       if (type === 'https' || type === 'doh' || type === 'dns-over-https') {
+        if (!server.includes('/')) {
+          server = `https://${server}/dns-query`
+        }
+
         // 基于 https
         dnsMap[provider] = new DNSOverHTTPS(provider, conf.cacheSize, preSetIpList, server)
       } else {
