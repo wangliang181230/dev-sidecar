@@ -40,34 +40,31 @@ module.exports = {
         type = type.toLowerCase()
       }
 
+      // 获取DNS端口
+      let port = conf.port
+
       // 创建DNS对象
       let dnsObj
       if (type === 'https' || type === 'doh' || type === 'dns-over-https') {
-        type = 'https'
         dnsObj = new DNSOverHTTPS(provider, conf.cacheSize, preSetIpList, server)
-      } else if (type === 'tls' || type === 'dot' || type === 'dns-over-tls') {
-        type = 'tls'
-        if (server.startsWith('tls://')) {
-          server = server.substring(6)
+      } else {
+        // 处理带协议的DNS服务地址
+        if (server.includes('://')) {
+          server = server.split('://')[1]
         }
-        dnsObj = new DNSOverTLS(provider, conf.cacheSize, preSetIpList, server, conf.port, conf.servername)
-      } else if (type === 'tcp' || type === 'dns-over-tcp') {
-        type = 'tcp'
-        if (server.startsWith('tcp://')) {
-          server = server.substring(6)
+        // 处理带端口的DNS服务地址
+        if (port == null && server.includes(':')) {
+          [server, port] = server.split(':')
         }
-        dnsObj = new DNSOverTCP(provider, conf.cacheSize, preSetIpList, server, conf.port)
-      } else { // udp
-        type = 'udp'
-        if (server.startsWith('udp://')) {
-          server = server.substring(6)
-        }
-        dnsObj = new DNSOverUDP(provider, conf.cacheSize, preSetIpList, server, conf.port)
-      }
 
-      // 设置DNS的名称和类型
-      dnsObj.name = provider
-      dnsObj.type = type
+        if (type === 'tls' || type === 'dot' || type === 'dns-over-tls') {
+          dnsObj = new DNSOverTLS(provider, conf.cacheSize, preSetIpList, server, port, conf.servername)
+        } else if (type === 'tcp' || type === 'dns-over-tcp') {
+          dnsObj = new DNSOverTCP(provider, conf.cacheSize, preSetIpList, server, port)
+        } else { // udp
+          dnsObj = new DNSOverUDP(provider, conf.cacheSize, preSetIpList, server, port)
+        }
+      }
 
       // 添加到DNS对象池中
       dnsMap[provider] = dnsObj
