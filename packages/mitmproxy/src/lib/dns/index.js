@@ -40,14 +40,14 @@ module.exports = {
         type = type.toLowerCase()
       }
 
-      // 获取DNS端口
-      let port = conf.port
-
       // 创建DNS对象
-      let dnsObj
       if (type === 'https' || type === 'doh' || type === 'dns-over-https') {
-        dnsObj = new DNSOverHTTPS(provider, conf.cacheSize, preSetIpList, server)
+        // 基于 https
+        dnsMap[provider] = new DNSOverHTTPS(provider, conf.cacheSize, preSetIpList, server)
       } else {
+        // 获取DNS端口
+        let port = conf.port
+
         // 处理带协议的DNS服务地址
         if (server.includes('://')) {
           server = server.split('://')[1]
@@ -58,16 +58,16 @@ module.exports = {
         }
 
         if (type === 'tls' || type === 'dot' || type === 'dns-over-tls') {
-          dnsObj = new DNSOverTLS(provider, conf.cacheSize, preSetIpList, server, port, conf.servername)
+          // 基于 tls
+          dnsMap[provider] = new DNSOverTLS(provider, conf.cacheSize, preSetIpList, server, port, conf.servername)
         } else if (type === 'tcp' || type === 'dns-over-tcp') {
-          dnsObj = new DNSOverTCP(provider, conf.cacheSize, preSetIpList, server, port)
-        } else { // udp
-          dnsObj = new DNSOverUDP(provider, conf.cacheSize, preSetIpList, server, port)
+          // 基于 tcp
+          dnsMap[provider] = new DNSOverTCP(provider, conf.cacheSize, preSetIpList, server, port)
+        } else {
+          // 基于 udp
+          dnsMap[provider] = new DNSOverUDP(provider, conf.cacheSize, preSetIpList, server, port)
         }
       }
-
-      // 添加到DNS对象池中
-      dnsMap[provider] = dnsObj
     }
 
     // 创建预设IP的DNS
