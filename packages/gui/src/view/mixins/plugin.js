@@ -77,7 +77,8 @@ export default {
             this.resetDefaultLoading = false
           }
         },
-        onCancel () {},
+        onCancel () {
+        },
       })
     },
     saveConfig () {
@@ -143,10 +144,14 @@ export default {
       this.$api.ipc.openPath(dir)
     },
     async focusFirst (ref) {
-      if (ref) {
+      if (ref && ref.length != null) {
         setTimeout(() => {
           if (ref.length > 0) {
-            ref[0].$el.querySelector('.ant-input').focus()
+            try {
+              ref[0].$el.querySelector('.ant-input').focus()
+            } catch (e) {
+              console.error('获取输入框焦点失败：', e)
+            }
           }
         }, 100)
       }
