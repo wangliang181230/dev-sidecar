@@ -77,8 +77,7 @@ export default {
             this.resetDefaultLoading = false
           }
         },
-        onCancel () {
-        },
+        onCancel () {},
       })
     },
     saveConfig () {
