@@ -16,8 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - windows
-          - ubuntu
           - macos
         node:
           - 22

@@ -112,10 +112,24 @@ module.exports = defineConfig({
         },
         mac: {
           icon: './build/mac/icon.icns',
-          target: {
-            target: 'dmg',
-            arch: ['x64', 'arm64', 'universal'],
-          },
+          target: [
+            {
+              target: 'mas',
+              arch: ['x64', 'ia32', 'armv7l', 'arm64', 'universal'],
+            },
+            {
+              target: 'mas-dev',
+              arch: ['x64', 'ia32', 'armv7l', 'arm64', 'universal'],
+            },
+            {
+              target: 'pkg',
+              arch: ['x64', 'ia32', 'armv7l', 'arm64', 'universal'],
+            },
+            {
+              target: 'tar.gz',
+              arch: ['x64', 'ia32', 'armv7l', 'arm64', 'universal'],
+            },
+          ],
           category: 'public.app-category.developer-tools',
         },
         publish: {
