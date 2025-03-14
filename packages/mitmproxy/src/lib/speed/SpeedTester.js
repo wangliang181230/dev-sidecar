@@ -151,9 +151,11 @@ class SpeedTester {
         return a.time - b.time
       })
     } catch (e) {
-      item.title = e.message
-      item.status = 'failed'
-      if (e.message !== 'timeout') {
+      if (item.time == null) {
+        item.title = e.message
+        item.status = 'failed'
+      }
+      if (!e.message.includes('timeout')) {
         log.warn(`[speed] test error:   ${this.hostname} ➜ ${item.host}:${this.port} from DNS '${item.dns}', errorMsg: ${e.message}`)
       }
     }
@@ -180,9 +182,7 @@ class SpeedTester {
         isOver = true
         clearTimeout(timeoutId)
 
-        if (e.message !== 'timeout') {
-          log.warn('[speed] test by TCP error:  ', this.hostname, `➜ ${host}:${this.port} from DNS '${dns}', cost: ${Date.now() - startTime} ms, errorMsg:`, e.message)
-        }
+        log.warn('[speed] test by TCP error:  ', this.hostname, `➜ ${host}:${this.port} from DNS '${dns}', cost: ${Date.now() - startTime} ms, errorMsg:`, e.message)
         reject(e)
         client.end()
       })
