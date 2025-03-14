@@ -43,17 +43,18 @@ function initSpeedTest (runtimeConfig) {
 
 function getAllSpeedTester () {
   const allSpeed = {}
-  if (!config.getConfig().enabled) {
-    return allSpeed
+
+  if (config.getConfig().enabled) {
+    _.forEach(SpeedTestPool, (item, key) => {
+      allSpeed[key] = {
+        hostname: item.hostname,
+        port: item.port,
+        alive: item.alive,
+        backupList: item.backupList,
+      }
+    })
   }
-  _.forEach(SpeedTestPool, (item, key) => {
-    allSpeed[key] = {
-      hostname: item.hostname,
-      port: item.port,
-      alive: item.alive,
-      backupList: item.backupList,
-    }
-  })
+
   return allSpeed
 }
 
@@ -64,12 +65,12 @@ function getSpeedTester (hostname, port) {
   return addSpeedTest(hostname, port)
 }
 
-function registerNotify (notify) {
-  config.notify = notify
-}
+// function registerNotify (notify) {
+//   config.notify = notify
+// }
 
 function reSpeedTest () {
-  _.forEach(SpeedTestPool, (item, key) => {
+  _.forEach(SpeedTestPool, (item, _key) => {
     item.test() // 异步
   })
 }
@@ -86,8 +87,8 @@ module.exports = {
   SpeedTester,
   initSpeedTest,
   getSpeedTester,
-  getAllSpeedTester,
-  registerNotify,
+  // getAllSpeedTester,
+  // registerNotify,
   reSpeedTest,
   action,
 }
