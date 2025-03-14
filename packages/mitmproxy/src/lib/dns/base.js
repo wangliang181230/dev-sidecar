@@ -52,13 +52,18 @@ module.exports = class BaseDNS {
     }
   }
 
-  async lookup (hostname) {
+  async lookup (hostname, ipChecker) {
     try {
       let ipCache = this.cache.get(hostname)
       if (ipCache) {
-        if (ipCache.value != null) {
-          // ipCache.doCount(ipCache.value, false)
-          return ipCache.value
+        const ip = ipCache.value
+        if (ip != null) {
+          if (ipChecker && ipChecker(ip)) {
+            // ipCache.doCount(ip, false)
+            return ip
+          } else {
+            return hostname
+          }
         }
       } else {
         ipCache = new IpCache(hostname)
@@ -74,9 +79,23 @@ module.exports = class BaseDNS {
       ipList.push(hostname) // 把原域名加入到统计里去
 
       ipCache.setBackupList(ipList)
-      log.info(`[DNS-over-${this.dnsType} '${this.dnsName}'] ${hostname} ➜ ${ipCache.value} (${new Date() - t} ms), ipList: ${JSON.stringify(ipList)}, ipCache:`, JSON.stringify(ipCache))
 
-      return ipCache.value
+      const ip = ipCache.value
+      log.info(`[DNS-over-${this.dnsType} '${this.dnsName}'] ${hostname} ➜ ${ip} (${new Date() - t} ms), ipList: ${JSON.stringify(ipList)}, ipCache:`, JSON.stringify(ipCache))
+
+      if (ipChecker) {
+        if (ip != null && ip !== hostname && ipChecker(ip)) {
+          return ip
+        }
+
+        for (const ip of ipList) {
+          if (ip !== hostname && ipChecker(ip)) {
+            return ip
+          }
+        }
+      }
+
+      return ip != null ? ip : hostname
     } catch (error) {
       log.error(`[DNS-over-${this.dnsType} '${this.dnsName}'] cannot resolve hostname ${hostname}, error:`, error)
       return hostname

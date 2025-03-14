@@ -137,6 +137,7 @@ class SpeedTester {
       })
     } catch (e) {
       item.title = e.message
+      item.status = 'failed'
       if (e.message !== 'timeout') {
         log.warn(`[speed] test error:   ${this.hostname} ➜ ${item.host}:${item.port} from DNS '${item.dns}', errorMsg: ${e.message}`)
       }
