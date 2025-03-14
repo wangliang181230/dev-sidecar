@@ -18,8 +18,8 @@ class SpeedTester {
     this.ready = false
     this.alive = []
     this.backupList = []
-    this.testCount = 0
 
+    this.testCount = 0
     this.lastReadTime = Date.now()
     this.keepCheckIntervalId = false
 
@@ -88,7 +88,7 @@ class SpeedTester {
 
     const items = []
     for (const ip in ips) {
-      items.push({ host: ip, port: this.port, dns: ips[ip].dns })
+      items.push({ host: ip, dns: ips[ip].dns })
     }
     return items
   }
@@ -134,7 +134,7 @@ class SpeedTester {
     try {
       const ret = await this.testOne(item)
       item.title = `${ret.by}测速成功：${item.host}`
-      log.info(`[speed] test success: ${this.hostname} ➜ ${item.host}:${item.port} from DNS '${item.dns}'`)
+      log.info(`[speed] test success: ${this.hostname} ➜ ${item.host}:${this.port} from DNS '${item.dns}'`)
       _.merge(item, ret)
       aliveList.push({ ...ret, ...item })
       aliveList.sort((a, b) => a.time - b.time)
@@ -154,21 +154,21 @@ class SpeedTester {
       item.title = e.message
       item.status = 'failed'
       if (e.message !== 'timeout') {
-        log.warn(`[speed] test error:   ${this.hostname} ➜ ${item.host}:${item.port} from DNS '${item.dns}', errorMsg: ${e.message}`)
+        log.warn(`[speed] test error:   ${this.hostname} ➜ ${item.host}:${this.port} from DNS '${item.dns}', errorMsg: ${e.message}`)
       }
     }
   }
 
   testByTCP (item) {
     return new Promise((resolve, reject) => {
-      const { host, port, dns } = item
+      const { host, dns } = item
       const startTime = Date.now()
 
       let isOver = false
       const timeout = 5000
       let timeoutId = null
 
-      const client = net.createConnection({ host, port }, () => {
+      const client = net.createConnection({ host, port: this.port }, () => {
         isOver = true
         clearTimeout(timeoutId)
 
@@ -181,7 +181,7 @@ class SpeedTester {
         clearTimeout(timeoutId)
 
         if (e.message !== 'timeout') {
-          log.warn('[speed] test by TCP error:  ', this.hostname, `➜ ${host}:${port} from DNS '${dns}', cost: ${Date.now() - startTime} ms, errorMsg:`, e.message)
+          log.warn('[speed] test by TCP error:  ', this.hostname, `➜ ${host}:${this.port} from DNS '${dns}', cost: ${Date.now() - startTime} ms, errorMsg:`, e.message)
         }
         reject(e)
         client.end()
@@ -192,7 +192,7 @@ class SpeedTester {
           return
         }
 
-        log.warn('[speed] test by TCP timeout:', this.hostname, `➜ ${host}:${port} from DNS '${dns}', cost: ${Date.now() - startTime} ms`)
+        log.warn('[speed] test by TCP timeout:', this.hostname, `➜ ${host}:${this.port} from DNS '${dns}', cost: ${Date.now() - startTime} ms`)
         reject(new Error('timeout'))
         client.end()
       }, timeout)
