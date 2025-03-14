@@ -3,11 +3,11 @@ const log = require('../../../utils/util.log.server')
 const speedTest = require('../../speed')
 
 module.exports = {
-  createLookupFunc (res, dns, action, target, isDnsIntercept) {
+  createLookupFunc (res, dns, action, target, port, isDnsIntercept) {
     target = target ? (`, target: ${target}`) : ''
 
     return (hostname, options, callback) => {
-      const tester = speedTest.getSpeedTester(hostname)
+      const tester = speedTest.getSpeedTester(hostname, port)
       if (tester) {
         const aliveIpObj = tester.pickFastAliveIpObj()
         if (aliveIpObj) {
