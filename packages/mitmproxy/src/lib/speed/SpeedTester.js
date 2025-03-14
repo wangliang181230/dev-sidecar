@@ -7,25 +7,38 @@ const config = require('./config.js')
 // const isWindows = process.platform === 'win32'
 
 const DISABLE_TIMEOUT = 60 * 60 * 1000
+
 class SpeedTester {
   constructor ({ hostname, port }) {
     this.dnsMap = config.getConfig().dnsMap
+
     this.hostname = hostname
     this.port = port || 443
-    this.lastReadTime = Date.now()
+
     this.ready = false
     this.alive = []
     this.backupList = []
+    this.testCount = 0
+
+    this.lastReadTime = Date.now()
     this.keepCheckIntervalId = false
 
-    this.testCount = 0
-    this.test() // 异步
+    this.tryTestCount = 0
+
+    this.test() // 异步：初始化完成后先测速一次
   }
 
   pickFastAliveIpObj () {
     this.touch()
+
     if (this.alive.length === 0) {
-      this.test() // 异步
+      if (this.backupList.length > 0 && this.tryTestCount % 10 > 0) {
+        this.testBackups() // 异步
+      } else if (this.tryTestCount % 10 === 0) {
+        this.test() // 异步
+      }
+      this.tryTestCount++
+
       return null
     }
     return this.alive[0]
@@ -46,6 +59,7 @@ class SpeedTester {
       if (Date.now() - DISABLE_TIMEOUT > this.lastReadTime) {
         // 超过很长时间没有访问，取消测试
         clearInterval(this.keepCheckIntervalId)
+        this.keepCheckIntervalId = false
         return
       }
       if (this.alive.length > 0) {
@@ -84,34 +98,35 @@ class SpeedTester {
   }
 
   async test () {
-    log.debug(`[speed] test start: ${this.hostname}`)
+    this.testCount++
+    log.debug(`[speed] test start: ${this.hostname}, testCount: ${this.testCount}`)
 
     try {
       const newList = await this.getIpListFromDns(this.dnsMap)
       const newBackupList = [...newList, ...this.backupList]
       this.backupList = _.unionBy(newBackupList, 'host')
-      this.testCount++
-
-      log.info(`[speed] test end: ${this.hostname} ➜ ip-list:`, this.backupList)
       await this.testBackups()
+      log.info(`[speed] test end: ${this.hostname} ➜ ip-list:`, this.backupList, `, testCount: ${this.testCount}`)
       if (config.notify) {
         config.notify({ key: 'test' })
       }
     } catch (e) {
-      log.error(`[speed] test failed: ${this.hostname}`, e)
+      log.error(`[speed] test failed: ${this.hostname}, testCount: ${this.testCount}, error:`, e)
     }
   }
 
   async testBackups () {
-    const aliveList = []
+    if (this.backupList.length > 0) {
+      const aliveList = []
 
-    const testAll = []
-    for (const item of this.backupList) {
-      testAll.push(this.doTest(item, aliveList))
+      const testAll = []
+      for (const item of this.backupList) {
+        testAll.push(this.doTest(item, aliveList))
+      }
+      await Promise.all(testAll)
+      this.alive = aliveList
     }
-    await Promise.all(testAll)
 
-    this.alive = aliveList
     this.ready = true
   }
 
