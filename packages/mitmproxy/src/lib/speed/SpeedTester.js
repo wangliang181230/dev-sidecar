@@ -16,7 +16,7 @@ class SpeedTester {
     this.ready = false
     this.alive = []
     this.backupList = []
-    this.keepCheckId = false
+    this.keepCheckIntervalId = false
 
     this.testCount = 0
     this.test() // 异步
@@ -33,26 +33,26 @@ class SpeedTester {
 
   touch () {
     this.lastReadTime = Date.now()
-    if (!this.keepCheckId) {
+    if (!this.keepCheckIntervalId) {
       this.startChecker()
     }
   }
 
   startChecker () {
-    if (this.keepCheckId) {
-      clearInterval(this.keepCheckId)
+    if (this.keepCheckIntervalId) {
+      clearInterval(this.keepCheckIntervalId)
     }
-    this.keepCheckId = setInterval(() => {
+    this.keepCheckIntervalId = setInterval(() => {
       if (Date.now() - DISABLE_TIMEOUT > this.lastReadTime) {
         // 超过很长时间没有访问，取消测试
-        clearInterval(this.keepCheckId)
+        clearInterval(this.keepCheckIntervalId)
         return
       }
       if (this.alive.length > 0) {
-        this.testBackups()
-        return
+        this.testBackups() // 异步
+      } else {
+        this.test() // 异步
       }
-      this.test() // 异步
     }, config.getConfig().interval)
   }
 
