@@ -50,7 +50,6 @@ module.exports = class DNSOverHTTPS extends BaseDNS {
       options.agent = new HttpsAgent({
         keepAlive: true,
         timeout: 20000,
-        keepAliveTimeout: 30000,
         rejectUnauthorized: false,
       })
     }
