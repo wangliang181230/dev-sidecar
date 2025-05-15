@@ -48,7 +48,7 @@ module.exports = {
         }
 
         // 基于 https
-        dnsMap[provider] = new DNSOverHTTPS(provider, conf.cacheSize, preSetIpList, server)
+        dnsMap[provider] = new DNSOverHTTPS(provider, conf.cacheSize, preSetIpList, server, conf.servername || conf.sni)
       } else {
         // 获取DNS端口
         let port = conf.port
