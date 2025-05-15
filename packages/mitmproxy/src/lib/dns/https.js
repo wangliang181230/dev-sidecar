@@ -1,10 +1,17 @@
 const { promisify } = require('node:util')
 const doh = require('dns-over-http')
 const BaseDNS = require('./base')
-const url = require('node:url')
 const HttpsAgent = require('../proxy/common/ProxyHttpsAgent')
+const Agent = require('../proxy/common/ProxyHttpAgent')
 
 const dohQueryAsync = promisify(doh.query)
+
+function createAgent (dnsServer) {
+  return new (dnsServer.startsWith('https:') ? HttpsAgent : Agent)({
+    keepAlive: true,
+    timeout: 20000,
+  })
+}
 
 module.exports = class DNSOverHTTPS extends BaseDNS {
   constructor (dnsName, cacheSize, preSetIpList, dnsServer, dnsServerName) {
@@ -14,45 +21,24 @@ module.exports = class DNSOverHTTPS extends BaseDNS {
   }
 
   _dnsQueryPromise (hostname, type = 'A') {
+    // 请求参数
     const options = {
       url: this.dnsServer,
+      agent: createAgent(this.dnsServer),
     }
+    if (this.dnsServerName) {
+      // 设置SNI
+      options.servername = this.dnsServerName
+      options.rejectUnauthorized = false
+    }
+
+    // 查询参数
     const questions = [
       {
         type,
         name: hostname,
       },
     ]
-    // const cb = null
-
-    // 设置SNI
-    if (this.dnsServerName) {
-      // 解析URL
-      {
-        // eslint-disable-next-line node/no-deprecated-api
-        const URL = url.parse(options.url)
-        // delete options.url
-        // options.protocol = URL.protocol
-        // options.hostname = URL.host
-        // options.host = URL.host
-        options.headers = {
-          Host: URL.host,
-        }
-        // options.path = URL.path
-        if (URL.port == null) {
-          options.port = options.protocol === 'https:' ? 443 : 80
-        }
-      }
-
-      // 设置SNI
-      options.servername = this.dnsServerName
-      // options.rejectUnauthorized = false
-      options.agent = new HttpsAgent({
-        keepAlive: true,
-        timeout: 20000,
-        rejectUnauthorized: false,
-      })
-    }
 
     return dohQueryAsync(options, questions)
   }
