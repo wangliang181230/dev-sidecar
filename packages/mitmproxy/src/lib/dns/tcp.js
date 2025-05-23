@@ -20,10 +20,13 @@ module.exports = class DNSOverTCP extends BaseDNS {
         flags: dnsPacket.RECURSION_DESIRED,
         type: 'query',
         id: randi(0x0, 0xFFFF),
-        questions: [{
-          type,
-          name: hostname,
-        }],
+        questions: [
+          {
+            type: 'AAAA',
+            name: hostname,
+            class: 'IN',
+          },
+        ],
       })
 
       // --- TCP 查询 ---

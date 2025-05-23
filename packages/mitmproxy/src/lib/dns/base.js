@@ -146,7 +146,7 @@ module.exports = class BaseDNS {
         return []
       }
 
-      const ret = response.answers.filter(item => item.type === 'A').map(item => item.data)
+      const ret = response.answers.filter(item => item.type === 'A' || item.type === 'AAAA').map(item => item.data)
       if (ret.length === 0) {
         log.info(`[DNS-over-${this.dnsType} '${this.dnsName}'] 没有该域名的IP地址: ${hostname}, cost: ${cost} ms`)
       } else {

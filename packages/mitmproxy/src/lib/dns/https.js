@@ -35,8 +35,9 @@ module.exports = class DNSOverHTTPS extends BaseDNS {
     // DNS查询参数
     const questions = [
       {
-        type,
+        type: 'AAAA',
         name: hostname,
+        class: 'IN',
       },
     ]
 

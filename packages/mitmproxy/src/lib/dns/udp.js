@@ -26,10 +26,13 @@ module.exports = class DNSOverUDP extends BaseDNS {
         flags: dnsPacket.RECURSION_DESIRED,
         type: 'query',
         id: randi(0x0, 0xFFFF),
-        questions: [{
-          type,
-          name: hostname,
-        }],
+        questions: [
+          {
+            type: 'AAAA',
+            name: hostname,
+            class: 'IN',
+          },
+        ],
       })
 
       // 创建客户端

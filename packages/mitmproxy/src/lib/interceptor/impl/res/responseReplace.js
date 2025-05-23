@@ -70,11 +70,15 @@ module.exports = {
   responseIntercept (context, interceptOpt, req, res, proxyReq, proxyRes, ssl, next) {
     const { rOptions, log } = context
 
-    if (proxyRes.statusCode !== 200) {
+    const responseReplaceConfig = interceptOpt.responseReplace
+
+    if (responseReplaceConfig.minStatusCode && responseReplaceConfig.maxStatusCode) {
+      if (proxyRes.statusCode < responseReplaceConfig.minStatusCode || proxyRes.statusCode > responseReplaceConfig.maxStatusCode) {
+        return
+      }
+    } else if (proxyRes.statusCode !== 200) {
       return
     }
-
-    const responseReplaceConfig = interceptOpt.responseReplace
 
     let actions = ''
 

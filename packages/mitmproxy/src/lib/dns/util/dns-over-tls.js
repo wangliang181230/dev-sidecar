@@ -7,16 +7,16 @@ const randi = require('random-int')
 
 const TWO_BYTES = 2
 
-function getDnsQuery ({ type, name, klass, id }) {
+function createDnsQuery (id, questions) {
   return {
     id,
     type: 'query',
     flags: dnsPacket.RECURSION_DESIRED,
-    questions: [{ class: klass, name, type }],
+    questions,
   }
 }
 
-function query ({ host, servername, type, name, klass, port, rejectUnauthorized, timeout }) {
+function query ({ host, servername, port, rejectUnauthorized, timeout }, questions) {
   return new Promise((resolve, reject) => {
     if (!host || !servername || !name) {
       throw new Error('At least host, servername and name must be set.')
@@ -24,7 +24,7 @@ function query ({ host, servername, type, name, klass, port, rejectUnauthorized,
 
     let response = Buffer.alloc(0)
     let packetLength = 0
-    const dnsQuery = getDnsQuery({ id: randi(0x0, 0xFFFF), type, name, klass })
+    const dnsQuery = createDnsQuery(randi(0x0, 0xFFFF), questions)
     const dnsQueryBuf = dnsPacket.streamEncode(dnsQuery)
     const socket = tls_1.connect({ host, port, servername, rejectUnauthorized, timeout })
 
