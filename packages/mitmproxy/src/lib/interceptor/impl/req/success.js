@@ -76,6 +76,9 @@ module.exports = {
         headers['Access-Control-Allow-Origin'] = rOptions.headers.origin
       }
 
+      // 同时使用缓存（如果配置了的话）
+      cacheRes.simpleHandle(interceptOpt, res)
+
       res.writeHead(status, headers)
       if (status !== 204) {
         res.write(body)
