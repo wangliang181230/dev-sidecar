@@ -18,9 +18,9 @@ const defaultConfig = {
     remoteConfig: {
       enabled: true,
       // 共享远程配置地址
-      url: 'https://gitee.com/wangliang181230/dev-sidecar/raw/docmirror2.x/packages/core/src/config/remote_config.json',
+      url: 'https://gitee.com/wangliang181230/dev-sidecar-config/raw/main/remote_config.json',
       // 个人远程配置地址
-      personalUrl: 'https://gitee.com/wangliang181230/dev-sidecar/raw/remote_config/packages/core/src/config/remote_config_myself.json',
+      personalUrl: 'https://gitee.com/wangliang181230/dev-sidecar-config/raw/myself/remote_config_myself.json',
     },
     startShowWindow: true, // 启动时是否打开窗口：true=打开窗口, false=隐藏窗口
     needCheckHideWindow: true, // 是否需要在隐藏窗口时做检查
