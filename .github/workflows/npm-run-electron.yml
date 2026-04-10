@@ -13,6 +13,11 @@ on:
       - "**/.gitignore"
       - "**/LICENSE"
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        default: 'v2.0.0-myself'
+        required: true
 
 jobs:
   npm-run-electron:
