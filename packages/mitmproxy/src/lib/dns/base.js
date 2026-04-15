@@ -74,7 +74,6 @@ module.exports = class BaseDNS {
               log.info(`[DNS-over-${this.dnsType} '${this.dnsName}'] 获取IP地址缓存: ${hostname} -> ${ip}（测试通过）`)
               return ip
             } else {
-              // ipCache.doCount(ip, true)
               log.info(`[DNS-over-${this.dnsType} '${this.dnsName}'] 获取IP地址缓存: ${hostname} -> ${ip}（测试不通过）-> ${hostname}`)
               return hostname
             }
