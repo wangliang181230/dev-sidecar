@@ -3,6 +3,10 @@ const net = require('node:net')
 const _ = require('lodash')
 const log = require('../../utils/util.log.server')
 const config = require('./config.js')
+const matchUtil = require('../../utils/util.match.js')
+const { configFromFiles } = require('@docmirror/dev-sidecar/src/config/index.js')
+
+const familyMapping = matchUtil.domainMapRegexply(configFromFiles.server.dns.familyMapping)
 
 // const isWindows = process.platform === 'win32'
 
@@ -94,7 +98,8 @@ class SpeedTester {
   }
 
   async getFromOneDns (dns) {
-    return await dns._lookupWithPreSetIpList(this.hostname)
+    const family = Number.parseInt(matchUtil.matchHostname(familyMapping, this.hostname, 'get family')) === 6 ? 6 : 4
+    return await dns._lookupWithPreSetIpList(this.hostname, { family })
   }
 
   async test () {
@@ -170,7 +175,7 @@ class SpeedTester {
       const timeout = 5000
       let timeoutId = null
 
-      const client = net.createConnection({ host, port: this.port }, () => {
+      const client = net.createConnection({ host, port: this.port, family: host.includes(':') ? 6 : 4 }, () => {
         isOver = true
         clearTimeout(timeoutId)
 

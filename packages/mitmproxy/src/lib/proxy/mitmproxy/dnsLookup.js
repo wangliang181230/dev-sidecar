@@ -26,8 +26,11 @@ function createIpChecker (tester) {
 }
 
 module.exports = {
-  createLookupFunc (res, dns, action, target, port, isDnsIntercept) {
+  createLookupFunc (res, dnsAndFamily, action, target, port, isDnsIntercept) {
     target = target ? (`, target: ${target}`) : ''
+
+    const dns = dnsAndFamily.dns
+    const family = Number.parseInt(dnsAndFamily.family) === 6 ? 6 : 4
 
     return (hostname, options, callback) => {
       const tester = speedTest.getSpeedTester(hostname, port)
@@ -38,7 +41,6 @@ module.exports = {
           if (res) {
             res.setHeader('DS-DNS-Lookup', `IpTester: ${aliveIpObj.host} ${aliveIpObj.dns === '预设IP' ? 'PreSet' : aliveIpObj.dns}`)
           }
-          const family = aliveIpObj.host.includes(':') ? 6 : 4
           callback(null, aliveIpObj.host, family)
           return
         } else {
@@ -48,7 +50,7 @@ module.exports = {
 
       const ipChecker = createIpChecker(tester)
 
-      dns.lookup(hostname, { ipChecker }).then((ip) => {
+      dns.lookup(hostname, { ipChecker, family }).then((ip) => {
         if (isDnsIntercept) {
           isDnsIntercept.dns = dns
           isDnsIntercept.hostname = hostname
@@ -56,17 +58,19 @@ module.exports = {
         }
 
         if (ip !== hostname) {
-          log.info(`----- ${action}: ${hostname}, use ip from dns '${dns.dnsName}': ${ip}${target} -----`)
+          log.info(`----- ${action}: ${hostname}, use ip from dns '${dns.dnsName}': ${ip}(family: ${family})${target} -----`)
           if (res) {
-            res.setHeader('DS-DNS-Lookup', `DNS: ${ip} ${dns.dnsName === '预设IP' ? 'PreSet' : dns.dnsName}`)
+            res.setHeader('DS-DNS-Lookup', `DNS: ${ip}（IPv${family}） ${dns.dnsName === '预设IP' ? 'PreSet' : dns.dnsName}`)
           }
-          const family = ip.includes(':') ? 6 : 4
           callback(null, ip, family)
         } else {
           // 使用默认dns
           log.info(`----- ${action}: ${hostname}, use default DNS: ${hostname}${target}, options:`, options, ', dns:', dns)
           defaultDns.lookup(hostname, options, callback)
         }
+      }).catch((err) => {
+        log.error(`----- ${action}: ${hostname}, dns lookup error${target}, options:`, options, `, error:`, err)
+        defaultDns.lookup(hostname, options, callback)
       })
     }
   },

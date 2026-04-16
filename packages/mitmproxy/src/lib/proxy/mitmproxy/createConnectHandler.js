@@ -1,5 +1,5 @@
 const net = require('node:net')
-const url = require('node:url')
+const URL = require('node:url')
 const jsonApi = require('../../../json')
 const log = require('../../../utils/util.log.server')
 const DnsUtil = require('../../dns')
@@ -31,8 +31,9 @@ module.exports = function createConnectHandler (sslConnectInterceptor, middlewar
   }
 
   return function connectHandler (req, cltSocket, head, ssl) {
+    const url = `${ssl ? 'https' : 'http'}://${req.url}`
     // eslint-disable-next-line node/no-deprecated-api
-    let { hostname, port } = url.parse(`${ssl ? 'https' : 'http'}://${req.url}`)
+    let { hostname, port } = URL.parse(url)
     port = Number.parseInt(port)
 
     if (isSslConnect(sslConnectInterceptors, req, cltSocket, head)) {
@@ -57,15 +58,15 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig = null, isDire
   // log.info('connect:', hostname, port)
   const start = Date.now()
   const isDnsIntercept = {}
-  const hostport = `${hostname}:${port}`
+  let hostport = `${hostname}:${port}`
 
   // 用于记录日志
   const connectInfo = isDirect ? hostport : `fakeServer: ${hostport}, target: ${target}`
 
   try {
     // 客户端的连接事件监听
-    cltSocket.on('timeout', (e) => {
-      log.error(`cltSocket timeout: ${connectInfo}, errorMsg: ${e.message}`)
+    cltSocket.on('timeout', () => {
+      log.error(`cltSocket timeout: ${connectInfo}`)
     })
     cltSocket.on('error', (e) => {
       log.error(`cltSocket error:   ${connectInfo}, errorMsg: ${e.message}`)
@@ -112,9 +113,13 @@ function connect (req, cltSocket, head, hostname, port, dnsConfig = null, isDire
       connectTimeout: 10000,
     }
     if (dnsConfig && dnsConfig.dnsMap) {
-      const dns = DnsUtil.getDNS(dnsConfig, hostname)
-      if (dns) {
-        options.lookup = dnsLookup.createLookupFunc(null, dns, 'connect', hostport, port, isDnsIntercept)
+      const dnsAndFamily = DnsUtil.getDNSAndFamily(dnsConfig, hostname)
+      if (dnsAndFamily) {
+        options.lookup = dnsLookup.createLookupFunc(null, dnsAndFamily, 'connect', hostport, port, isDnsIntercept)
+        if (dnsAndFamily.family === 6) {
+          options.family = 6
+          hostport += '(IPv6)'
+        }
       }
     }
     // 代理连接事件监听

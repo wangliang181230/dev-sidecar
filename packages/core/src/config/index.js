@@ -11,6 +11,11 @@ function getRootCaKeyPath () {
 
 const defaultConfig = {
   app: {
+    metaInfo: {
+      updateLog: 'GUI v2.0.2自带配置',
+      version: 202604122348,
+      id: 'internal',
+    },
     mode: 'default',
     autoStart: {
       enabled: false,
@@ -374,31 +379,21 @@ const defaultConfig = {
     },
     dns: {
       providers: {
-        aliyun: {
-          type: 'https',
-          server: 'https://dns.alidns.com/dns-query',
-          cacheSize: 1000,
-        },
-        cloudflare: {
-          type: 'https',
-          server: 'https://1.1.1.1/dns-query',
-          cacheSize: 1000,
-        },
-        quad9: {
-          type: 'https',
-          server: 'https://9.9.9.9/dns-query',
-          cacheSize: 1000,
-        },
         safe360: {
-          type: 'https',
-          server: 'https://doh.360.cn/dns-query',
-          cacheSize: 1000,
+          server: 'tls://dot.360.cn',
           forSNI: true,
         },
+        aliyun: {
+          server: 'tls://dns.alidns.com',
+        },
+        cloudflare: {
+          server: 'https://1.1.1.1/dns-query',
+        },
+        quad9: {
+          server: 'https://9.9.9.9/dns-query',
+        },
         rubyfish: {
-          type: 'https',
           server: 'https://rubyfish.cn/dns-query',
-          cacheSize: 1000,
         },
       },
       mapping: {
@@ -419,6 +414,31 @@ const defaultConfig = {
         '*.pypi.org': 'quad9',
         '*.jetbrains.com': 'quad9',
         '*.azureedge.net': 'quad9',
+      },
+      /*
+       * 原本是想将 mapping 中的数据结构由 string 改为 object，但是这样会导致新的配置无法向下兼容，所以将family配置，放到下面的 familyMapping 中
+       *
+       * @param family 可选值：4（只查询IPv4地址，默认值）、6（只查询IPv6地址）......暂不支持同时查IPv4和IPv6地址
+       * @since 2.0.2
+       */
+      familyMapping: {
+        '*.github.com': '4',
+        '*github*.com': '4',
+        '*.github.io': '4',
+        '*.docker.com': '4',
+        '*.stackoverflow.com': '4',
+        '*.electronjs.org': '4',
+        '*.amazonaws.com': '4',
+        '*.yarnpkg.com': '4',
+        '*.cloudfront.net': '4',
+        '*.cloudflare.com': '4',
+        'img.shields.io': '4',
+        '*.vuepress.vuejs.org': '4',
+        '*.gh.docmirror.top': '4',
+        '*.v2ex.com': '4',
+        '*.pypi.org': '4',
+        '*.jetbrains.com': '4',
+        '*.azureedge.net': '4',
       },
       speedTest: {
         enabled: true,

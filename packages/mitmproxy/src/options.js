@@ -35,12 +35,35 @@ function getExclusionArray (exclusions) {
   return ret
 }
 
+function handleDnsMapping (dnsMapping, familyMapping) {
+  // 循环读取所有key value
+  for (const hostname in dnsMapping) {
+    const value = dnsMapping[hostname]
+    if (value == null) {
+      delete dnsMapping[hostname]
+      continue
+    }
+
+    if (typeof value === 'string') {
+      dnsMapping[hostname] = {
+        dnsName: value,
+        family: Number.parseInt(familyMapping[hostname]) === 6 ? 6 : 4,
+      }
+    } else if (value.dnsName == null) {
+      log.warn(`域名 ${hostname} 的DNS配置有误，未配置dnsName，配置值：`, value)
+      delete dnsMapping[hostname]
+    }
+  }
+
+  return dnsMapping
+}
+
 module.exports = (serverConfig) => {
   const intercepts = matchUtil.domainMapRegexply(buildIntercepts(serverConfig.intercepts))
   const whiteList = matchUtil.domainMapRegexply(serverConfig.whiteList)
   const timeoutMapping = matchUtil.domainMapRegexply(serverConfig.setting.timeoutMapping)
 
-  const dnsMapping = serverConfig.dns.mapping
+  const dnsMapping = handleDnsMapping(serverConfig.dns.mapping, serverConfig.dns.familyMapping || {})
   const setting = serverConfig.setting
 
   if (!setting.script.dirAbsolutePath) {
@@ -203,7 +226,7 @@ module.exports = (serverConfig) => {
             }
             matchInterceptsOpts[impl.name] = {
               order: interceptOpt.order || 0,
-              index: matchIntercepts.length - 1,
+              index: action === 'replace' ? matchedInterceptOpt.index : matchIntercepts.length - 1,
             }
           }
         }

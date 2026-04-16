@@ -114,19 +114,23 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
 
           const isDnsIntercept = {}
           if (dnsConfig && dnsConfig.dnsMap) {
-            let dns = DnsUtil.getDNS(dnsConfig, rOptions.hostname)
-            if (!dns && rOptions.servername) {
-              dns = dnsConfig.dnsMap.ForSNI
+            let dnsAndFamily = DnsUtil.getDNSAndFamily(dnsConfig, rOptions.hostname)
+            if (!dnsAndFamily && rOptions.servername) {
+              const dns = dnsConfig.dnsMap.ForSNI
               if (dns) {
-                log.info(`域名 ${rOptions.hostname} 在dns中未配置，但使用了 sni: ${rOptions.servername}, 必须使用dns，现默认使用 '${dns.dnsName}' DNS.`)
+                dnsAndFamily = { dns }
+                log.info(`域名 ${rOptions.hostname} 在dns中未配置，但使用了 sni: ${rOptions.servername}, 必须使用dns，现默认使用 '${dnsAndFamily.dnsName}' DNS.`)
               } else {
-                log.warn(`域名 ${rOptions.hostname} 在dns中未配置，但使用了 sni: ${rOptions.servername}，且DNS服务管理中，也未指定SNI默认使用的DNS。`)
+                log.warn(`域名 ${rOptions.hostname} 在dns中未配置，但使用了 sni: ${rOptions.servername}，然而DNS服务管理中，并未指定SNI默认使用的DNS。`)
               }
             }
-            if (dns) {
-              rOptions.lookup = dnsLookup.createLookupFunc(res, dns, 'request url', url, rOptions.port, isDnsIntercept)
-              log.debug(`域名 ${rOptions.hostname} DNS: ${dns.dnsName}`)
-              res.setHeader('DS-DNS', dns.dnsName)
+            if (dnsAndFamily) {
+              rOptions.lookup = dnsLookup.createLookupFunc(res, dnsAndFamily, 'request url', url, rOptions.port, isDnsIntercept)
+              if (dnsAndFamily.family === 6) {
+                rOptions.family = 6
+              }
+              log.debug(`域名 ${rOptions.hostname} DNS: ${dnsAndFamily.dns.dnsName}, family: ${rOptions.family || 4}`)
+              res.setHeader('DS-DNS', dnsAndFamily.dns.dnsName)
             } else {
               log.info(`域名 ${rOptions.hostname} 在DNS中未配置`)
             }
@@ -141,7 +145,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
           // log.debug('rOptions:', rOptions.hostname + rOptions.path, '\r\n', rOptions)
           // log.debug('agent:', rOptions.agent)
           // log.debug('agent.options:', rOptions.agent.options)
-          res.setHeader('DS-Proxy-Request', rOptions.hostname)
+          res.setHeader('DS-Proxy-Request', `${rOptions.protocol}//${rOptions.hostname}:${rOptions.port}${req.url}`)
 
           // 自动兼容程序：2
           if (rOptions.agent) {
@@ -155,6 +159,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             }
           }
 
+          res.setHeader('DS-Proxy-Request-Family', rOptions.family || 4)
           proxyReq = (rOptions.protocol === 'https:' ? https : http).request(rOptions, (proxyRes) => {
             const cost = Date.now() - start
             if (rOptions.protocol === 'https:') {
@@ -232,7 +237,7 @@ module.exports = function createRequestHandler (createIntercepts, middlewares, e
             }
             reject(new Error(errorMsg))
           })
-          req.on('error', (e, req, res) => {
+          req.on('error', (e) => {
             const cost = Date.now() - start
             log.error(`请求错误: ${url}, cost: ${cost} ms, error:`, e, ', rOptions:', jsonApi.stringify2(rOptions))
             reject(e)
