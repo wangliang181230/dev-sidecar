@@ -32,12 +32,9 @@ export default {
     },
   },
   mounted () {
-    let theme = null
-    if (!this.config || !this.config.app) {
-      theme = this.config.app.theme
-    }
-
-    if (theme == null || theme === 'system') {
+    // TODO: 待修复，此处的 config 为什么会为空
+    let theme = this.config && this.config.app ? this.config.app.theme : null
+    if (!theme || theme === 'system') {
       theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     }
 
