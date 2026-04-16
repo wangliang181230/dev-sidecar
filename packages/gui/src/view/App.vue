@@ -32,12 +32,12 @@ export default {
     },
   },
   mounted () {
+    let theme = null
     if (!this.config || !this.config.app) {
-      return
+      theme = this.config.app.theme
     }
 
-    let theme = this.config.app.theme
-    if (theme === 'system') {
+    if (theme == null || theme === 'system') {
       theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     }
 
