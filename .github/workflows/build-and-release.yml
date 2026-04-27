@@ -134,23 +134,24 @@ jobs:
         if: ${{ matrix.os == 'windows' }}
         run: |
           echo "为 Windows 创建 electron-builder 多架构配置文件..."
-          cat > packages/gui/electron-builder.yml << 'EOF'
-          win:
-            target: nsis
-            arch:
-              - x64
-              - ia32
-              - arm64
-              - universal
-          nsis:
-            oneClick: false
-            perMachine: false
-            allowElevation: true
-            allowToChangeInstallationDirectory: true
-          publish: null
-          EOF
+          $config = @"
+win:
+  target: nsis
+  arch:
+    - x64
+    - ia32
+    - arm64
+    - universal
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+publish: null
+"@
+          Set-Content -Path packages/gui/electron-builder.yml -Value $config
           echo "配置文件内容:"
-          cat packages/gui/electron-builder.yml
+          Get-Content packages/gui/electron-builder.yml
 
       - name: "npm run electron:build"
         run: |
