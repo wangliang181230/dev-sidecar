@@ -141,6 +141,7 @@ jobs:
               - x64
               - ia32
               - arm64
+              - universal
           nsis:
             oneClick: false
             perMachine: false
