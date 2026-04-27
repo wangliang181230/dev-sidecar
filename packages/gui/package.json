@@ -19,6 +19,15 @@
     "electron:icons-mac": "electron-icon-builder --input=./public/logo/mac.png --output=build --flatten",
     "electron:icons-black": "electron-icon-builder --input=./public/logo/win-black.png --output=build/black --flatten"
   },
+  "vue": {
+    "pluginOptions": {
+      "electronBuilder": {
+        "builderOptions": {
+          "publish": false
+        }
+      }
+    }
+  },
   "dependencies": {
     "@docmirror/dev-sidecar": "workspace:*",
     "@docmirror/mitmproxy": "workspace:*",
