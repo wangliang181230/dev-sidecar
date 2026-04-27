@@ -195,28 +195,28 @@ jobs:
       # region Upload artifacts - Windows
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ matrix.os == 'windows' && hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-x86_64.exe', steps.package-info.outputs.version)) != '' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
           if-no-files-found: error
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ matrix.os == 'windows' && hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-ia32.exe', steps.package-info.outputs.version)) != '' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
           if-no-files-found: error
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ matrix.os == 'windows' && hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-arm64.exe', steps.package-info.outputs.version)) != '' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
           if-no-files-found: error
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ matrix.os == 'windows' && hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-universal.exe', steps.package-info.outputs.version)) != '' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
@@ -371,7 +371,7 @@ jobs:
         id: package-info
         uses: luizfelipelaviola/get-package-info@v1
         with:
-          path: ./packages/mitmproxy
+          path: ./packages/gui
 
       - name: 'Make "release" dir'
         run: mkdir release
@@ -379,21 +379,25 @@ jobs:
       # Download artifacts
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
         uses: actions/download-artifact@v4.1.8
+        if: ${{ hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-x86_64.exe', steps.package-info.outputs.version)) != '' }}
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
           path: release
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
         uses: actions/download-artifact@v4.1.8
+        if: ${{ hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-ia32.exe', steps.package-info.outputs.version)) != '' }}
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
           path: release
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
         uses: actions/download-artifact@v4.1.8
+        if: ${{ hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-arm64.exe', steps.package-info.outputs.version)) != '' }}
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
           path: release
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
         uses: actions/download-artifact@v4.1.8
+        if: ${{ hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-universal.exe', steps.package-info.outputs.version)) != '' }}
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
           path: release
@@ -420,6 +424,7 @@ jobs:
           path: release
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak"
         uses: actions/download-artifact@v4.1.8
+        if: ${{ hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-linux-x86_64.flatpak', steps.package-info.outputs.version)) != '' }}
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak"
           path: release
@@ -446,6 +451,7 @@ jobs:
           path: release
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak"
         uses: actions/download-artifact@v4.1.8
+        if: ${{ hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-linux-arm64.flatpak', steps.package-info.outputs.version)) != '' }}
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak"
           path: release
@@ -472,6 +478,7 @@ jobs:
           path: release
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak"
         uses: actions/download-artifact@v4.1.8
+        if: ${{ hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-linux-armv7l.flatpak', steps.package-info.outputs.version)) != '' }}
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak"
           path: release
