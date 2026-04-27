@@ -1,0 +1,56 @@
+name: IPTV Daily Update
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+      timezone: Asia/Shanghai
+  workflow_dispatch:
+
+env:
+  TZ: Asia/Shanghai
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  scrape-and-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: pip install aiohttp
+
+    - name: Run scraping script
+      run: python .github/workflows/iptv.py
+
+    - name: GetTime
+      run: echo "GET_TIME=$(date +'%Y-%m-%d %H:%M:%S CST')" >> $GITHUB_ENV
+
+    - name: Update README.md
+      run: |
+        file_link="https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref }}/best_sorted.m3u"
+        file_link1="https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref }}/best_sorted.m3u8"
+        file_link2="https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref }}/best_sorted.txt"
+        sed -i "s|<!-- Last Run Time -->.*|<!-- Last Run Time --> ${GET_TIME}|" README.md
+        sed -i "s|<!-- Generated File Link M3U -->.*|<!-- Generated File Link M3U --> [View M3U](${file_link})|" README.md
+        sed -i "s|<!-- Generated File Link M3U8 -->.*|<!-- Generated File Link M3U8 --> [View M3U8](${file_link1})|" README.md
+        sed -i "s|<!-- Generated File Link TXT -->.*|<!-- Generated File Link TXT --> [View TXT](${file_link2})|" README.md
+
+    - name: Commit and Push changes
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add README.md best_sorted.m3u best_sorted.m3u8 best_sorted.txt 2>/dev/null || true
+        git commit -am "自动更新：${GET_TIME}" || echo "没有需要提交的变更"
+        git push origin HEAD:${{ github.ref }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
