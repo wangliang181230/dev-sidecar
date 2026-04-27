@@ -127,6 +127,30 @@ jobs:
           cd packages/mitmproxy;
           pnpm run test;
 
+      # ==============================================
+      # ✅ 修复：为 Windows 平台创建 electron-builder 配置文件
+      # ==============================================
+      - name: "Create electron-builder config for Windows"
+        if: ${{ matrix.os == 'windows' }}
+        run: |
+          echo "为 Windows 创建 electron-builder 多架构配置文件..."
+          cat > packages/gui/electron-builder.yml << 'EOF'
+          win:
+            target: nsis
+            arch:
+              - x64
+              - ia32
+              - arm64
+          nsis:
+            oneClick: false
+            perMachine: false
+            allowElevation: true
+            allowToChangeInstallationDirectory: true
+          publish: null
+          EOF
+          echo "配置文件内容:"
+          cat packages/gui/electron-builder.yml
+
       - name: "npm run electron:build"
         run: |
           echo "======================================================================";
@@ -138,7 +162,13 @@ jobs:
           echo "======================================================================";
           echo "npm run electron:build";
           echo "--------------------";
-          npm run electron:build;
+          # 👇 👇 👇 【关键修复】Windows 平台使用多架构参数
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            echo "Windows 平台：使用 electron-builder.yml 配置构建所有架构"
+            npm run electron:build -- --win
+          else
+            npm run electron:build
+          fi;
 
       - name: 'Print dir "packages/gui/dist_electron/"'
         run: |
