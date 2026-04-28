@@ -154,11 +154,16 @@ jobs:
           dir || ls -lah;
 
           echo "======================================================================";
+          echo "查看临时配置文件内容";
+          echo "--------------------";
+          cat electron-builder.temp.yml;
+
+          echo "======================================================================";
           echo "npm run electron:build";
           echo "--------------------";
           # 👇 👇 👇 【修复】Windows 强制打包所有架构（仅修复语法，不改动逻辑）
           if ('${{ matrix.os }}' -eq 'windows') {
-            npm run electron:build -- --win --config electron-builder.temp.yml
+            npm run electron:build -- -- --win --config electron-builder.temp.yml
           } else {
             npm run electron:build
           }
