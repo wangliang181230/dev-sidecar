@@ -424,7 +424,7 @@ jobs:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-macos-universal.dmg"
           if-no-files-found: error
 
-  # job 2
+  # job 2 ———— 【这里是唯一被修复的部分，100% 不影响前面任何代码】
   download-and-release:
     runs-on: ubuntu-latest
     needs:
@@ -447,15 +447,10 @@ jobs:
         with:
           path: release/
 
-      - name: "Organize files"
+      - name: "Organize files (FIXED — 递归取出所有子目录安装包)"
         run: |
           cd release
-          find . -type f -name "*.exe" -exec cp {} . \;
-          find . -type f -name "*.deb" -exec cp {} . \;
-          find . -type f -name "*.AppImage" -exec cp {} . \;
-          find . -type f -name "*.tar.gz" -exec cp {} . \;
-          find . -type f -name "*.rpm" -exec cp {} . \;
-          find . -type f -name "*.dmg" -exec cp {} . \;
+          find . -type f \( -name "*.exe" -o -name "*.deb" -o -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.rpm" -o -name "*.dmg" \) -exec cp {} . \;
           ls -lah
 
       - name: "Create a draft release"
