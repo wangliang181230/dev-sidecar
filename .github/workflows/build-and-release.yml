@@ -243,7 +243,7 @@ jobs:
 
       # region Upload artifacts - Windows
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'windows' && hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-x86_64.exe', steps.package-info.outputs.version)) != '' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe
@@ -251,7 +251,7 @@ jobs:
           if-no-files-found: ignore
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'windows' && hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-ia32.exe', steps.package-info.outputs.version)) != '' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe
@@ -259,7 +259,7 @@ jobs:
           if-no-files-found: ignore
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'windows' && hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-arm64.exe', steps.package-info.outputs.version)) != '' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe
@@ -267,7 +267,7 @@ jobs:
           if-no-files-found: ignore
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'windows' && hashFiles(format('packages/gui/dist_electron/DevSidecar-{0}-windows-universal.exe', steps.package-info.outputs.version)) != '' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe
@@ -277,7 +277,7 @@ jobs:
 
       # region Upload artifacts - Linux
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.deb"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.deb
@@ -285,7 +285,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.AppImage"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.AppImage
@@ -293,7 +293,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.tar.gz"
-        uses: actions/upload-artifact@4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.tar.gz
@@ -301,7 +301,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.rpm"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.rpm
@@ -309,7 +309,7 @@ jobs:
           if-no-files-found: error
           
       # - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak"
-      #   uses: actions/upload-artifact@v4.4.0
+      #   uses: actions/upload-artifact@v4
       #   if: ${{ matrix.os == 'ubuntu' }}
       #   with:
       #     path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak
@@ -318,7 +318,7 @@ jobs:
 
       # -------------------------------------------------------------------------------------------------------------------------
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb
@@ -326,7 +326,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.AppImage"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.AppImage
@@ -334,7 +334,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.tar.gz"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.tar.gz
@@ -342,7 +342,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.rpm"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.rpm
@@ -350,7 +350,7 @@ jobs:
           if-no-files-found: error
           
       # - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak"
-      #   uses: actions/upload-artifact@v4.4.0
+      #   uses: actions/upload-artifact@v4
       #   if: ${{ matrix.os == 'ubuntu' }}
       #   with:
       #     path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak
@@ -359,7 +359,7 @@ jobs:
 
       # -------------------------------------------------------------------------------------------------------------------------
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.deb"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.deb
@@ -367,7 +367,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.AppImage"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.AppImage
@@ -375,7 +375,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.tar.gz"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.tar.gz
@@ -383,7 +383,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.rpm"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.rpm
@@ -391,7 +391,7 @@ jobs:
           if-no-files-found: error
           
       # - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak"
-      #   uses: actions/upload-artifact@v4.4.0
+      #   uses: actions/upload-artifact@v4
       #   if: ${{ matrix.os == 'ubuntu' }}
       #   with:
       #     path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak
@@ -401,7 +401,7 @@ jobs:
 
       # Upload artifacts - macOS
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-macos-x86_64.dmg"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'macos' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-macos-x86_64.dmg
@@ -409,7 +409,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-macos-arm64.dmg"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'macos' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-macos-arm64.dmg
@@ -417,7 +417,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-macos-universal.dmg"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'macos' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-macos-universal.dmg
