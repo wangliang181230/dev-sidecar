@@ -4,122 +4,114 @@ on:
   push:
     branches:
       - release*
-    paths-ignore:
-      - "_script/**"
-      - "doc/**"
-      - "**/*.md"
-      - "**/.gitignore"
-      - "**/LICENSE"
   workflow_dispatch:
 
 jobs:
   build-and-upload:
     runs-on: ${{ matrix.os }}-latest
-    env:
-      ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
-      ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
     strategy:
       fail-fast: false
       matrix:
-        os: [windows, ubuntu, macos]
+        os: [windows-latest, ubuntu-latest, macos-latest]
         node: [22]
+
     steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4.1.7
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           submodules: true
-          fetch-depth: 0
 
-      - name: "Setup pnpm"
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
-      - name: "Setup Node.js"
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
 
-      - name: "Setup Python"
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: "Get package info"
+      - name: Get version
         id: package-info
         uses: luizfelipelaviola/get-package-info@v1
         with:
           path: ./packages/gui
 
-      - name: "pnpm install"
+      - name: Install dependencies
         run: pnpm install
 
-      - name: "Run tests"
+      - name: Run tests
         run: |
-          cd packages/core && pnpm run test
-          cd ../mitmproxy && pnpm run test
+          cd packages/core && pnpm test
+          cd ../mitmproxy && pnpm test
 
-      - name: "Build Electron App"
+      - name: Build Electron
         working-directory: packages/gui
         run: npm run electron:build
 
-      - name: "Rename artifacts - Windows"
-        if: matrix.os == 'windows'
-        shell: powershell
+      # 自动重命名所有包
+      - name: Rename Windows files
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
         run: |
           cd packages/gui/dist_electron
-          if (Test-Path "DevSidecar-${{ steps.package-info.outputs.version }}-x64.exe") { ren "DevSidecar-${{ steps.package-info.outputs.version }}-x64.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe" }
-          if (Test-Path "DevSidecar-${{ steps.package-info.outputs.version }}-ia32.exe") { ren "DevSidecar-${{ steps.package-info.outputs.version }}-ia32.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe" }
-          if (Test-Path "DevSidecar-${{ steps.package-info.outputs.version }}-arm64.exe") { ren "DevSidecar-${{ steps.package-info.outputs.version }}-arm64.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe" }
+          Get-ChildItem -Filter "*.exe" | Rename-Item -NewName { $_.Name -replace 'DevSidecar-.*?-x64','DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64' }
+          Get-ChildItem -Filter "*.exe" | Rename-Item -NewName { $_.Name -replace 'DevSidecar-.*?-arm64','DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64' }
 
-      - name: "Rename artifacts - Linux"
-        if: matrix.os == 'ubuntu'
+      - name: Rename Linux files
+        if: matrix.os == 'ubuntu-latest'
         run: |
           cd packages/gui/dist_electron
-          mv DevSidecar-*-amd64.deb DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.deb || true
-          mv DevSidecar-*-x86_64.AppImage DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.AppImage || true
-          mv DevSidecar-*-arm64.deb DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb || true
+          rename -f 's/DevSidecar-.*?-amd64/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64/' *.deb
+          rename -f 's/DevSidecar-.*?-x86_64/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64/' *.AppImage
+          rename -f 's/DevSidecar-.*?-arm64/DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64/' *.deb
+          rename -f 's/DevSidecar-.*?-arm64/DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64/' *.AppImage
 
-      - name: "Rename artifacts - macOS"
-        if: matrix.os == 'macos'
+      - name: Rename macOS files
+        if: matrix.os == 'macos-latest'
         run: |
           cd packages/gui/dist_electron
-          mv DevSidecar-*-x64.dmg DevSidecar-${{ steps.package-info.outputs.version }}-macos-x86_64.dmg || true
-          mv DevSidecar-*-arm64.dmg DevSidecar-${{ steps.package-info.outputs.version }}-macos-arm64.dmg || true
+          mv *.dmg DevSidecar-${{ steps.package-info.outputs.version }}-macos-x86_64.dmg 2>/dev/null || true
 
-      # 🔥 关键修复：只上传一个文件夹，而不是分开上传每个文件
-      - name: "Upload build artifacts"
+      # 🔥 关键：每个系统只上传一个文件夹
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.os }}-artifacts
+          name: build-${{ matrix.os }}
           path: packages/gui/dist_electron/
-          if-no-files-found: error
 
+  # 🔥 发布任务：自动收集所有包，一键发布
   download-and-release:
     runs-on: ubuntu-latest
     needs: build-and-upload
     steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4.1.7
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: "Get package info"
+      - name: Get version
         id: package-info
         uses: luizfelipelaviola/get-package-info@v1
         with:
           path: ./packages/gui
 
-      - name: "Download all artifacts"
+      - name: Download all builds
         uses: actions/download-artifact@v4
         with:
-          path: ./artifacts/
+          path: ./all-builds
 
-      # 🔥 关键修复：把所有子目录里的文件提取出来
-      - name: "Flatten all files"
+      # 自动把所有安装包集中到 release 目录
+      - name: Collect all files
         run: |
-          mkdir -p release
-          find ./artifacts -type f \( -name "*.exe" -o -name "*.deb" -o -name "*.AppImage" -o -name "*.rpm" -o -name "*.dmg" -o -name "*.tar.gz" \) -exec cp {} release/ \;
-          ls -lah release/
+          mkdir release
+          find all-builds -type f \( -name "*.exe" -o -name "*.dmg" -o -name "*.deb" -o -name "*.AppImage" -o -name "*.rpm" -o -name "*.tar.gz" \) -exec cp {} release/ \;
+          ls -lh release/
 
-      - name: "Create draft release"
+      # 🔥 最终：自动创建 Release，所有包自动上传
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           draft: true
