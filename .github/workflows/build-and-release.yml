@@ -293,7 +293,7 @@ jobs:
           if-no-files-found: error
           
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.tar.gz"
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@4.4.0
         if: ${{ matrix.os == 'ubuntu' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.tar.gz
@@ -450,7 +450,12 @@ jobs:
       - name: "Organize files"
         run: |
           cd release
-          find . -name "*.exe" -o -name "*.deb" -o -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.rpm" -o -name "*.dmg" | xargs -I {} cp {} .
+          find . -type f -name "*.exe" -exec cp {} . \;
+          find . -type f -name "*.deb" -exec cp {} . \;
+          find . -type f -name "*.AppImage" -exec cp {} . \;
+          find . -type f -name "*.tar.gz" -exec cp {} . \;
+          find . -type f -name "*.rpm" -exec cp {} . \;
+          find . -type f -name "*.dmg" -exec cp {} . \;
           ls -lah
 
       - name: "Create a draft release"
