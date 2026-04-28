@@ -1,6 +1,6 @@
 {
   "name": "@docmirror/dev-sidecar-gui",
-  "version": "2.0.2-myself",
+  "version": "2.0.2",
   "private": false,
   "author": {
     "email": "xiaojunnuo@qq.com",
@@ -11,7 +11,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "lint": "vue-cli-service lint",
-    "electron:build": "vue-cli-service electron:build --win --linux --mac",
+    "electron:build": "vue-cli-service electron:build",
     "electron": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
@@ -30,7 +30,7 @@
     "electron-baidu-tongji": "^1.0.5",
     "electron-updater": "^6.3.9",
     "json5": "^2.2.3",
-    "lodash": "^4.17.2",
+    "lodash": "^4.17.21",
     "request-progress": "^3.0.0",
     "sass": "^1.81.0",
     "sass-loader": "^16.0.3",
