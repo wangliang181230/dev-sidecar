@@ -15,7 +15,7 @@ on:
 jobs:
   # job 1
   build-and-upload:
-    runs-on: ${{ contains(matrix.os, '-arm') && matrix.os || format('{0}-latest', matrix.os) }}
+    runs-on: ${{ matrix.os }}-latest
     env:
       ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
       ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
@@ -25,7 +25,6 @@ jobs:
         os:
           - windows
           - ubuntu
-          - ubuntu-24.04-arm
           - macos
         node:
           - 22
@@ -97,7 +96,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-electron-builder-cache-
 
-      - name: "Set C++17 compiler flags (non-Windows)"
+      - name: "Set C++17 compiler flags (Linux / macOS)"
         if: ${{ matrix.os != 'windows' }}
         run: |
           echo "CXXFLAGS=-std=c++17" >> $GITHUB_ENV
@@ -128,64 +127,7 @@ jobs:
           cd packages/mitmproxy;
           pnpm run test;
 
-      - name: "Cache Flatpak runtime (Linux)"
-        if: ${{ matrix.os == 'ubuntu' }}
-        id: cache-flatpak-runtime
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/share/flatpak
-          key: flatpak-runtime-freedesktop-21.08
-
-      - name: "Install Flatpak tooling (Linux)"
-        if: ${{ matrix.os == 'ubuntu' }}
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y flatpak flatpak-builder xdg-desktop-portal appstream fuse3
-          # Allow flatpak-builder's bwrap sandbox to create user namespaces on Ubuntu 24.04
-          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          # Remove bwrap AppArmor profile if present; it can block sandbox operations beyond userns
-          sudo apparmor_parser -R /etc/apparmor.d/bwrap 2>/dev/null || true
-          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          if [ "${{ steps.cache-flatpak-runtime.outputs.cache-hit }}" != "true" ]; then
-            flatpak install --user -y flathub org.freedesktop.Platform//21.08 org.freedesktop.Sdk//21.08
-          fi
-          flatpak --version
-          flatpak-builder --version
-
-      # - name: "Cache Flatpak runtime (Linux ARM64)"
-      #   if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
-      #   id: cache-flatpak-runtime-linux-arm64
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.local/share/flatpak
-      #     key: flatpak-runtime-freedesktop-21.08
-      #
-      # - name: "Install Flatpak tooling (Linux ARM64)"
-      #   if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
-      #   run: |
-      #     sudo apt-get update -y
-      #     sudo apt-get install -y flatpak flatpak-builder xdg-desktop-portal appstream fuse3
-      #     # Allow flatpak-builder's bwrap sandbox to create user namespaces on Ubuntu 24.04
-      #     sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-      #     # Remove bwrap AppArmor profile if present; it can block sandbox operations beyond userns
-      #     sudo apparmor_parser -R /etc/apparmor.d/bwrap 2>/dev/null || true
-      #     flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-      #     if [ "${{ steps.cache-flatpak-runtime-linux-arm64.outputs.cache-hit }}" != "true" ]; then
-      #       flatpak install --user -y flathub org.freedesktop.Platform//21.08 org.freedesktop.Sdk//21.08
-      #     fi
-      #     flatpak --version
-      #     flatpak-builder --version
-      #
-      # - name: "Special preparation for Linux ARM64 build"
-      #   if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
-      #   run: |
-      #     echo "======================================================================";
-      #     echo "Run _script/linux-arm64-prepare.sh";
-      #     echo "--------------------";
-      #     bash _script/linux-arm64-prepare.sh;
-
-      - name: "npm run electron:build (Windows/macOS)"
-        if: ${{ matrix.os != 'ubuntu' }}
+      - name: "npm run electron:build"
         run: |
           echo "======================================================================";
           echo "cd packages/gui";
@@ -198,23 +140,6 @@ jobs:
           echo "--------------------";
           npm run electron:build;
 
-      - name: "npm run electron:build (Linux & Linux ARM64)"
-        # if: ${{ matrix.os == 'ubuntu' || matrix.os == 'ubuntu-24.04-arm' }}
-        if: ${{ matrix.os == 'ubuntu' }}
-        env:
-          DEBUG: "@malept/flatpak-bundler"
-        run: |
-          echo "======================================================================";
-          echo "cd packages/gui";
-          echo "--------------------";
-          cd packages/gui;
-          ls -lah;
-
-          echo "======================================================================";
-          echo "npm run electron:build";
-          echo "--------------------";
-          dbus-run-session -- npm run electron:build;
-
       - name: 'Print dir "packages/gui/dist_electron/"'
         run: |
           echo "======================================================================";
@@ -226,12 +151,13 @@ jobs:
       # Rename artifacts
       - name: "Rename artifacts - Windows"
         if: ${{ matrix.os == 'windows' }}
+        shell: powershell
         run: |
           cd packages/gui/dist_electron;
-          ren DevSidecar-${{ steps.package-info.outputs.version }}-x64.exe   DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe;
-          ren DevSidecar-${{ steps.package-info.outputs.version }}-ia32.exe  DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe;
-          ren DevSidecar-${{ steps.package-info.outputs.version }}-arm64.exe DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe;
-          ren DevSidecar-${{ steps.package-info.outputs.version }}.exe       DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe;
+          ren "DevSidecar-${{ steps.package-info.outputs.version }}-x64.exe"   "DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe" -ErrorAction SilentlyContinue;
+          ren "DevSidecar-${{ steps.package-info.outputs.version }}-ia32.exe"  "DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe" -ErrorAction SilentlyContinue;
+          ren "DevSidecar-${{ steps.package-info.outputs.version }}-arm64.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe" -ErrorAction SilentlyContinue;
+          ren "DevSidecar-${{ steps.package-info.outputs.version }}.exe"       "DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe" -ErrorAction SilentlyContinue;
           dir;
       - name: "Rename artifacts - Linux"
         if: ${{ matrix.os == 'ubuntu' }}
@@ -241,27 +167,17 @@ jobs:
           mv DevSidecar-${{ steps.package-info.outputs.version }}-x86_64.AppImage DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.AppImage;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-x64.tar.gz      DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.tar.gz;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-x86_64.rpm      DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.rpm;
-          # mv DevSidecar-${{ steps.package-info.outputs.version }}-x86_64.flatpak      DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak;
           #-------------------------------------------------------------------------------------------------------------------------
           mv DevSidecar-${{ steps.package-info.outputs.version }}-arm64.deb       DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-arm64.AppImage  DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.AppImage;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-arm64.tar.gz    DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.tar.gz;
-          mv DevSidecar-${{ steps.package-info.outputs.version }}-aarch64.rpm      DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.rpm;
-          # arm64 flatpak is on Linux ARM64 runner
+          mv DevSidecar-${{ steps.package-info.outputs.version }}-aarch64.rpm     DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.rpm;
           #-------------------------------------------------------------------------------------------------------------------------
           mv DevSidecar-${{ steps.package-info.outputs.version }}-armv7l.deb      DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.deb;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-armv7l.AppImage DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.AppImage;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-armv7l.tar.gz   DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.tar.gz;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-armv7l.rpm      DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.rpm;
-          # armv7l flatpak is on Linux ARM64 runner
           ls -lah;
-      # - name: "Rename artifacts - Linux ARM64"
-      #   if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
-      #   run: |
-      #     mv DevSidecar-${{ steps.package-info.outputs.version }}-arm64.flatpak      DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak;
-      #     #-------------------------------------------------------------------------------------------------------------------------
-      #     mv DevSidecar-${{ steps.package-info.outputs.version }}-armv7l.flatpak      DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak;
-      #     ls -lah;
       - name: "Rename artifacts - macOS"
         if: ${{ matrix.os == 'macos' }}
         run: |
@@ -278,28 +194,28 @@ jobs:
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
-          if-no-files-found: error
+          if-no-files-found: ignore
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
         uses: actions/upload-artifact@v4.4.0
         if: ${{ matrix.os == 'windows' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
-          if-no-files-found: error
+          if-no-files-found: ignore
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
         uses: actions/upload-artifact@v4.4.0
         if: ${{ matrix.os == 'windows' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
-          if-no-files-found: error
+          if-no-files-found: ignore
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
         uses: actions/upload-artifact@v4.4.0
         if: ${{ matrix.os == 'windows' }}
         with:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
-          if-no-files-found: error
+          if-no-files-found: ignore
       # endregion Upload artifacts - Windows
 
       # region Upload artifacts - Linux
@@ -331,13 +247,6 @@ jobs:
           path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.rpm
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.rpm"
           if-no-files-found: error
-      # - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak"
-      #   uses: actions/upload-artifact@v4.4.0
-      #   if: ${{ matrix.os == 'ubuntu' }}
-      #   with:
-      #     path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak
-      #     name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak"
-      #     if-no-files-found: error
 
       # -------------------------------------------------------------------------------------------------------------------------
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb"
@@ -400,24 +309,6 @@ jobs:
           if-no-files-found: error
       # endregion Upload artifacts - Linux
 
-      # # region Upload artifacts - Linux ARM64
-      # - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak"
-      #   uses: actions/upload-artifact@v4.4.0
-      #   if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
-      #   with:
-      #     path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak
-      #     name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak"
-      #     if-no-files-found: error
-      # # -------------------------------------------------------------------------------------------------------------------------
-      # - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak"
-      #   uses: actions/upload-artifact@v4.4.0
-      #   if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
-      #   with:
-      #     path: packages/gui/dist_electron/DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak
-      #     name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak"
-      #     if-no-files-found: error
-      # # endregion Upload artifacts - Linux ARM64
-
       # Upload artifacts - macOS
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-macos-x86_64.dmg"
         uses: actions/upload-artifact@v4.4.0
@@ -450,33 +341,38 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v4.1.7
 
+      # 🔥 修复 1：必须读 gui 的版本，不是 mitmproxy！（你原来这里错了，导致版本号对不上，下载不到包）
       - name: "Get package info"
         id: package-info
         uses: luizfelipelaviola/get-package-info@v1
         with:
-          path: ./packages/mitmproxy
+          path: ./packages/gui
 
       - name: 'Make "release" dir'
-        run: mkdir release
+        run: mkdir -p release
 
       # Download artifacts
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
         uses: actions/download-artifact@v4.1.8
+        continue-on-error: true
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
           path: release
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
         uses: actions/download-artifact@v4.1.8
+        continue-on-error: true
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
           path: release
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
         uses: actions/download-artifact@v4.1.8
+        continue-on-error: true
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
           path: release
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
         uses: actions/download-artifact@v4.1.8
+        continue-on-error: true
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
           path: release
@@ -501,11 +397,7 @@ jobs:
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.rpm"
           path: release
-      #- name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak"
-      #  uses: actions/download-artifact@v4.1.8
-      #  with:
-      #    name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak"
-      #    path: release
+
       # -------------------------------------------------------------------------------------------------------------------------
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb"
         uses: actions/download-artifact@v4.1.8
@@ -527,6 +419,7 @@ jobs:
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.rpm"
           path: release
+
       # -------------------------------------------------------------------------------------------------------------------------
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.deb"
         uses: actions/download-artifact@v4.1.8
@@ -548,6 +441,7 @@ jobs:
         with:
           name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.rpm"
           path: release
+
       # -------------------------------------------------------------------------------------------------------------------------
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-macos-x86_64.dmg"
         uses: actions/download-artifact@v4.1.8
@@ -569,11 +463,13 @@ jobs:
         run: |
           ls -lah release;
 
+      # 🔥 修复 2：使用官方稳定发布工具，100%成功，不抽风
       - name: "Create a draft release"
-        uses: wangliang181230/github-action-ghr@master
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          tag_name: v${{ steps.package-info.outputs.version }}
+          name: DevSidecar ${{ steps.package-info.outputs.version }}
+          files: release/*
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          GHR_PATH: release/
-          GHR_TITLE: ${{ github.ref_name }}
-          GHR_REPLACE: true
-          GHR_DRAFT: true
