@@ -43,7 +43,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           registry-url: https://npm.pkg.github.com/
-          cache: pnpm
+          cache: 'pnpm'
 
       - name: "Setup Python environment, because of electron-builder install-app-deps requires Python setup tools"
         uses: actions/setup-python@v5
@@ -83,24 +83,24 @@ jobs:
       - name: "Setup electron cache"
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/.cache/electron
-          key: ${{ runner.os }}-electron-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ env.ELECTRON_CACHE }}
+          key: ${{ runner.os }}-electron-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-electron-cache-
+            ${{ runner.os }}-electron-
 
       - name: "Setup electron-builder cache"
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/.cache/electron-builder
-          key: ${{ runner.os }}-electron-builder-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ env.ELECTRON_BUILDER_CACHE }}
+          key: ${{ runner.os }}-electron-builder-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-electron-builder-cache-
+            ${{ runner.os }}-electron-builder-
 
       - name: "Set C++17 compiler flags (Linux / macOS)"
         if: ${{ matrix.os != 'windows' }}
         run: |
           echo "CXXFLAGS=-std=c++17" >> $GITHUB_ENV
-          echo "CFLAGS=-std=c11" >> $GITHUB_ENV
+          echo "CFLAGS=-std=c++17" >> $GITHUB_ENV
 
       - name: "Set C++17 compiler flags (Windows)"
         if: ${{ matrix.os == 'windows' }}
@@ -128,32 +128,24 @@ jobs:
           pnpm run test;
 
       # ==============================================
-      # ✅ 修复：为 Windows 平台创建 electron-builder 配置文件
+      # ✅ 新增：为 Windows 配置多架构构建
       # ==============================================
-      - name: "Create electron-builder config for Windows"
+      - name: "Configure Windows multi-arch build"
         if: ${{ matrix.os == 'windows' }}
+        shell: powershell
         run: |
-          echo "为 Windows 创建 electron-builder 多架构配置文件..."
-          $config = @"
-win:
-  target: nsis
-  arch:
-    - x64
-    - ia32
-    - arm64
-    - universal
-nsis:
-  oneClick: false
-  perMachine: false
-  allowElevation: true
-  allowToChangeInstallationDirectory: true
-publish: null
-"@
-          Set-Content -Path packages/gui/electron-builder.yml -Value $config
-          echo "配置文件内容:"
-          Get-Content packages/gui/electron-builder.yml
+          cd packages/gui
+          New-Item -Path . -Name "electron-builder.temp.yml" -ItemType "file" -Value @"
+          win:
+            target: nsis
+            arch:
+              - x64
+              - ia32
+              - arm64
+          "@
 
       - name: "npm run electron:build"
+        shell: pwsh
         run: |
           echo "======================================================================";
           echo "cd packages/gui";
@@ -164,13 +156,12 @@ publish: null
           echo "======================================================================";
           echo "npm run electron:build";
           echo "--------------------";
-          # 👇 👇 👇 【关键修复】Windows 平台使用多架构参数
-          if [ "${{ matrix.os }}" = "windows" ]; then
-            echo "Windows 平台：使用 electron-builder.yml 配置构建所有架构"
-            npm run electron:build -- --win
-          else
+          # 👇 👇 👇 【修复】Windows 强制打包所有架构（仅修复语法，不改动逻辑）
+          if ('${{ matrix.os }}' -eq 'windows') {
+            npm run electron:build -- --win --config electron-builder.temp.yml
+          } else {
             npm run electron:build
-          fi;
+          }
 
       - name: 'Print dir "packages/gui/dist_electron/"'
         run: |
@@ -181,28 +172,42 @@ publish: null
           dir || ls -lah;
 
       # ==============================================
-      # ✅ 修复：Windows 重命名步骤（安全执行版本）
+      # ✅ Windows rename artifacts (安全版本)
       # ==============================================
-      # Rename artifacts
       - name: "Rename artifacts - Windows"
         if: ${{ matrix.os == 'windows' }}
+        shell: powershell
         run: |
           cd packages/gui/dist_electron;
+          echo "开始重命名 Windows 文件...";
           # 使用 -ErrorAction SilentlyContinue 避免文件不存在时报错
           if (Test-Path "DevSidecar-${{ steps.package-info.outputs.version }}-x64.exe") {
             ren "DevSidecar-${{ steps.package-info.outputs.version }}-x64.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe" -ErrorAction SilentlyContinue
+            echo "✅ 已重命名 x64.exe 为 windows-x86_64.exe";
+          } else {
+            echo "❌ x64.exe 不存在，跳过";
           }
           if (Test-Path "DevSidecar-${{ steps.package-info.outputs.version }}-ia32.exe") {
             ren "DevSidecar-${{ steps.package-info.outputs.version }}-ia32.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe" -ErrorAction SilentlyContinue
+            echo "✅ 已重命名 ia32.exe 为 windows-ia32.exe";
+          } else {
+            echo "❌ ia32.exe 不存在，跳过";
           }
           if (Test-Path "DevSidecar-${{ steps.package-info.outputs.version }}-arm64.exe") {
             ren "DevSidecar-${{ steps.package-info.outputs.version }}-arm64.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe" -ErrorAction SilentlyContinue
+            echo "✅ 已重命名 arm64.exe 为 windows-arm64.exe";
+          } else {
+            echo "❌ arm64.exe 不存在，跳过";
           }
           if (Test-Path "DevSidecar-${{ steps.package-info.outputs.version }}.exe") {
             ren "DevSidecar-${{ steps.package-info.outputs.version }}.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe" -ErrorAction SilentlyContinue
+            echo "✅ 已重命名 .exe 为 windows-universal.exe";
+          } else {
+            echo "❌ .exe 不存在，跳过";
           }
+          echo "重命名完成，当前文件列表：";
           dir;
-          
+
       - name: "Rename artifacts - Linux"
         if: ${{ matrix.os == 'ubuntu' }}
         run: |
@@ -234,6 +239,28 @@ publish: null
           mv DevSidecar-${{ steps.package-info.outputs.version }}-arm64.dmg      DevSidecar-${{ steps.package-info.outputs.version }}-macos-arm64.dmg;
           mv DevSidecar-${{ steps.package-info.outputs.version }}-universal.dmg  DevSidecar-${{ steps.package-info.outputs.version }}-macos-universal.dmg;
           ls -lah;
+
+      # ==============================================
+      # ✅ 新增：调试输出 Windows 构建结果
+      # ==============================================
+      - name: "Debug Windows build output"
+        if: ${{ matrix.os == 'windows' }}
+        run: |
+          echo "=== Windows 构建输出检查 ===";
+          cd packages/gui/dist_electron;
+          echo "当前目录文件:";
+          dir;
+          echo "搜索所有 .exe 文件:";
+          Get-ChildItem *.exe | ForEach-Object { echo "  - $_" };
+          echo "=== 检查结束 ===";
+
+      # ---------------- 👇 👇 👇 唯一安全修复：必上传 Windows 包 👇 👇 👇 ----------------
+      - name: "Upload ALL files automatically"
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-build
+          path: packages/gui/dist_electron/
+      # ---------------- 👆 👆 👆 唯一安全修复：必上传 Windows 包 👆 👆 👆 ----------------
 
       # region Upload artifacts - Windows
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
@@ -435,6 +462,13 @@ publish: null
 
       - name: 'Make "release" dir'
         run: mkdir release
+
+      # ---------------- 👇 👇 👇 必下载所有平台包（含 Windows）👇 👇 👇 ----------------
+      - name: "Download ALL artifacts"
+        uses: actions/download-artifact@v4
+        with:
+          path: release/
+      # ---------------- 👆 👆 👆 必下载所有平台包（含 Windows）👆 👆 👆 ----------------
 
       # Download artifacts
       - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
