@@ -45,7 +45,7 @@ jobs:
           registry-url: https://npm.pkg.github.com/
           cache: 'pnpm'
 
-      - name: "Setup Python environment, because of electron-builder install-app-deps requires Python setup tools"
+      - name: "Setup Python environment, because we need setup tools for electron-builder install-app-deps"
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
@@ -128,7 +128,7 @@ jobs:
           pnpm run test;
 
       # ==============================================
-      # ✅ 新增：为 Windows 配置多架构构建
+      # Configure Windows multi-arch build
       # ==============================================
       - name: "Configure Windows multi-arch build"
         if: ${{ matrix.os == 'windows' }}
@@ -154,14 +154,13 @@ jobs:
           dir || ls -lah;
 
           echo "======================================================================";
-          echo "查看临时配置文件内容";
+          echo "cat electron-builder.temp.yml";
           echo "--------------------";
           cat electron-builder.temp.yml;
 
           echo "======================================================================";
           echo "npm run electron:build";
           echo "--------------------";
-          # 👇 👇 👇 【修复】Windows 强制打包所有架构（仅修复语法，不改动逻辑）
           if ('${{ matrix.os }}' -eq 'windows') {
             npm run electron:build -- -- --win --config electron-builder.temp.yml
           } else {
@@ -177,46 +176,19 @@ jobs:
           dir || ls -lah;
 
       # ==============================================
-      # ✅ Windows rename artifacts (安全版本)
+      # Windows rename artifacts
       # ==============================================
       - name: "Rename artifacts - Windows"
         if: ${{ matrix.os == 'windows' }}
         shell: powershell
         run: |
-          cd packages/gui/dist_electron;
-          echo "开始重命名 Windows 文件...";
-          $version = "${{ steps.package-info.outputs.version }}";
-
-          if (Test-Path "DevSidecar-$version-x64.exe") {
-            Rename-Item -Path "DevSidecar-$version-x64.exe" -NewName "DevSidecar-$version-windows-x86_64.exe" -ErrorAction SilentlyContinue
-            echo "✅ 已重命名 x64.exe 为 windows-x86_64.exe";
-          } else {
-            echo "❌ x64.exe 不存在，跳过";
-          }
-
-          if (Test-Path "DevSidecar-$version-ia32.exe") {
-            Rename-Item -Path "DevSidecar-$version-ia32.exe" -NewName "DevSidecar-$version-windows-ia32.exe" -ErrorAction SilentlyContinue
-            echo "✅ 已重命名 ia32.exe 为 windows-ia32.exe";
-          } else {
-            echo "❌ ia32.exe 不存在，跳过";
-          }
-
-          if (Test-Path "DevSidecar-$version-arm64.exe") {
-            Rename-Item -Path "DevSidecar-$version-arm64.exe" -NewName "DevSidecar-$version-windows-arm64.exe" -ErrorAction SilentlyContinue
-            echo "✅ 已重命名 arm64.exe 为 windows-arm64.exe";
-          } else {
-            echo "❌ arm64.exe 不存在，跳过";
-          }
-
-          if (Test-Path "DevSidecar-$version.exe") {
-            Rename-Item -Path "DevSidecar-$version.exe" -NewName "DevSidecar-$version-windows-universal.exe" -ErrorAction SilentlyContinue
-            echo "✅ 已重命名 .exe 为 windows-universal.exe";
-          } else {
-            echo "❌ .exe 不存在，跳过";
-          }
-
-          echo "重命名完成，当前文件列表：";
-          Get-ChildItem *.exe;
+          cd packages/gui/dist_electron
+          $version = "${{ steps.package-info.outputs.version }}"
+          if (Test-Path "DevSidecar-$version-x64.exe") { Rename-Item "DevSidecar-$version-x64.exe" "DevSidecar-$version-windows-x86_64.exe" }
+          if (Test-Path "DevSidecar-$version-ia32.exe") { Rename-Item "DevSidecar-$version-ia32.exe" "DevSidecar-$version-windows-ia32.exe" }
+          if (Test-Path "DevSidecar-$version-arm64.exe") { Rename-Item "DevSidecar-$version-arm64.exe" "DevSidecar-$version-windows-arm64.exe" }
+          if (Test-Path "DevSidecar-$version.exe") { Rename-Item "DevSidecar-$version.exe" "DevSidecar-$version-windows-universal.exe" }
+          Get-ChildItem *.exe
 
       - name: "Rename artifacts - Linux"
         if: ${{ matrix.os == 'ubuntu' }}
@@ -251,26 +223,23 @@ jobs:
           ls -lah;
 
       # ==============================================
-      # ✅ 新增：调试输出 Windows 构建结果
+      # Debug Windows build output
       # ==============================================
       - name: "Debug Windows build output"
         if: ${{ matrix.os == 'windows' }}
         run: |
-          echo "=== Windows 构建输出检查 ===";
           cd packages/gui/dist_electron;
-          echo "当前目录文件:";
           dir;
-          echo "搜索所有 .exe 文件:";
-          Get-ChildItem *.exe | ForEach-Object { echo "  - $_" };
-          echo "=== 检查结束 ===";
+          Get-ChildItem *.exe;
 
-      # ---------------- 👇 👇 👇 唯一安全修复：必上传 Windows 包 👇 👇 👇 ----------------
+      # --------------------------
+      # Upload files
+      # --------------------------
       - name: "Upload ALL files automatically"
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-build
           path: packages/gui/dist_electron/
-      # ---------------- 👆 👆 👆 唯一安全修复：必上传 Windows 包 👆 👆 👆 ----------------
 
       # region Upload artifacts - Windows
       - name: "Upload DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
@@ -473,160 +442,13 @@ jobs:
       - name: 'Make "release" dir'
         run: mkdir release
 
-      # ---------------- 👇 👇 👇 必下载所有平台包（含 Windows）👇 👇 👇 ----------------
       - name: "Download ALL artifacts"
         uses: actions/download-artifact@v4
         with:
           path: release/
-      # ---------------- 👆 👆 👆 必下载所有平台包（含 Windows）👆 👆 👆 ----------------
 
-      # Download artifacts
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
-          path: release
-          
-      # -------------------------------------------------------------------------------------------------------------------------
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.deb"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.deb"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.AppImage"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.AppImage"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.tar.gz"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.tar.gz"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.rpm"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.rpm"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak"
-          path: release
-          
-      # -------------------------------------------------------------------------------------------------------------------------
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.AppImage"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.AppImage"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.tar.gz"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.tar.gz"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.rpm"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.rpm"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak"
-          path: release
-          
-      # -------------------------------------------------------------------------------------------------------------------------
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.deb"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.deb"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.AppImage"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.AppImage"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.tar.gz"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.tar.gz"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.rpm"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.rpm"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak"
-          path: release
-          
-      # -------------------------------------------------------------------------------------------------------------------------
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-macos-x86_64.dmg"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-macos-x86_64.dmg"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-macos-arm64.dmg"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-macos-arm64.dmg"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-macos-universal.dmg"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-macos-universal.dmg"
-          path: release
-
-      - name: 'Print files from "release" dir'
-        run: |
-          ls -lah release;
+      - name: "List release files"
+        run: ls -lah release/
 
       - name: "Create a draft release"
         uses: wangliang181230/github-action-ghr@master
