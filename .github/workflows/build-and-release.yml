@@ -440,21 +440,29 @@ jobs:
           path: ./packages/gui
 
       - name: 'Make "release" dir'
-        run: mkdir release
+        run: mkdir -p release
 
       - name: "Download ALL artifacts"
         uses: actions/download-artifact@v4
         with:
           path: release/
 
-      - name: "List release files"
-        run: ls -lah release/
+      - name: "Organize files"
+        run: |
+          cd release
+          find . -name "*.exe" -o -name "*.deb" -o -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.rpm" -o -name "*.dmg" | xargs -I {} cp {} .
+          ls -lah
 
       - name: "Create a draft release"
-        uses: wangliang181230/github-action-ghr@master
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          GHR_PATH: release/
-          GHR_TITLE: ${{ github.ref_name }}
-          GHR_REPLACE: true
-          GHR_DRAFT: true
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          name: "DevSidecar ${{ steps.package-info.outputs.version }} (release-myself)"
+          tag_name: "v${{ steps.package-info.outputs.version }}-myself"
+          files: |
+            release/*.exe
+            release/*.deb
+            release/*.AppImage
+            release/*.tar.gz
+            release/*.rpm
+            release/*.dmg
