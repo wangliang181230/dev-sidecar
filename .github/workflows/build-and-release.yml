@@ -461,168 +461,27 @@ jobs:
           path: ./packages/gui
 
       - name: 'Make "release" dir'
-        run: mkdir release
+        run: mkdir -p release
 
-      # ---------------- 👇 👇 👇 必下载所有平台包（含 Windows）👇 👇 👇 ----------------
       - name: "Download ALL artifacts"
         uses: actions/download-artifact@v4
         with:
           path: release/
-      # ---------------- 👆 👆 👆 必下载所有平台包（含 Windows）👆 👆 👆 ----------------
 
-      # Download artifacts
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe"
-          path: release
-          
-      # -------------------------------------------------------------------------------------------------------------------------
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.deb"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.deb"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.AppImage"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.AppImage"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.tar.gz"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.tar.gz"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.rpm"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.rpm"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-x86_64.flatpak"
-          path: release
-          
-      # -------------------------------------------------------------------------------------------------------------------------
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.deb"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.AppImage"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.AppImage"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.tar.gz"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.tar.gz"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.rpm"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.rpm"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-arm64.flatpak"
-          path: release
-          
-      # -------------------------------------------------------------------------------------------------------------------------
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.deb"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.deb"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.AppImage"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.AppImage"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.tar.gz"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.tar.gz"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.rpm"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.rpm"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak"
-        uses: actions/download-artifact@v4.1.8
-        continue-on-error: true
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-linux-armv7l.flatpak"
-          path: release
-          
-      # -------------------------------------------------------------------------------------------------------------------------
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-macos-x86_64.dmg"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-macos-x86_64.dmg"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-macos-arm64.dmg"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-macos-arm64.dmg"
-          path: release
-          
-      - name: "Download DevSidecar-${{ steps.package-info.outputs.version }}-macos-universal.dmg"
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: "DevSidecar-${{ steps.package-info.outputs.version }}-macos-universal.dmg"
-          path: release
-
-      - name: 'Print files from "release" dir'
+      # 🔥 核心修复：把所有子目录里的安装包全部提取出来
+      - name: "Flatten all files"
         run: |
-          ls -lah release;
+          cd release
+          find . -type f \( -name "*.exe" -o -name "*.deb" -o -name "*.AppImage" -o -name "*.rpm" -o -name "*.dmg" -o -name "*.tar.gz" \) -exec mv {} . \;
+          ls -lah
 
+      # 🔥 使用官方稳定插件创建 Release，不报错、稳定可用
       - name: "Create a draft release"
-        uses: wangliang181230/github-action-ghr@master
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          tag_name: v${{ steps.package-info.outputs.version }}-myself
+          name: DevSidecar ${{ steps.package-info.outputs.version }} (release-myself)
+          files: release/*
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          GHR_PATH: release/
-          GHR_TITLE: ${{ github.ref_name }}
-          GHR_REPLACE: true
-          GHR_DRAFT: true
