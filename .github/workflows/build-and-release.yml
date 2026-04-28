@@ -22,15 +22,15 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows, ubuntu, macos]
-        node: [20]   # ✅ 固定 Node 20（避免 22 兼容性坑）
+        node: [18]   # ✅ 对齐你用的 Electron 19（Node 18 最稳）
 
     steps:
-      # ✅ 升级 actions，消除 Node 20 弃用警告
       - uses: actions/checkout@v4
 
+      # ✅ 明确指定 pnpm 版本（与你本地一致）
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 9.13.2
 
       - uses: actions/setup-node@v4
         with:
@@ -41,7 +41,6 @@ jobs:
         with:
           python-version: "3.11"
 
-      # ✅ Ubuntu：补齐所有 Electron Builder 必需依赖
       - name: "Install Linux build deps"
         if: ${{ matrix.os == 'ubuntu' }}
         run: |
@@ -58,7 +57,6 @@ jobs:
             libgbm-dev \
             libxshmfence-dev
 
-      # ✅ macOS：接受 Xcode 许可（避免 exit code 1）
       - name: "Accept Xcode license"
         if: ${{ matrix.os == 'macos' }}
         run: sudo xcodebuild -license accept
@@ -71,19 +69,18 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # ✅ 明确指定 electron-builder 命令
+      # ✅ 覆盖 electron:build，按平台构建
       - name: "Build Electron"
         working-directory: packages/gui
         run: |
           if [[ "${{ matrix.os }}" == "windows" ]]; then
-            npx electron-builder --win --x64 --ia32 --arm64
+            npm run electron:build -- --win --x64 --ia32 --arm64
           elif [[ "${{ matrix.os }}" == "ubuntu" ]]; then
-            npx electron-builder --linux --x64 --arm64 --armv7l
+            npm run electron:build -- --linux --x64 --arm64 --armv7l
           else
-            npx electron-builder --mac --x64 --arm64 --universal
+            npm run electron:build -- --mac --x64 --arm64 --universal
           fi
 
-      # ✅ 统一重命名（防 mv 失败）
       - name: "Rename artifacts"
         working-directory: packages/gui/dist_electron
         run: |
