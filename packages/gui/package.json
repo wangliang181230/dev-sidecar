@@ -1,6 +1,6 @@
 {
   "name": "@docmirror/dev-sidecar-gui",
-  "version": "2.0.2-myself",
+  "version": "2.0.2",
   "private": false,
   "author": {
     "email": "xiaojunnuo@qq.com",
@@ -18,15 +18,6 @@
     "electron:icons": "electron-icon-builder --input=./public/logo/win.png --output=build --flatten",
     "electron:icons-mac": "electron-icon-builder --input=./public/logo/mac.png --output=build --flatten",
     "electron:icons-black": "electron-icon-builder --input=./public/logo/win-black.png --output=build/black --flatten"
-  },
-  "vue": {
-    "pluginOptions": {
-      "electronBuilder": {
-        "builderOptions": {
-          "publish": false
-        }
-      }
-    }
   },
   "dependencies": {
     "@docmirror/dev-sidecar": "workspace:*",
