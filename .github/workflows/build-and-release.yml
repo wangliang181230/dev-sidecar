@@ -185,33 +185,38 @@ jobs:
         run: |
           cd packages/gui/dist_electron;
           echo "开始重命名 Windows 文件...";
-          # 使用 -ErrorAction SilentlyContinue 避免文件不存在时报错
-          if (Test-Path "DevSidecar-${{ steps.package-info.outputs.version }}-x64.exe") {
-            ren "DevSidecar-${{ steps.package-info.outputs.version }}-x64.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-x86_64.exe" -ErrorAction SilentlyContinue
+          $version = "${{ steps.package-info.outputs.version }}";
+
+          if (Test-Path "DevSidecar-$version-x64.exe") {
+            Rename-Item -Path "DevSidecar-$version-x64.exe" -NewName "DevSidecar-$version-windows-x86_64.exe" -ErrorAction SilentlyContinue
             echo "✅ 已重命名 x64.exe 为 windows-x86_64.exe";
           } else {
             echo "❌ x64.exe 不存在，跳过";
           }
-          if (Test-Path "DevSidecar-${{ steps.package-info.outputs.version }}-ia32.exe") {
-            ren "DevSidecar-${{ steps.package-info.outputs.version }}-ia32.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-ia32.exe" -ErrorAction SilentlyContinue
+
+          if (Test-Path "DevSidecar-$version-ia32.exe") {
+            Rename-Item -Path "DevSidecar-$version-ia32.exe" -NewName "DevSidecar-$version-windows-ia32.exe" -ErrorAction SilentlyContinue
             echo "✅ 已重命名 ia32.exe 为 windows-ia32.exe";
           } else {
             echo "❌ ia32.exe 不存在，跳过";
           }
-          if (Test-Path "DevSidecar-${{ steps.package-info.outputs.version }}-arm64.exe") {
-            ren "DevSidecar-${{ steps.package-info.outputs.version }}-arm64.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-arm64.exe" -ErrorAction SilentlyContinue
+
+          if (Test-Path "DevSidecar-$version-arm64.exe") {
+            Rename-Item -Path "DevSidecar-$version-arm64.exe" -NewName "DevSidecar-$version-windows-arm64.exe" -ErrorAction SilentlyContinue
             echo "✅ 已重命名 arm64.exe 为 windows-arm64.exe";
           } else {
             echo "❌ arm64.exe 不存在，跳过";
           }
-          if (Test-Path "DevSidecar-${{ steps.package-info.outputs.version }}.exe") {
-            ren "DevSidecar-${{ steps.package-info.outputs.version }}.exe" "DevSidecar-${{ steps.package-info.outputs.version }}-windows-universal.exe" -ErrorAction SilentlyContinue
+
+          if (Test-Path "DevSidecar-$version.exe") {
+            Rename-Item -Path "DevSidecar-$version.exe" -NewName "DevSidecar-$version-windows-universal.exe" -ErrorAction SilentlyContinue
             echo "✅ 已重命名 .exe 为 windows-universal.exe";
           } else {
             echo "❌ .exe 不存在，跳过";
           }
+
           echo "重命名完成，当前文件列表：";
-          dir;
+          Get-ChildItem *.exe;
 
       - name: "Rename artifacts - Linux"
         if: ${{ matrix.os == 'ubuntu' }}
