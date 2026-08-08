@@ -23,9 +23,9 @@ const defaultConfig = {
     remoteConfig: {
       enabled: true,
       // 共享远程配置地址
-      url: 'https://gitee.com/wangliang181230/dev-sidecar-config/raw/main/remote_config.json',
+      url: 'https://gitee.com/wzbdyr/dev-sidecar-config/raw/main/remote_config20260514.json',
       // 个人远程配置地址
-      personalUrl: 'https://gitee.com/wangliang181230/dev-sidecar-config/raw/myself/remote_config_myself.json',
+      personalUrl: 'https://gitee.com/wzbdyr/dev-sidecar-config/raw/main/ds-config.json',
     },
     startShowWindow: true, // 启动时是否打开窗口：true=打开窗口, false=隐藏窗口
     needCheckHideWindow: true, // 是否需要在隐藏窗口时做检查
@@ -107,9 +107,9 @@ const defaultConfig = {
         },
         '^(/[\\w-.]+){2,}/?(\\?.*)?$': {
           // 篡改猴插件地址，以下是高速镜像地址
-          tampermonkeyScript: 'https://gitee.com/wangliang181230/dev-sidecar-config/raw/main/tampermonkey.js',
+          tampermonkeyScript: 'https://gitee.com/wzbdyr/dev-sidecar-config/raw/main/tampermonkey.js',
           // Github油猴脚本地址，以下是高速镜像地址
-          script: 'https://gitee.com/wangliang181230/dev-sidecar-config/raw/main/GithubEnhanced-High-Speed-Download.user.js',
+          script: 'https://gitee.com/wzbdyr/dev-sidecar-config/raw/main/GithubEnhanced-High-Speed-Download.user.js',
           remark: '注：上面所使用的脚本地址，为高速镜像地址。',
           desc: '油猴脚本：高速下载 Git Clone/SSH、Release、Raw、Code(ZIP) 等文件 (公益加速)、项目列表单文件快捷下载、添加 git clone 命令',
         },
@@ -462,7 +462,6 @@ const defaultConfig = {
     ],
   },
 }
-
 // 从本地文件中加载配置
 defaultConfig.configFromFiles = configLoader.getConfigFromFiles(configLoader.getUserConfig(), defaultConfig)
 

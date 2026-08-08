@@ -87,7 +87,7 @@ module.exports = defineConfig({
           target: [
             {
               target: 'nsis',
-              arch: ['x64'],
+              arch: ['x64', 'ia32', 'arm64'],
             },
           ],
           // requestedExecutionLevel: 'highestAvailable', // 加了这个无法开机自启
